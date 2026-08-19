@@ -1,0 +1,50 @@
+TablePartial timestamps_template {
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table clientes {
+  id int [pk, not null]
+  nombres varchar(255)
+  apellido_primario varchar(255)
+  apellido_secundario varchar(255) [null]
+  ruc varchar(20) [unique, null]
+  dni varchar(10) [unique, null]
+  telefono varchar(20) [null]
+  ~timestamps_template
+}
+
+Table productos {
+  id bigint [pk, increment]
+  nombre varchar(255)
+  descripcion text [null]
+  precio decimal(10,2)
+  unidad_medida varchar(50) [default: 'UND']
+  stock int [default: 0]
+  is_active boolean [default: true]
+  ~timestamps_template
+}
+
+Table proformas {
+  id bigint [pk, increment]
+  numero_correlativo varchar(20) [unique]
+  cliente_id bigint [ref: > clientes.id]
+  fecha_emision date
+  fecha_vencimiento date [null]
+  subtotal decimal(10,2)
+  igv_tasa decimal(1,2) [default: 0.18]
+  igv_monto decimal(10,2)
+  total decimal(10,2)
+  ~timestamps_template
+}
+
+Table proforma_items {
+  id bigint [pk, increment]
+  proforma_id bigint [ref: > proformas.id]
+  product_id bigint [ref: > productos.id]
+  descripcion varchar(255) [null]
+  cantidad int
+  precio_unitario decimal(10,2)
+  subtotal decimal(10,2)
+  ~timestamps_template
+}
