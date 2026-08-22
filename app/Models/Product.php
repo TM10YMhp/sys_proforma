@@ -2,11 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable('nombre', 'descripcion', 'stock', 'precio', 'unidad_medida', 'activo')]
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
-    use HasFactory;
+  /** @use HasFactory<\Database\Factories\ProductFactory> */
+  use HasFactory;
+
+  protected function casts(): array
+  {
+    return [
+      'activo' => 'boolean',
+    ];
+  }
 }
