@@ -25,7 +25,7 @@ class ProductController extends Controller
    */
   public function create()
   {
-    //
+    return Inertia::render('products/create');
   }
 
   /**
@@ -33,7 +33,9 @@ class ProductController extends Controller
    */
   public function store(StoreProductRequest $request)
   {
-    //
+    $validated = $request->validated();
+    Product::create($validated);
+    return to_route("products.index");
   }
 
   /**
@@ -65,6 +67,9 @@ class ProductController extends Controller
    */
   public function destroy(Product $product)
   {
-    //
+    // TODO: revisar esto
+    $product->delete();
+
+    return to_route('products.index');
   }
 }
