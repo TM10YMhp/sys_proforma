@@ -18,7 +18,7 @@ Table productos {
   id bigint [pk, increment]
   nombre varchar(255)
   descripcion text [null]
-  precio decimal(10,2)
+  precio decimal(10,2) // precio de compra
   unidad_medida varchar(50) [default: 'UND']
   stock int [default: 0]
   is_active boolean [default: true]
@@ -44,7 +44,7 @@ Table proforma_items {
   product_id bigint [ref: > productos.id]
   descripcion varchar(255) [null]
   cantidad int
-  precio_unitario decimal(10,2)
+  precio_unitario decimal(10,2) // precio de venta
   subtotal decimal(10,2)
   ~timestamps_template
 }

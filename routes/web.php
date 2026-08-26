@@ -9,4 +9,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/product.php';
+require __DIR__.'/proforma.php';
 require __DIR__.'/settings.php';

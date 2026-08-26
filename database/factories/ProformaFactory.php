@@ -23,7 +23,7 @@ class ProformaFactory extends Factory
       'fecha_emision' => fake()->dateTimeThisYear(),
       'fecha_vencimiento' => fake()->dateTimeThisYear(),
       'subtotal' => fake()->randomFloat(2, 0, 100),
-      'igv_tasa' => fake()->randomFloat(2, 0, 100),
+      // 'igv_tasa' => fake()->randomFloat(2, 0, 100),
       'igv_monto' => fake()->randomFloat(2, 0, 100),
       'total' => fake()->randomFloat(2, 0, 100)
     ];

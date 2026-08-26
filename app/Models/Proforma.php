@@ -19,4 +19,13 @@ class Proforma extends Model
 {
   /** @use HasFactory<\Database\Factories\ProformaFactory> */
   use HasFactory;
+
+  protected function casts(): array
+  {
+    // https://laravel.com/framework/docs/13.x/eloquent-mutators#date-casting
+    return [
+      'fecha_emision' => 'datetime',
+      'fecha_vencimiento' => 'datetime',
+    ];
+  }
 }
