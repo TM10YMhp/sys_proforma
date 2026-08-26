@@ -16,13 +16,13 @@
 </script>
 
 <script lang="ts">
-  import AppHead from '@/components/AppHead.svelte';
-  import Button from '@/components/ui/button/Button.svelte';
-  import ProductController from '@/actions/App/Http/Controllers/ProductController';
-  import Input from '@/components/ui/input/Input.svelte';
   import { useForm } from '@inertiajs/svelte';
-  import { Label } from '@/components/ui/label';
+  import ProductController from '@/actions/App/Http/Controllers/ProductController';
+  import AppHead from '@/components/AppHead.svelte';
   import InputError from '@/components/InputError.svelte';
+  import Button from '@/components/ui/button/Button.svelte';
+  import Input from '@/components/ui/input/Input.svelte';
+  import { Label } from '@/components/ui/label';
   import type { Product } from '@/types/product';
 
   type Props = {

@@ -12,19 +12,8 @@
 </script>
 
 <script lang="ts">
-  import AppHead from '@/components/AppHead.svelte';
   import { Link, useForm } from '@inertiajs/svelte';
-  import Button from '@/components/ui/button/Button.svelte';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
-  import type { LaravelPaginator } from '@/types/paginate';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from '@/components/_ui/table';
   import {
     Pagination,
     PaginationContent,
@@ -33,6 +22,17 @@
     PaginationNext,
     PaginationPrevious,
   } from '@/components/_ui/pagination';
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from '@/components/_ui/table';
+  import AppHead from '@/components/AppHead.svelte';
+  import Button from '@/components/ui/button/Button.svelte';
+  import type { LaravelPaginator } from '@/types/paginate';
   import type { Product } from '@/types/product';
 
   type Props = {
