@@ -51,7 +51,9 @@ class ProformaController extends Controller
    */
   public function edit(Proforma $proforma)
   {
-    //
+    return Inertia::render('proformas/edit', [
+      'proforma' => $proforma
+    ]);
   }
 
   /**
@@ -59,7 +61,9 @@ class ProformaController extends Controller
    */
   public function update(UpdateProformaRequest $request, Proforma $proforma)
   {
-    //
+    $validated = $request->validated();
+    $proforma->update($validated);
+    return to_route('proformas.index');
   }
 
   /**
