@@ -94,6 +94,6 @@
       <Input id="total" bind:value={form.total} readonly />
       <InputError message={form.errors.total} />
     </div>
-    <Button disabled={form.processing} type="submit">Crear Producto</Button>
+    <Button disabled={form.processing} type="submit">Crear Proforma</Button>
   </form>
 </div>

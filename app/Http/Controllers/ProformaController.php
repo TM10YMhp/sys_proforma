@@ -33,7 +33,9 @@ class ProformaController extends Controller
    */
   public function store(StoreProformaRequest $request)
   {
-    //
+    $validated = $request->validated();
+    Proforma::create($validated);
+    return to_route("proformas.index");
   }
 
   /**
@@ -65,6 +67,9 @@ class ProformaController extends Controller
    */
   public function destroy(Proforma $proforma)
   {
-    //
+    // TODO: revisar esto
+    $proforma->delete();
+
+    return to_route('proformas.index');
   }
 }
