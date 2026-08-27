@@ -25,7 +25,7 @@ class ProformaController extends Controller
    */
   public function create()
   {
-    //
+    return Inertia::render('proformas/create');
   }
 
   /**
