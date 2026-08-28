@@ -31,6 +31,9 @@
   let { proforma }: Props = $props();
 
   // svelte-ignore state_referenced_locally
+  let porcentaje = $state(proforma.igv_tasa * 100);
+
+  // svelte-ignore state_referenced_locally
   const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
     codigo: proforma.codigo,
     fecha_emision: proforma.fecha_emision,
@@ -67,6 +70,7 @@
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
+    form.igv_tasa = porcentaje / 100;
     form.fecha_emision = datetimeToUTC(fecha_emision);
     form.fecha_vencimiento = datetimeToUTC(fecha_vencimiento);
     form.put(ProformaController.update.url(proforma.id));
@@ -82,45 +86,61 @@
       <Input id="codigo" bind:value={form.codigo} />
       <InputError message={form.errors.codigo} />
     </div>
-    <div class="grid gap-2">
-      <Label for="emision">Fecha de Emision</Label>
-      <Input id="emision" type="datetime-local" bind:value={fecha_emision} />
-      <InputError message={form.errors.fecha_emision} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="emision">Fecha de Emision</Label>
+        <Input id="emision" type="datetime-local" bind:value={fecha_emision} />
+        <InputError message={form.errors.fecha_emision} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="vencimiento">Fecha de Vencimiento</Label>
+        <Input
+          id="vencimiento"
+          type="datetime-local"
+          bind:value={fecha_vencimiento}
+        />
+        <InputError message={form.errors.fecha_vencimiento} />
+      </div>
     </div>
-    <div class="grid gap-2">
-      <Label for="vencimiento">Fecha de Vencimiento</Label>
-      <Input
-        id="vencimiento"
-        type="datetime-local"
-        bind:value={fecha_vencimiento}
-      />
-      <InputError message={form.errors.fecha_vencimiento} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="subtotal">Subtotal</Label>
+        <Input
+          id="subtotal"
+          bind:value={form.subtotal}
+          type="number"
+          min="0"
+          step="0.1"
+          oninput={onChangeSubtotal}
+        />
+        <InputError message={form.errors.subtotal} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="igv_tasa">IGV Tasa (%)</Label>
+        <!-- TODO: el ancho debe establecerse -->
+        <Input
+          class="w-fit"
+          id="igv_tasa"
+          bind:value={porcentaje}
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+        />
+        <InputError message={form.errors.igv_tasa} />
+      </div>
     </div>
-    <div class="grid gap-2">
-      <Label for="subtotal">Subtotal</Label>
-      <Input
-        id="subtotal"
-        type="number"
-        step="0.01"
-        bind:value={form.subtotal}
-        oninput={onChangeSubtotal}
-      />
-      <InputError message={form.errors.subtotal} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="igv_tasa">IGV Tasa</Label>
-      <Input id="igv_tasa" bind:value={form.igv_tasa} />
-      <InputError message={form.errors.igv_tasa} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="igv_monto">IGV Monto</Label>
-      <Input id="igv_monto" bind:value={form.igv_monto} readonly />
-      <InputError message={form.errors.igv_monto} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="total">Total</Label>
-      <Input id="total" bind:value={form.total} readonly />
-      <InputError message={form.errors.total} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="igv_monto">IGV Monto</Label>
+        <Input id="igv_monto" bind:value={form.igv_monto} readonly />
+        <InputError message={form.errors.igv_monto} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="total">Total</Label>
+        <Input id="total" bind:value={form.total} readonly />
+        <InputError message={form.errors.total} />
+      </div>
     </div>
     <Button disabled={form.processing} type="submit">Actualizar Proforma</Button
     >
