@@ -8,6 +8,11 @@
     {
       "label": "run dev",
       "command": "composer run dev"
+    },
+    {
+      "label": "create-excel",
+      "command": "node create-excel.ts && start test.xlsx",
+      "options": { "cwd": "${workspaceFolder}/playground" }
     }
   ]
 }
