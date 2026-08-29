@@ -10,4 +10,7 @@ Route::prefix('proformas')->group(function () {
   Route::get('/edit/{proforma}', [ProformaController::class, 'edit'])->name('proformas.edit');
   Route::put('/{proforma}', [ProformaController::class, 'update'])->name('proformas.update');
   Route::delete('/{proforma}', [ProformaController::class, 'destroy'])->name('proformas.destroy');
+
+  Route::get('/exportExcel', [ProformaController::class, 'exportExcel']);
+  Route::get('/exportPDF', [ProformaController::class, 'exportPDF']);
 });

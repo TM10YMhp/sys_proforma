@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProformaExport;
 use App\Models\Proforma;
 use App\Http\Requests\StoreProformaRequest;
 use App\Http\Requests\UpdateProformaRequest;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProformaController extends Controller
 {
@@ -75,5 +77,20 @@ class ProformaController extends Controller
     $proforma->delete();
 
     return to_route('proformas.index');
+  }
+
+  public function exportExcel()
+  {
+    return Excel::download(new ProformaExport, "test.xlsx");
+  }
+
+  public function exportPDF()
+  {
+    // TODO: probar mpdf
+    $response = Excel::download(new ProformaExport, "test.pdf", \Maatwebsite\Excel\Excel::MPDF);
+
+    $response->headers->set('Content-Disposition', 'inline; filename="test.pdf"');
+
+    return $response;
   }
 }
