@@ -4,11 +4,11 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeWriting;
+use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Files\LocalTemporaryFile;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -19,12 +19,9 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ProformaExport implements
   Export,
   WithEvents,
-  WithHeadings,
   WithStyles,
-  WithColumnWidths,
-  WithCustomStartCell
+  WithColumnWidths
 {
-  private $rowNumber = 0;
   private $products = [
     [
       "descripcion" => 'Cartel vinil en base celtex 3 mm de 30 cm x 22 cm',
@@ -105,71 +102,81 @@ class ProformaExport implements
     ]
   ];
 
+  private function setupPage(Worksheet $sheet)
+  {
+    $sheet->getPageMargins()
+      ->setTop(1.1)
+      ->setBottom(0.9)
+      ->setLeft(0.3)
+      ->setRight(0.3)
+      ->setHeader(0.8)
+      ->setFooter(0.6);
+
+    $sheet->getPageSetup()
+      ->setPaperSize(PageSetup::PAPERSIZE_A4)
+      ->setScale(85);
+  }
+
+  private function fillWithProducts(Worksheet $sheet)
+  {
+    $filaInicio = 8;
+    $totalProductos = count($this->products);
+    $celda = [
+      "descripcion" => "C",
+      "cantidad" => "E",
+      "medida" => "F",
+      "precio_unitario" => "G",
+      "total" => "H",
+    ];
+    for ($i = 0; $i < 30; $i++) {
+      $numFila = $filaInicio + $i;
+
+      // $sheet->setCellValue("A{$numFila}", $i + 1);
+
+      if ($i < $totalProductos) {
+        $prod = $this->products[$i];
+
+        $sheet->setCellValue("{$celda["descripcion"]}{$numFila}", $prod["descripcion"]);
+        $sheet->setCellValue("{$celda["cantidad"]}{$numFila}", $prod["cantidad"]);
+        $sheet->setCellValue("{$celda["medida"]}{$numFila}", $prod["medida"]);
+        $sheet->setCellValue("{$celda["precio_unitario"]}{$numFila}", $prod["precio_unitario"]);
+
+        // $sheet->setCellValue("G{$numFila}", $prod["total"]);
+        $sheet->setCellValue("{$celda["total"]}{$numFila}", "={$celda["cantidad"]}{$numFila}*{$celda["precio_unitario"]}{$numFila}");
+
+        $sheet->getStyle("{$celda["precio_unitario"]}{$numFila}:{$celda["total"]}{$numFila}")
+          ->getNumberFormat()
+          ->setFormatCode(NumberFormat::FORMAT_NUMBER_00);
+      }
+    }
+  }
+
   public function registerEvents(): array
   {
     return [
-      AfterSheet::class => function (AfterSheet $event) {
-        $sheet = $event->sheet->getDelegate();
+      BeforeWriting::class => function (BeforeWriting $event) {
+        $rutaPlantilla = storage_path("plantilla_test.xlsx");
+        $event->writer->reopen(new LocalTemporaryFile($rutaPlantilla), Excel::XLSX);
+        $sheet = $event->writer->getSheetByIndex(0)->getDelegate();
 
-        $filaInicio = 2;
-        $totalProductos = count($this->products);
-        for ($i = 0; $i < 30; $i++) {
-          $numFila = $filaInicio + $i;
+        $this->fillWithProducts($sheet);
+        $this->setupPage($sheet);
 
-          $sheet->setCellValue("A{$numFila}", $i + 1);
+        return $event->getWriter()->getSheetByIndex(0);
+      },
+      // AfterSheet::class => function (AfterSheet $event) {
+      //   $sheet = $event->sheet->getDelegate();
 
-          if ($i < $totalProductos) {
-            $prod = $this->products[$i];
+      //   $this->fillWithProducts($sheet);
 
-            $sheet->setCellValue("C{$numFila}", $prod["descripcion"]);
-            $sheet->setCellValue("D{$numFila}", $prod["cantidad"]);
-            $sheet->setCellValue("E{$numFila}", $prod["medida"]);
-            $sheet->setCellValue("F{$numFila}", $prod["precio_unitario"]);
-
-            // $sheet->setCellValue("G{$numFila}", $prod["total"]);
-            $sheet->setCellValue("G{$numFila}", "=D{$numFila}*F{$numFila}");
-
-            $sheet->getStyle("E{$numFila}:G{$numFila}")
-              ->getNumberFormat()
-              ->setFormatCode(NumberFormat::FORMAT_NUMBER_00);
-          }
-        }
-
-        $sheet->getPageMargins()
-          ->setTop(1.1)
-          ->setBottom(0.9)
-          ->setLeft(0.3)
-          ->setRight(0.3)
-          ->setHeader(0.8)
-          ->setFooter(0.6);
-
-        $sheet->getPageSetup()
-          ->setPaperSize(PageSetup::PAPERSIZE_A4)
-          ->setScale(85);
-      }
-    ];
-  }
-
-  public function startCell(): string
-  {
-    return "A1";
-  }
-
-  public function headings(): array
-  {
-    return [
-      "Nº",
-      'CODIGO PRODUCTO',
-      'DESCRIPCIÓN',
-      'CANTIDAD',
-      'U. MEDIDA',
-      'PRECIO UNITARIO',
-      'TOTAL'
+      //   $this->setupPage($sheet);
+      // }
     ];
   }
 
   public function styles(Worksheet $sheet): ?array
   {
+    return [];
     return [
       "A1:G1" => [
         "font" => ["bold" => true],
@@ -203,6 +210,7 @@ class ProformaExport implements
 
   public function columnWidths(): array
   {
+    return [];
     return [
       'A' => 3,
       'B' => 9,
