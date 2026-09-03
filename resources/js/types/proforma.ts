@@ -1,3 +1,5 @@
+import type { Product } from './product';
+
 export interface Proforma {
   id: number;
 
@@ -8,6 +10,8 @@ export interface Proforma {
   igv_tasa: number;
   igv_monto: number;
   total: number;
+
+  products: Product[];
 
   created_at: string;
   updated_at: string;

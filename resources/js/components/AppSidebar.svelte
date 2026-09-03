@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Link } from '@inertiajs/svelte';
+  import { FileText, PackageSearch } from 'lucide-svelte';
   import BookOpen from 'lucide-svelte/icons/book-open';
   import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
   import LayoutGrid from 'lucide-svelte/icons/layout-grid';
@@ -20,7 +21,6 @@
   import { toUrl } from '@/lib/utils';
   import { dashboard } from '@/routes';
   import type { NavItem } from '@/types';
-  import { PackageSearch } from 'lucide-svelte';
 
   let {
     children,
@@ -38,6 +38,11 @@
       title: 'Productos',
       href: '/products',
       icon: PackageSearch,
+    },
+    {
+      title: 'Proformas',
+      href: '/proformas',
+      icon: FileText,
     },
   ];
 

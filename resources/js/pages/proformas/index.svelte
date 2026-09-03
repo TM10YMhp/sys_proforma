@@ -40,6 +40,9 @@
   };
   let { proformas }: Props = $props();
 
+  let showProducts = $state(!false);
+  let selectedIndex = $state(0);
+
   const form = useForm();
 
   const handleDelete = (id: number) => {
@@ -87,6 +90,7 @@
     <TableHeader>
       <TableRow>
         <TableHead>Codigo</TableHead>
+        <TableHead>Productos</TableHead>
         <TableHead>Fecha Emision</TableHead>
         <TableHead>Fecha Vencimiento</TableHead>
         <TableHead>Subtotal</TableHead>
@@ -97,9 +101,16 @@
       </TableRow>
     </TableHeader>
     <TableBody>
-      {#each proformas.data as item (item.id)}
-        <TableRow>
+      {#each proformas.data as item, index (item.id)}
+        <TableRow
+          class={[index == selectedIndex && 'bg-muted']}
+          onclick={() => {
+            // showProducts = !showProducts;
+            selectedIndex = index;
+          }}
+        >
           <TableCell>{item.codigo}</TableCell>
+          <TableCell>{item.products.length}</TableCell>
           <TableCell class="font-mono"
             >{formatDate(item.fecha_emision)}</TableCell
           >
@@ -163,4 +174,35 @@
       </PaginationContent>
     </Pagination>
   </div>
+
+  {#if showProducts}
+    <div class="relative w-full overflow-x-auto max-h-56 border">
+      <table class="w-full caption-bottom text-sm">
+        <TableHeader class="sticky top-0 bg-background">
+          <TableRow>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Descripcion</TableHead>
+            <TableHead>Precio</TableHead>
+            <TableHead>U. Medida</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Activo</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <!-- TODO: esta sintaxis ya no se usa pero prettier aun no lo reconoce -->
+          {@const productos = proformas.data[selectedIndex].products}
+          {#each productos as item (item.id)}
+            <TableRow>
+              <TableCell>{item.nombre}</TableCell>
+              <TableCell>{item.descripcion}</TableCell>
+              <TableCell>{item.precio}</TableCell>
+              <TableCell>{item.unidad_medida}</TableCell>
+              <TableCell>{item.stock}</TableCell>
+              <TableCell>{item.activo}</TableCell>
+            </TableRow>
+          {/each}
+        </TableBody>
+      </table>
+    </div>
+  {/if}
 </div>

@@ -31,13 +31,17 @@ class DatabaseSeeder extends Seeder
 
     $products = Product::factory(30)->create();
 
-    Proforma::factory(20)->hasAttached(
-      $products->random(fake()->randomElement([8, 15])),
-      fn() => [
-        'cantidad' => fake()->randomDigit() + 3,
-        'precio_unitario' => fake()->randomFloat(2, 5, 100),
-        'subtotal' => fake()->randomFloat(2, 5, 100),
-      ]
-    )->create();
+    foreach (range(1, 20) as $_) {
+      $cantidad = fake()->randomElement([8, 15]);
+      $productos = $products->random($cantidad);
+      Proforma::factory()->hasAttached(
+        $productos,
+        fn() => [
+          'cantidad' => fake()->randomDigit() + 3,
+          'precio_unitario' => fake()->randomFloat(2, 5, 100),
+          'subtotal' => fake()->randomFloat(2, 5, 100),
+        ]
+      )->create();
+    }
   }
 }
