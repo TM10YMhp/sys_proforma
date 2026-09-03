@@ -28,4 +28,9 @@ class Proforma extends Model
       'fecha_vencimiento' => 'datetime',
     ];
   }
+
+  public function products()
+  {
+    return $this->belongsToMany(Product::class, "proforma_items");
+  }
 }

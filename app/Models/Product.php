@@ -25,4 +25,9 @@ class Product extends Model
       'activo' => 'boolean',
     ];
   }
+
+  public function proformas()
+  {
+    return $this->belongsToMany(Proforma::class, "proforma_items");
+  }
 }

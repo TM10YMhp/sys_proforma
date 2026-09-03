@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use App\Models\Proforma;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -28,4 +29,21 @@ class ProformaFactory extends Factory
       'total' => fake()->randomFloat(2, 0, 100)
     ];
   }
+
+  // public function configure()
+  // {
+  //   return $this->afterCreating(function (Proforma $proforma) {
+  //     $productIds = Product::inRandomOrder()
+  //       ->take(fake()->randomElement([8, 15, 23]))
+  //       ->pluck('id');
+
+  //     foreach ($productIds as $id) {
+  //       $proforma->products()->attach($id, [
+  //         'cantidad' => fake()->randomDigit() + 3,
+  //         'precio_unitario' => fake()->randomFloat(2, 0, 100),
+  //         'subtotal' => fake()->randomFloat(2, 0, 100),
+  //       ]);
+  //     }
+  //   });
+  // }
 }
