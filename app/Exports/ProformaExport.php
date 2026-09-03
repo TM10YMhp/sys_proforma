@@ -2,26 +2,28 @@
 
 namespace App\Exports;
 
+use App\Models\Product;
 use Maatwebsite\Excel\Concerns\Export;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\BeforeWriting;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Files\LocalTemporaryFile;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProformaExport implements
-  Export,
-  WithEvents,
-  WithStyles,
-  WithColumnWidths
+class ProformaExport implements Export, WithEvents
 {
+  private $id = "001 - 2547";
+  private $cliente = [
+    "empresa" => "Safresco Peru SAC",
+    "cliente" => "Paul Sanchez",
+    "condicion_pago" => "Credito 15 dias",
+  ];
+  private $condiciones = [
+    "tiempo_fabricacion" => "2 dias",
+    "validez_oferta" => "7 dias"
+  ];
+  /* #region products */
   private $products = [
     [
       "descripcion" => 'Cartel vinil en base celtex 3 mm de 30 cm x 22 cm',
@@ -101,26 +103,27 @@ class ProformaExport implements
       "total" => 180,
     ]
   ];
+  /* #endregion */
 
-  private function setupPage(Worksheet $sheet)
+  public function __construct()
   {
-    $sheet->getPageMargins()
-      ->setTop(1.1)
-      ->setBottom(0.9)
-      ->setLeft(0.3)
-      ->setRight(0.3)
-      ->setHeader(0.8)
-      ->setFooter(0.6);
-
-    $sheet->getPageSetup()
-      ->setPaperSize(PageSetup::PAPERSIZE_A4)
-      ->setScale(85);
+    // TODO: traer datos desde proforma
+    $this->products = Product::take(10)->get()->map(
+      fn($prod) => [
+        "descripcion" => $prod->descripcion,
+        "cantidad" => $prod->stock,
+        "medida" => $prod->unidad_medida,
+        "precio_unitario" => $prod->precio,
+        // NOTE: calculado por excel
+        "total" => 0,
+      ]
+    )->toArray();
   }
 
   private function fillWithProducts(Worksheet $sheet)
   {
     $filaInicio = 8;
-    $totalProductos = count($this->products);
+    $totalProductos = \count($this->products);
     $celda = [
       "descripcion" => "C",
       "cantidad" => "E",
@@ -128,10 +131,9 @@ class ProformaExport implements
       "precio_unitario" => "G",
       "total" => "H",
     ];
+
     for ($i = 0; $i < 30; $i++) {
       $numFila = $filaInicio + $i;
-
-      // $sheet->setCellValue("A{$numFila}", $i + 1);
 
       if ($i < $totalProductos) {
         $prod = $this->products[$i];
@@ -141,8 +143,11 @@ class ProformaExport implements
         $sheet->setCellValue("{$celda["medida"]}{$numFila}", $prod["medida"]);
         $sheet->setCellValue("{$celda["precio_unitario"]}{$numFila}", $prod["precio_unitario"]);
 
-        // $sheet->setCellValue("G{$numFila}", $prod["total"]);
-        $sheet->setCellValue("{$celda["total"]}{$numFila}", "={$celda["cantidad"]}{$numFila}*{$celda["precio_unitario"]}{$numFila}");
+        // NOTE: calcular el total con formula
+        $sheet->setCellValue(
+          "{$celda["total"]}{$numFila}",
+          "={$celda["cantidad"]}{$numFila}*{$celda["precio_unitario"]}{$numFila}"
+        );
 
         $sheet->getStyle("{$celda["precio_unitario"]}{$numFila}:{$celda["total"]}{$numFila}")
           ->getNumberFormat()
@@ -151,74 +156,43 @@ class ProformaExport implements
     }
   }
 
+  private function fillWithId(Worksheet $sheet)
+  {
+    $sheet->setCellValue("A2", "PROFORMA {$this->id}");
+  }
+
+
+  private function fillWithClient(Worksheet $sheet)
+  {
+    $sheet->setCellValue("C3", $this->cliente["empresa"]);
+    $sheet->setCellValue("C4", $this->cliente["cliente"]);
+    $sheet->setCellValue("C5", $this->cliente["condicion_pago"]);
+
+  }
+
+  private function fillWithConditions(Worksheet $sheet)
+  {
+    $sheet->setCellValue("D41", $this->condiciones["tiempo_fabricacion"]);
+    $sheet->setCellValue("D42", $this->condiciones["validez_oferta"]);
+  }
+
+
   public function registerEvents(): array
   {
     return [
       BeforeWriting::class => function (BeforeWriting $event) {
+        // dd($this->products);
         $rutaPlantilla = storage_path("plantilla_test.xlsx");
         $event->writer->reopen(new LocalTemporaryFile($rutaPlantilla), Excel::XLSX);
         $sheet = $event->writer->getSheetByIndex(0)->getDelegate();
 
+        $this->fillWithId($sheet);
+        $this->fillWithClient($sheet);
         $this->fillWithProducts($sheet);
-        $this->setupPage($sheet);
+        $this->fillWithConditions($sheet);
 
         return $event->getWriter()->getSheetByIndex(0);
-      },
-      // AfterSheet::class => function (AfterSheet $event) {
-      //   $sheet = $event->sheet->getDelegate();
-
-      //   $this->fillWithProducts($sheet);
-
-      //   $this->setupPage($sheet);
-      // }
-    ];
-  }
-
-  public function styles(Worksheet $sheet): ?array
-  {
-    return [];
-    return [
-      "A1:G1" => [
-        "font" => ["bold" => true],
-        'alignment' => [
-          'wrapText' => true,
-        ],
-        "fill" => [
-          'fillType' => Fill::FILL_SOLID,
-          'startColor' => ['rgb' => 'C0C0C0']
-        ]
-      ],
-      "A1:G31" => [
-        'font' => ['size' => 10, 'name' => 'Calibri'],
-        'alignment' => [
-          'horizontal' => Alignment::HORIZONTAL_CENTER,
-          'vertical' => Alignment::VERTICAL_CENTER,
-        ],
-        "borders" => [
-          'allBorders' => [
-            'borderStyle' => Border::BORDER_THIN,
-          ],
-        ],
-      ],
-      'C2:C31' => [
-        'alignment' => [
-          'horizontal' => Alignment::HORIZONTAL_LEFT,
-        ],
-      ]
-    ];
-  }
-
-  public function columnWidths(): array
-  {
-    return [];
-    return [
-      'A' => 3,
-      'B' => 9,
-      'C' => 62,
-      'D' => 7,
-      'E' => 10,
-      'F' => 9,
-      'G' => 10,
+      }
     ];
   }
 }
