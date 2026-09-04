@@ -105,19 +105,24 @@ class ProformaExport implements Export, WithEvents
   ];
   /* #endregion */
 
-  public function __construct()
+  /**
+   * @param Product[] $products
+   */
+  public function __construct(array $products)
   {
-    // TODO: traer datos desde proforma
-    $this->products = Product::take(10)->get()->map(
-      fn($prod) => [
-        "descripcion" => $prod->descripcion,
-        "cantidad" => $prod->stock,
-        "medida" => $prod->unidad_medida,
-        "precio_unitario" => $prod->precio,
-        // NOTE: calculado por excel
-        "total" => 0,
-      ]
-    )->toArray();
+    $this->products = $products;
+
+    // // TODO: traer datos desde proforma
+    // $this->products = Product::take(10)->get()->map(
+    //   fn($prod) => [
+    //     "descripcion" => $prod->descripcion,
+    //     "cantidad" => $prod->stock,
+    //     "medida" => $prod->unidad_medida,
+    //     "precio_unitario" => $prod->precio,
+    //     // NOTE: calculado por excel
+    //     "total" => 0,
+    //   ]
+    // )->toArray();
   }
 
   private function fillWithProducts(Worksheet $sheet)

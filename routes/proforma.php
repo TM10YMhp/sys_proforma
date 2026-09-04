@@ -11,6 +11,6 @@ Route::prefix('proformas')->group(function () {
   Route::put('/{proforma}', [ProformaController::class, 'update'])->name('proformas.update');
   Route::delete('/{proforma}', [ProformaController::class, 'destroy'])->name('proformas.destroy');
 
-  Route::get('/exportExcel', [ProformaController::class, 'exportExcel']);
+  Route::get('/exportExcel/{proforma}', [ProformaController::class, 'exportExcel']);
   Route::get('/exportPDF', [ProformaController::class, 'exportPDF']);
 });

@@ -132,6 +132,10 @@
             >
               Borrar
             </Button>
+            <a
+              href={ProformaController.exportExcel.url(item.id)}
+              class="bg-green-900 py-2 px-4 rounded">Excel</a
+            >
           </TableCell>
         </TableRow>
       {/each}
