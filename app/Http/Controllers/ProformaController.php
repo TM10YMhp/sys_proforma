@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\ProductDTO;
 use App\Exports\ProformaExport;
 use App\Models\Product;
 use App\Models\Proforma;
@@ -15,6 +16,7 @@ class ProformaController extends Controller
 {
   /**
    * Display a listing of the resource.
+   * @return \Inertia\Response
    */
   public function index()
   {
@@ -26,6 +28,7 @@ class ProformaController extends Controller
 
   /**
    * Show the form for creating a new resource.
+   * @return \Inertia\Response
    */
   public function create()
   {
@@ -34,6 +37,7 @@ class ProformaController extends Controller
 
   /**
    * Store a newly created resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function store(StoreProformaRequest $request)
   {
@@ -44,6 +48,7 @@ class ProformaController extends Controller
 
   /**
    * Display the specified resource.
+   * @return void
    */
   public function show(Proforma $proforma)
   {
@@ -52,6 +57,7 @@ class ProformaController extends Controller
 
   /**
    * Show the form for editing the specified resource.
+   * @return \Inertia\Response
    */
   public function edit(Proforma $proforma)
   {
@@ -62,6 +68,7 @@ class ProformaController extends Controller
 
   /**
    * Update the specified resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function update(UpdateProformaRequest $request, Proforma $proforma)
   {
@@ -72,6 +79,7 @@ class ProformaController extends Controller
 
   /**
    * Remove the specified resource from storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function destroy(Proforma $proforma)
   {
@@ -81,27 +89,24 @@ class ProformaController extends Controller
     return to_route('proformas.index');
   }
 
+  /**
+   * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+   */
   public function exportExcel(Proforma $proforma)
   {
     $proforma->load("products");
 
-    /** @var Collection<Product> */
+    /** @var Collection<int, Product> */
     $products = $proforma->products;
-    $productsDTO = $products->map(
-      fn($prod) => [
-        "descripcion" => $prod->descripcion,
-        "cantidad" => $prod->stock,
-        "medida" => $prod->unidad_medida,
-        "precio_unitario" => $prod->precio,
-        // NOTE: calculado por excel
-        "total" => 0,
-      ]
-    )->toArray();
+    $productsDTO = $products->map(ProductDTO::fromModel(...));
     // dd($productsDTO);
 
     return Excel::download(new ProformaExport($productsDTO), "test.xlsx");
   }
 
+  /**
+   * @return string
+   */
   public function exportPDF()
   {
     return "WIP";

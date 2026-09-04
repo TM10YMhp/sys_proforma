@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Fillable(
   'codigo',
@@ -29,6 +30,9 @@ class Proforma extends Model
     ];
   }
 
+  /**
+   * @return BelongsToMany<Product, $this>
+   */
   public function products()
   {
     return $this->belongsToMany(Product::class, "proforma_items");

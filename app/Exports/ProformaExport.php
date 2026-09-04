@@ -2,7 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\Product;
+use App\DTO\ProductDTO;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeWriting;
@@ -13,18 +14,27 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ProformaExport implements Export, WithEvents
 {
-  private $id = "001 - 2547";
-  private $cliente = [
+  private string $id = "001 - 2547";
+  /**
+   * @var array{empresa: string, cliente: string, condicion_pago: string}
+   */
+  private array $cliente = [
     "empresa" => "Safresco Peru SAC",
     "cliente" => "Paul Sanchez",
     "condicion_pago" => "Credito 15 dias",
   ];
-  private $condiciones = [
+  /**
+   * @var array{tiempo_fabricacion: string, validez_oferta: string}
+   */
+  private array $condiciones = [
     "tiempo_fabricacion" => "2 dias",
     "validez_oferta" => "7 dias"
   ];
   /* #region products */
-  private $products = [
+  /**
+   * @var array{descripcion: string, cantidad: int, medida: string, precio_unitario: float, total: int}[]
+   */
+  private array $products = [
     [
       "descripcion" => 'Cartel vinil en base celtex 3 mm de 30 cm x 22 cm',
       "cantidad" => 27,
@@ -106,11 +116,11 @@ class ProformaExport implements Export, WithEvents
   /* #endregion */
 
   /**
-   * @param Product[] $products
+   * @param Collection<int, ProductDTO> $products
    */
-  public function __construct(array $products)
+  public function __construct(Collection $products)
   {
-    $this->products = $products;
+    $this->products = $products->toArray();
 
     // // TODO: traer datos desde proforma
     // $this->products = Product::take(10)->get()->map(
@@ -125,7 +135,7 @@ class ProformaExport implements Export, WithEvents
     // )->toArray();
   }
 
-  private function fillWithProducts(Worksheet $sheet)
+  private function fillWithProducts(Worksheet $sheet): void
   {
     $filaInicio = 8;
     $totalProductos = \count($this->products);
@@ -161,13 +171,13 @@ class ProformaExport implements Export, WithEvents
     }
   }
 
-  private function fillWithId(Worksheet $sheet)
+  private function fillWithId(Worksheet $sheet): void
   {
     $sheet->setCellValue("A2", "PROFORMA {$this->id}");
   }
 
 
-  private function fillWithClient(Worksheet $sheet)
+  private function fillWithClient(Worksheet $sheet): void
   {
     $sheet->setCellValue("C3", $this->cliente["empresa"]);
     $sheet->setCellValue("C4", $this->cliente["cliente"]);
@@ -175,7 +185,7 @@ class ProformaExport implements Export, WithEvents
 
   }
 
-  private function fillWithConditions(Worksheet $sheet)
+  private function fillWithConditions(Worksheet $sheet): void
   {
     $sheet->setCellValue("D41", $this->condiciones["tiempo_fabricacion"]);
     $sheet->setCellValue("D42", $this->condiciones["validez_oferta"]);
