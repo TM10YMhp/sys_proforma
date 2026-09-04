@@ -42,6 +42,7 @@
     igv_tasa: proforma.igv_tasa,
     igv_monto: proforma.igv_monto,
     total: proforma.total,
+    products: proforma.products,
   });
 
   const onChangeSubtotal = (e: Event) => {

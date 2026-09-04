@@ -33,6 +33,7 @@
     igv_tasa: 0.18,
     igv_monto: 0,
     total: 0,
+    products: [],
   });
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -58,41 +59,51 @@
       <Input id="codigo" bind:value={form.codigo} />
       <InputError message={form.errors.codigo} />
     </div>
-    <div class="grid gap-2">
-      <Label for="emision">Fecha de Emision</Label>
-      <Input id="emision" type="date" bind:value={form.fecha_emision} />
-      <InputError message={form.errors.fecha_emision} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="emision">Fecha de Emision</Label>
+        <Input id="emision" type="date" bind:value={form.fecha_emision} />
+        <InputError message={form.errors.fecha_emision} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="vencimiento">Fecha de Vencimiento</Label>
+        <Input
+          id="vencimiento"
+          type="date"
+          bind:value={form.fecha_vencimiento}
+        />
+        <InputError message={form.errors.fecha_vencimiento} />
+      </div>
     </div>
-    <div class="grid gap-2">
-      <Label for="vencimiento">Fecha de Vencimiento</Label>
-      <Input id="vencimiento" type="date" bind:value={form.fecha_vencimiento} />
-      <InputError message={form.errors.fecha_vencimiento} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="subtotal">Subtotal</Label>
+        <Input
+          id="subtotal"
+          type="number"
+          step="0.01"
+          bind:value={form.subtotal}
+          oninput={onChangeSubtotal}
+        />
+        <InputError message={form.errors.subtotal} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="igv_tasa">IGV Tasa</Label>
+        <Input id="igv_tasa" bind:value={form.igv_tasa} />
+        <InputError message={form.errors.igv_tasa} />
+      </div>
     </div>
-    <div class="grid gap-2">
-      <Label for="subtotal">Subtotal</Label>
-      <Input
-        id="subtotal"
-        type="number"
-        step="0.01"
-        bind:value={form.subtotal}
-        oninput={onChangeSubtotal}
-      />
-      <InputError message={form.errors.subtotal} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="igv_tasa">IGV Tasa</Label>
-      <Input id="igv_tasa" bind:value={form.igv_tasa} />
-      <InputError message={form.errors.igv_tasa} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="igv_monto">IGV Monto</Label>
-      <Input id="igv_monto" bind:value={form.igv_monto} readonly />
-      <InputError message={form.errors.igv_monto} />
-    </div>
-    <div class="grid gap-2">
-      <Label for="total">Total</Label>
-      <Input id="total" bind:value={form.total} readonly />
-      <InputError message={form.errors.total} />
+    <div class="flex flex-row gap-2">
+      <div class="grid gap-2">
+        <Label for="igv_monto">IGV Monto</Label>
+        <Input id="igv_monto" bind:value={form.igv_monto} readonly />
+        <InputError message={form.errors.igv_monto} />
+      </div>
+      <div class="grid gap-2">
+        <Label for="total">Total</Label>
+        <Input id="total" bind:value={form.total} readonly />
+        <InputError message={form.errors.total} />
+      </div>
     </div>
     <Button disabled={form.processing} type="submit">Crear Proforma</Button>
   </form>
