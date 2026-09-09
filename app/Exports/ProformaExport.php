@@ -120,7 +120,13 @@ class ProformaExport implements Export, WithEvents
    */
   public function __construct(Collection $products)
   {
-    $this->products = $products->toArray();
+    $this->products = $products->map(fn($dto) => [
+      "descripcion" => $dto->descripcion,
+      "cantidad" => $dto->cantidad,
+      "medida" => $dto->medida,
+      "precio_unitario" => $dto->precio_unitario,
+      "total" => 0,
+    ])->toArray();
 
     // // TODO: traer datos desde proforma
     // $this->products = Product::take(10)->get()->map(

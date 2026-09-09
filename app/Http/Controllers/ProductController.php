@@ -11,6 +11,7 @@ class ProductController extends Controller
 {
   /**
    * Display a listing of the resource.
+   * @return \Inertia\Response
    */
   public function index()
   {
@@ -22,6 +23,7 @@ class ProductController extends Controller
 
   /**
    * Show the form for creating a new resource.
+   * @return \Inertia\Response
    */
   public function create()
   {
@@ -30,6 +32,7 @@ class ProductController extends Controller
 
   /**
    * Store a newly created resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function store(StoreProductRequest $request)
   {
@@ -40,6 +43,7 @@ class ProductController extends Controller
 
   /**
    * Display the specified resource.
+   * @return void
    */
   public function show(Product $product)
   {
@@ -48,6 +52,7 @@ class ProductController extends Controller
 
   /**
    * Show the form for editing the specified resource.
+   * @return \Inertia\Response
    */
   public function edit(Product $product)
   {
@@ -58,6 +63,7 @@ class ProductController extends Controller
 
   /**
    * Update the specified resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function update(UpdateProductRequest $request, Product $product)
   {
@@ -68,6 +74,7 @@ class ProductController extends Controller
 
   /**
    * Remove the specified resource from storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
   public function destroy(Product $product)
   {
