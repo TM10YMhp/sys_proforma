@@ -61,6 +61,7 @@ class ProformaController extends Controller
    */
   public function edit(Proforma $proforma)
   {
+    $proforma->load("products");
     return Inertia::render('proformas/edit', [
       'proforma' => $proforma
     ]);

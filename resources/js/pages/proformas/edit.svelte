@@ -18,11 +18,21 @@
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from '@/components/_ui/table';
+  import Textarea from '@/components/_ui/textarea.svelte';
   import AppHead from '@/components/AppHead.svelte';
   import InputError from '@/components/InputError.svelte';
   import Button from '@/components/ui/button/Button.svelte';
   import Input from '@/components/ui/input/Input.svelte';
   import { Label } from '@/components/ui/label';
+  import type { Product } from '@/types/product';
   import type { Proforma } from '@/types/proforma';
 
   type Props = {
@@ -32,6 +42,19 @@
 
   // svelte-ignore state_referenced_locally
   let porcentaje = $state(proforma.igv_tasa * 100);
+  // svelte-ignore state_referenced_locally
+  let productos = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>[]>(
+    proforma.products,
+  );
+
+  let productoNuevo = $state({
+    nombre: '',
+    descripcion: '',
+    precio: 0,
+    unidad_medida: '',
+    stock: 0,
+    activo: true,
+  });
 
   // svelte-ignore state_referenced_locally
   const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
@@ -76,13 +99,53 @@
     form.fecha_vencimiento = datetimeToUTC(fecha_vencimiento);
     form.put(ProformaController.update.url(proforma.id));
   };
+
+  const addProduct = (
+    _e: MouseEvent & {
+      currentTarget: EventTarget & HTMLButtonElement;
+    },
+  ) => {
+    const draft = { ...productoNuevo };
+    productos.push(draft);
+  };
+
+  let __productos = [
+    'Proforma de Servicios',
+    'Proforma de Productos de Limpieza',
+    'Proforma de Computadoras',
+    'Factura Electrónica',
+    'Boleta de Venta',
+  ];
+  let __busqueda = $state('');
+  let __sugerenciasFiltradas = $derived(
+    __productos.filter((p) =>
+      p.toLowerCase().includes(__busqueda.toLowerCase()),
+    ),
+  );
 </script>
 
 <AppHead title="Proformas | Editar" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <form onsubmit={handleSubmit} class="w-8/12 space-y-4">
-    <div class="grid gap-2">
+  <div class="autocomplete-container">
+    <label for="buscar-proforma">Buscar Proforma:</label>
+    <input
+      id="buscar-proforma"
+      type="text"
+      list="opciones-proformas"
+      bind:value={__busqueda}
+      placeholder="Escribe para buscar..."
+    />
+    <datalist id="opciones-proformas">
+      {#each __sugerenciasFiltradas as sugerencia (sugerencia)}
+        <option value={sugerencia}></option>
+      {/each}
+    </datalist>
+
+    <p>Seleccionado: <strong>{__busqueda}</strong></p>
+  </div>
+  <form onsubmit={handleSubmit} class="space-y-4">
+    <div class="grid gap-2 w-1/4">
       <Label for="codigo">Codigo</Label>
       <Input id="codigo" bind:value={form.codigo} />
       <InputError message={form.errors.codigo} />
@@ -143,7 +206,80 @@
         <InputError message={form.errors.total} />
       </div>
     </div>
+    <Table>
+      <TableHeader class="sticky top-0 bg-background">
+        <TableRow>
+          <TableHead>Nombre</TableHead>
+          <TableHead>Descripcion</TableHead>
+          <TableHead>Precio</TableHead>
+          <TableHead>U. Medida</TableHead>
+          <TableHead>Stock</TableHead>
+          <TableHead>Activo</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {#each productos as item, idx (idx)}
+          <TableRow>
+            <TableCell>{item.nombre}</TableCell>
+            <TableCell>{item.descripcion}</TableCell>
+            <TableCell>{item.precio}</TableCell>
+            <TableCell>{item.unidad_medida}</TableCell>
+            <TableCell>{item.stock}</TableCell>
+            <TableCell>{item.activo}</TableCell>
+          </TableRow>
+        {/each}
+      </TableBody>
+    </Table>
+    <div class="bg-stone-800 p-2 rounded">
+      <div>
+        <Label for="nombre">Nombre</Label>
+        <Input id="nombre" bind:value={productoNuevo.nombre} />
+      </div>
+      <div>
+        <Label for="descripcion">Descripcion</Label>
+        <Textarea id="descripcion" bind:value={productoNuevo.descripcion}
+        ></Textarea>
+      </div>
+      <div>
+        <Label for="stock">Stock</Label>
+        <Input id="stock" type="number" bind:value={productoNuevo.stock} />
+      </div>
+      <div>
+        <Label for="precio">Precio</Label>
+        <Input
+          id="precio"
+          type="number"
+          step="0.01"
+          bind:value={productoNuevo.precio}
+        />
+      </div>
+      <div>
+        <Label for="unidad_medida">Unidad de Medida</Label>
+        <Input id="unidad_medida" bind:value={productoNuevo.unidad_medida} />
+      </div>
+    </div>
+    <div class="flex flex-row justify-center">
+      <Button disabled={form.processing} type="button" onclick={addProduct}
+        >Agregar Producto</Button
+      >
+    </div>
     <Button disabled={form.processing} type="submit">Actualizar Proforma</Button
     >
   </form>
 </div>
+
+<style>
+  .autocomplete-container {
+    font-family: sans-serif;
+    margin: 20px 0;
+  }
+  input {
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: block;
+    margin-top: 5px;
+  }
+</style>
