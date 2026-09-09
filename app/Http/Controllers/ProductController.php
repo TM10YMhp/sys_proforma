@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -82,5 +84,27 @@ class ProductController extends Controller
     $product->delete();
 
     return to_route('products.index');
+  }
+
+  public function search(Request $request): JsonResponse
+  {
+    // TODO: probar laravel/scout
+    $buscar = $request->input('q');
+
+    if (empty($buscar)) {
+      return response()->json([]);
+    }
+
+    $buscar = strtolower($buscar);
+    $buscar = str_split(str_replace(" ", "", $buscar));
+    $buscar = implode("%", $buscar);
+    $buscar = "%". $buscar . "%";
+      $products = Product::whereRaw('lower(nombre) LIKE ?', [$buscar])
+      ->select('id', 'nombre', 'precio')
+      ->limit(10) // Limitar para mejorar el rendimiento
+      // ->dd();
+      ->get();
+
+    return response()->json($products);
   }
 }
