@@ -17,7 +17,7 @@ class ProductController extends Controller
    */
   public function index()
   {
-    $products = Product::orderByDesc('created_at')->paginate(6);
+    $products = Product::orderByDesc('codigo')->paginate(6);
     return Inertia::render("products/index", [
       'products' => $products
     ]);
@@ -29,7 +29,13 @@ class ProductController extends Controller
    */
   public function create()
   {
-    return Inertia::render('products/create');
+    $ultimoProducto = Product::latest("codigo")->first();
+    [$prefijo, $numero] = sscanf($ultimoProducto->codigo, "%[A-Za-z]-%[0-9]");
+    $siguienteCodigo = \sprintf("%s-%04d", $prefijo, (int) $numero + 1);
+
+    return Inertia::render('products/create', [
+      'codigo' => $siguienteCodigo
+    ]);
   }
 
   /**
@@ -98,8 +104,8 @@ class ProductController extends Controller
     $buscar = strtolower($buscar);
     $buscar = str_split(str_replace(" ", "", $buscar));
     $buscar = implode("%", $buscar);
-    $buscar = "%". $buscar . "%";
-      $products = Product::whereRaw('lower(nombre) LIKE ?', [$buscar])
+    $buscar = "%" . $buscar . "%";
+    $products = Product::whereRaw('lower(nombre) LIKE ?', [$buscar])
       ->select('id', 'nombre', 'precio')
       ->limit(10) // Limitar para mejorar el rendimiento
       // ->dd();

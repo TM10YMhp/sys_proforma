@@ -60,7 +60,8 @@
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead>Nombre</TableHead>
+        <TableHead>#</TableHead>
+        <TableHead>Codigo</TableHead>
         <TableHead>Descripcion</TableHead>
         <TableHead>Precio</TableHead>
         <TableHead>Unidad de Medida</TableHead>
@@ -70,9 +71,10 @@
       </TableRow>
     </TableHeader>
     <TableBody>
-      {#each products.data as item (item.id)}
+      {#each products.data as item, idx (item.id)}
         <TableRow>
-          <TableCell>{item.nombre}</TableCell>
+          <TableCell>{idx + Number(products.from)}</TableCell>
+          <TableCell>{item.codigo}</TableCell>
           <TableCell>{item.descripcion}</TableCell>
           <TableCell>{item.precio}</TableCell>
           <TableCell>{item.unidad_medida}</TableCell>

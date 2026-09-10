@@ -25,8 +25,11 @@
   import { Label } from '@/components/ui/label';
   import type { Product } from '@/types/product';
 
+  const { codigo } = $props();
+
+  // svelte-ignore state_referenced_locally
   const form = useForm<Omit<Product, 'id' | 'created_at' | 'updated_at'>>({
-    nombre: '',
+    codigo,
     descripcion: '',
     stock: 0,
     precio: 0,
@@ -45,9 +48,8 @@
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="w-8/12 space-y-4">
     <div class="grid gap-2">
-      <Label for="nombre">Nombre</Label>
-      <Input id="nombre" bind:value={form.nombre} />
-      <InputError message={form.errors.nombre} />
+      <p>Codigo: <span class="font-bold">{codigo}</span></p>
+      <InputError message={form.errors.codigo} />
     </div>
     <div class="grid gap-2">
       <Label for="descripcion">Descripcion</Label>
