@@ -18,6 +18,7 @@
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
+  import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import {
     Table,
     TableBody,
@@ -108,42 +109,11 @@
     const draft = { ...productoNuevo };
     productos.push(draft);
   };
-
-  let __productos = [
-    'Proforma de Servicios',
-    'Proforma de Productos de Limpieza',
-    'Proforma de Computadoras',
-    'Factura Electrónica',
-    'Boleta de Venta',
-  ];
-  let __busqueda = $state('');
-  let __sugerenciasFiltradas = $derived(
-    __productos.filter((p) =>
-      p.toLowerCase().includes(__busqueda.toLowerCase()),
-    ),
-  );
 </script>
 
 <AppHead title="Proformas | Editar" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <div class="autocomplete-container">
-    <label for="buscar-proforma">Buscar Proforma:</label>
-    <input
-      id="buscar-proforma"
-      type="text"
-      list="opciones-proformas"
-      bind:value={__busqueda}
-      placeholder="Escribe para buscar..."
-    />
-    <datalist id="opciones-proformas">
-      {#each __sugerenciasFiltradas as sugerencia (sugerencia)}
-        <option value={sugerencia}></option>
-      {/each}
-    </datalist>
-
-    <p>Seleccionado: <strong>{__busqueda}</strong></p>
-  </div>
   <form onsubmit={handleSubmit} class="space-y-4">
     <div class="grid gap-2 w-1/4">
       <Label for="codigo">Codigo</Label>
@@ -233,7 +203,8 @@
     <div class="bg-stone-800 p-2 rounded">
       <div>
         <Label for="nombre">Nombre</Label>
-        <Input id="nombre" bind:value={productoNuevo.nombre} />
+        <Autocomplete id="nombre" bind:value={productoNuevo.nombre} />
+        <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
       </div>
       <div>
         <Label for="descripcion">Descripcion</Label>
@@ -267,19 +238,3 @@
     >
   </form>
 </div>
-
-<style>
-  .autocomplete-container {
-    font-family: sans-serif;
-    margin: 20px 0;
-  }
-  input {
-    padding: 8px;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    display: block;
-    margin-top: 5px;
-  }
-</style>
