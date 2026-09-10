@@ -25,8 +25,12 @@
   import { Label } from '@/components/ui/label';
   import type { Proforma } from '@/types/proforma';
 
+  const { codigo } = $props();
+
+  // svelte-ignore state_referenced_locally
   const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
-    codigo: crypto.randomUUID().split('-')[0],
+    // codigo: crypto.randomUUID().split('-')[0],
+    codigo: codigo,
     fecha_emision: '',
     fecha_vencimiento: '',
     subtotal: 0,
@@ -55,8 +59,7 @@
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="w-8/12 space-y-4">
     <div class="grid gap-2">
-      <Label for="codigo">Codigo</Label>
-      <Input id="codigo" bind:value={form.codigo} />
+      <p>Codigo: <span class="font-bold">{codigo}</span></p>
       <InputError message={form.errors.codigo} />
     </div>
     <div class="flex flex-row gap-2">

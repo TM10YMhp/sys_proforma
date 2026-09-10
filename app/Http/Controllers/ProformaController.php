@@ -20,7 +20,7 @@ class ProformaController extends Controller
    */
   public function index()
   {
-    $proformas = Proforma::with('products')->orderByDesc('created_at')->paginate(6);
+    $proformas = Proforma::with('products')->orderByDesc('codigo')->paginate(6);
     return Inertia::render("proformas/index", [
       'proformas' => $proformas
     ]);
@@ -32,7 +32,12 @@ class ProformaController extends Controller
    */
   public function create()
   {
-    return Inertia::render('proformas/create');
+    $ultimaProforma = Proforma::latest("codigo")->first();
+    [$prefijo, $numero] = sscanf($ultimaProforma->codigo, "%[0-9] - %[0-9]");
+    $siguienteCodigo = \sprintf("001 - %04d", (int) $numero + 1);
+    return Inertia::render('proformas/create', [
+      'codigo' => $siguienteCodigo
+    ]);
   }
 
   /**

@@ -89,6 +89,7 @@
   <Table>
     <TableHeader>
       <TableRow>
+        <TableHead>#</TableHead>
         <TableHead>Codigo</TableHead>
         <TableHead>Productos</TableHead>
         <TableHead>Fecha Emision</TableHead>
@@ -109,6 +110,7 @@
             selectedIndex = index;
           }}
         >
+          <TableCell>{index + Number(proformas.from)}</TableCell>
           <TableCell>{item.codigo}</TableCell>
           <TableCell>{item.products.length}</TableCell>
           <TableCell class="font-mono"
@@ -184,7 +186,7 @@
       <table class="w-full caption-bottom text-sm">
         <TableHeader class="sticky top-0 bg-background">
           <TableRow>
-            <TableHead>Nombre</TableHead>
+            <TableHead>Codigo</TableHead>
             <TableHead>Descripcion</TableHead>
             <TableHead>Precio</TableHead>
             <TableHead>U. Medida</TableHead>
@@ -197,7 +199,7 @@
           {@const productos = proformas.data[selectedIndex].products}
           {#each productos as item (item.id)}
             <TableRow>
-              <TableCell>{item.nombre}</TableCell>
+              <TableCell>{item.codigo}</TableCell>
               <TableCell>{item.descripcion}</TableCell>
               <TableCell>{item.precio}</TableCell>
               <TableCell>{item.unidad_medida}</TableCell>
