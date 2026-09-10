@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProformaFactory extends Factory
 {
+  private static int $index = 2547;
+
   /**
    * Define the model's default state.
    *
@@ -18,9 +20,12 @@ class ProformaFactory extends Factory
    */
   public function definition(): array
   {
+    $codigo = \sprintf("001 - %d", self::$index++);
+
     // https://fakerphp.org/formatters/numbers-and-strings
     return [
-      'codigo' => fake()->unique()->numerify('001-####'),
+      // 'codigo' => fake()->unique()->numerify('001 - ####'),
+      'codigo' => $codigo,
       'fecha_emision' => fake()->dateTimeThisYear(),
       'fecha_vencimiento' => fake()->dateTimeThisYear(),
       'subtotal' => fake()->randomFloat(2, 0, 100),

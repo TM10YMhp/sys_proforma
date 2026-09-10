@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductFactory extends Factory
 {
+  private static int $index = 1;
+
   /**
    * Define the model's default state.
    *
@@ -17,8 +19,11 @@ class ProductFactory extends Factory
    */
   public function definition(): array
   {
+    // $codigo = "P-" . str_pad((string) self::$index++, 4, '0', STR_PAD_LEFT);
+    $codigo = \sprintf("P-%04d", self::$index++);
+
     return [
-      'nombre' => fake()->unique()->word(),
+      'codigo' => $codigo,
       'descripcion' => fake()->unique()->sentence(),
       'precio' => fake()->randomFloat(2, 0, 100),
       'unidad_medida' => fake()->randomElement(['KG', 'UN']),

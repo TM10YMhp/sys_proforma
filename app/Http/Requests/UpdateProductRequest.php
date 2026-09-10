@@ -23,7 +23,7 @@ class UpdateProductRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'nombre' => ["required", "string", "max:255"],
+      'codigo' => ["required", "string", "max:255"],
       'descripcion' => ["required", "string", "max:255"],
       'stock' => ["required", "integer:strict", "min:0"],
       'precio' => ["required", "decimal:0,2", "min:0"],
