@@ -58,17 +58,17 @@
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="w-8/12 space-y-4">
-    <div class="grid gap-2">
+    <div>
       <p>Codigo: <span class="font-bold">{codigo}</span></p>
       <InputError message={form.errors.codigo} />
     </div>
     <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
+      <div>
         <Label for="emision">Fecha de Emision</Label>
         <Input id="emision" type="date" bind:value={form.fecha_emision} />
         <InputError message={form.errors.fecha_emision} />
       </div>
-      <div class="grid gap-2">
+      <div>
         <Label for="vencimiento">Fecha de Vencimiento</Label>
         <Input
           id="vencimiento"
@@ -79,7 +79,7 @@
       </div>
     </div>
     <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
+      <div>
         <Label for="subtotal">Subtotal</Label>
         <Input
           id="subtotal"
@@ -90,19 +90,19 @@
         />
         <InputError message={form.errors.subtotal} />
       </div>
-      <div class="grid gap-2">
+      <div>
         <Label for="igv_tasa">IGV Tasa</Label>
         <Input id="igv_tasa" bind:value={form.igv_tasa} />
         <InputError message={form.errors.igv_tasa} />
       </div>
     </div>
     <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
+      <div>
         <Label for="igv_monto">IGV Monto</Label>
         <Input id="igv_monto" bind:value={form.igv_monto} readonly />
         <InputError message={form.errors.igv_monto} />
       </div>
-      <div class="grid gap-2">
+      <div>
         <Label for="total">Total</Label>
         <Input id="total" bind:value={form.total} readonly />
         <InputError message={form.errors.total} />

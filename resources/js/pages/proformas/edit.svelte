@@ -109,7 +109,7 @@
     },
   ) => {
     const draft = { ...productoNuevo };
-    productos.push(draft);
+    productos.unshift(draft);
   };
 </script>
 
@@ -117,65 +117,111 @@
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="space-y-4">
-    <div class="grid gap-2 w-1/4">
-      <Label for="codigo">Codigo</Label>
-      <Input id="codigo" bind:value={form.codigo} />
-      <InputError message={form.errors.codigo} />
-    </div>
-    <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
-        <Label for="emision">Fecha de Emision</Label>
-        <Input id="emision" type="datetime-local" bind:value={fecha_emision} />
-        <InputError message={form.errors.fecha_emision} />
+    <div class="flex flex-row gap-6">
+      <div class="space-y-4">
+        <div>
+          <p>Codigo: <span class="font-bold">{form.codigo}</span></p>
+          <InputError message={form.errors.codigo} />
+        </div>
+        <div class="flex flex-row gap-2">
+          <div>
+            <Label for="emision">Fecha de Emision</Label>
+            <Input
+              id="emision"
+              type="datetime-local"
+              bind:value={fecha_emision}
+            />
+            <InputError message={form.errors.fecha_emision} />
+          </div>
+          <div>
+            <Label for="vencimiento">Fecha de Vencimiento</Label>
+            <Input
+              id="vencimiento"
+              type="datetime-local"
+              bind:value={fecha_vencimiento}
+            />
+            <InputError message={form.errors.fecha_vencimiento} />
+          </div>
+        </div>
+        <div class="flex flex-row gap-2">
+          <div>
+            <Label for="subtotal">Subtotal</Label>
+            <Input
+              id="subtotal"
+              bind:value={form.subtotal}
+              type="number"
+              min="0"
+              step="0.1"
+              oninput={onChangeSubtotal}
+            />
+            <InputError message={form.errors.subtotal} />
+          </div>
+          <div>
+            <Label for="igv_tasa">IGV Tasa (%)</Label>
+            <!-- TODO: el ancho debe establecerse -->
+            <Input
+              class="w-fit"
+              id="igv_tasa"
+              bind:value={porcentaje}
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+            />
+            <InputError message={form.errors.igv_tasa} />
+          </div>
+        </div>
+        <div class="flex flex-row gap-2">
+          <div>
+            <Label for="igv_monto">IGV Monto</Label>
+            <Input id="igv_monto" bind:value={form.igv_monto} readonly />
+            <InputError message={form.errors.igv_monto} />
+          </div>
+          <div>
+            <Label for="total">Total</Label>
+            <Input id="total" bind:value={form.total} readonly />
+            <InputError message={form.errors.total} />
+          </div>
+        </div>
       </div>
-      <div class="grid gap-2">
-        <Label for="vencimiento">Fecha de Vencimiento</Label>
-        <Input
-          id="vencimiento"
-          type="datetime-local"
-          bind:value={fecha_vencimiento}
-        />
-        <InputError message={form.errors.fecha_vencimiento} />
-      </div>
-    </div>
-    <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
-        <Label for="subtotal">Subtotal</Label>
-        <Input
-          id="subtotal"
-          bind:value={form.subtotal}
-          type="number"
-          min="0"
-          step="0.1"
-          oninput={onChangeSubtotal}
-        />
-        <InputError message={form.errors.subtotal} />
-      </div>
-      <div class="grid gap-2">
-        <Label for="igv_tasa">IGV Tasa (%)</Label>
-        <!-- TODO: el ancho debe establecerse -->
-        <Input
-          class="w-fit"
-          id="igv_tasa"
-          bind:value={porcentaje}
-          type="number"
-          min="0"
-          max="100"
-          step="0.1"
-        />
-        <InputError message={form.errors.igv_tasa} />
-      </div>
-    </div>
-    <div class="flex flex-row gap-2">
-      <div class="grid gap-2">
-        <Label for="igv_monto">IGV Monto</Label>
-        <Input id="igv_monto" bind:value={form.igv_monto} readonly />
-        <InputError message={form.errors.igv_monto} />
-      </div>
-      <div class="grid gap-2">
-        <Label for="total">Total</Label>
-        <Input id="total" bind:value={form.total} readonly />
-        <InputError message={form.errors.total} />
+      <div class="bg-stone-900 p-2 rounded">
+        <div>
+          <Label for="codigo">Codigo</Label>
+          <Autocomplete id="codigo" bind:value={productoNuevo.codigo} />
+          <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
+        </div>
+        <div>
+          <Label for="descripcion">Descripcion</Label>
+          <Textarea id="descripcion" bind:value={productoNuevo.descripcion}
+          ></Textarea>
+        </div>
+        <div class="flex flex-row gap-4">
+          <div>
+            <Label for="stock">Stock</Label>
+            <Input id="stock" type="number" bind:value={productoNuevo.stock} />
+          </div>
+          <div>
+            <Label for="precio">Precio</Label>
+            <Input
+              id="precio"
+              type="number"
+              step="0.01"
+              bind:value={productoNuevo.precio}
+            />
+          </div>
+          <div>
+            <Label for="unidad_medida">Unidad de Medida</Label>
+            <Input
+              id="unidad_medida"
+              bind:value={productoNuevo.unidad_medida}
+            />
+          </div>
+        </div>
+        <div class="flex flex-row justify-center mt-2">
+          <Button disabled={form.processing} type="button" onclick={addProduct}
+            >Agregar Producto</Button
+          >
+        </div>
       </div>
     </div>
     <Table>
@@ -212,42 +258,6 @@
         {/each}
       </TableBody>
     </Table>
-    <div class="bg-stone-900 p-2 rounded">
-      <div>
-        <Label for="codigo">Codigo</Label>
-        <Autocomplete id="codigo" bind:value={productoNuevo.codigo} />
-        <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
-      </div>
-      <div>
-        <Label for="descripcion">Descripcion</Label>
-        <Textarea id="descripcion" bind:value={productoNuevo.descripcion}
-        ></Textarea>
-      </div>
-      <div class="flex flex-row gap-4">
-        <div>
-          <Label for="stock">Stock</Label>
-          <Input id="stock" type="number" bind:value={productoNuevo.stock} />
-        </div>
-        <div>
-          <Label for="precio">Precio</Label>
-          <Input
-            id="precio"
-            type="number"
-            step="0.01"
-            bind:value={productoNuevo.precio}
-          />
-        </div>
-        <div>
-          <Label for="unidad_medida">Unidad de Medida</Label>
-          <Input id="unidad_medida" bind:value={productoNuevo.unidad_medida} />
-        </div>
-      </div>
-      <div class="flex flex-row justify-center mt-2">
-        <Button disabled={form.processing} type="button" onclick={addProduct}
-          >Agregar Producto</Button
-        >
-      </div>
-    </div>
     <Button disabled={form.processing} type="submit">Actualizar Proforma</Button
     >
   </form>
