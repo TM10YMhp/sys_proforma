@@ -182,29 +182,42 @@
   </div>
 
   {#if showProducts}
+    <p>
+      Productos de la Proforma <span class="font-bold">{proformas.data[selectedIndex].codigo}</span>
+    </p>
     <div class="relative w-full overflow-x-auto max-h-56 border">
       <table class="w-full caption-bottom text-sm">
         <TableHeader class="sticky top-0 bg-background">
           <TableRow>
+            <TableHead>#</TableHead>
             <TableHead>Codigo</TableHead>
             <TableHead>Descripcion</TableHead>
             <TableHead>Precio</TableHead>
             <TableHead>U. Medida</TableHead>
             <TableHead>Stock</TableHead>
-            <TableHead>Activo</TableHead>
+            <TableHead class="text-center">Activo</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <!-- TODO: esta sintaxis ya no se usa pero prettier aun no lo reconoce -->
           {@const productos = proformas.data[selectedIndex].products}
-          {#each productos as item (item.id)}
+          {#each productos as item, idx (item.id)}
             <TableRow>
+              <TableCell>{idx + 1}</TableCell>
               <TableCell>{item.codigo}</TableCell>
               <TableCell>{item.descripcion}</TableCell>
               <TableCell>{item.precio}</TableCell>
               <TableCell>{item.unidad_medida}</TableCell>
               <TableCell>{item.stock}</TableCell>
-              <TableCell>{item.activo}</TableCell>
+              <TableCell class="text-center">
+                {#if item.activo}
+                  <span class="inline-block bg-green-500 size-3 rounded-full"
+                  ></span>
+                {:else}
+                  <span class="inline-block bg-red-500 size-3 rounded-full"
+                  ></span>
+                {/if}
+              </TableCell>
             </TableRow>
           {/each}
         </TableBody>

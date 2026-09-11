@@ -48,14 +48,16 @@
     proforma.products,
   );
 
-  let productoNuevo = $state({
-    nombre: '',
-    descripcion: '',
-    precio: 0,
-    unidad_medida: '',
-    stock: 0,
-    activo: true,
-  });
+  let productoNuevo = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>>(
+    {
+      codigo: '',
+      descripcion: '',
+      precio: 0,
+      unidad_medida: '',
+      stock: 0,
+      activo: true,
+    },
+  );
 
   // svelte-ignore state_referenced_locally
   const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
@@ -179,31 +181,41 @@
     <Table>
       <TableHeader class="sticky top-0 bg-background">
         <TableRow>
-          <TableHead>Nombre</TableHead>
+          <TableHead>#</TableHead>
+          <TableHead>Codigo</TableHead>
           <TableHead>Descripcion</TableHead>
           <TableHead>Precio</TableHead>
           <TableHead>U. Medida</TableHead>
           <TableHead>Stock</TableHead>
-          <TableHead>Activo</TableHead>
+          <TableHead class="text-center">Activo</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {#each productos as item, idx (idx)}
           <TableRow>
-            <TableCell>{item.nombre}</TableCell>
+            <TableCell>{idx + 1}</TableCell>
+            <TableCell>{item.codigo}</TableCell>
             <TableCell>{item.descripcion}</TableCell>
             <TableCell>{item.precio}</TableCell>
             <TableCell>{item.unidad_medida}</TableCell>
             <TableCell>{item.stock}</TableCell>
-            <TableCell>{item.activo}</TableCell>
+            <TableCell class="text-center">
+              {#if item.activo}
+                <span class="inline-block bg-green-500 size-3 rounded-full"
+                ></span>
+              {:else}
+                <span class="inline-block bg-red-500 size-3 rounded-full"
+                ></span>
+              {/if}
+            </TableCell>
           </TableRow>
         {/each}
       </TableBody>
     </Table>
-    <div class="bg-stone-800 p-2 rounded">
+    <div class="bg-stone-900 p-2 rounded">
       <div>
-        <Label for="nombre">Nombre</Label>
-        <Autocomplete id="nombre" bind:value={productoNuevo.nombre} />
+        <Label for="codigo">Codigo</Label>
+        <Autocomplete id="codigo" bind:value={productoNuevo.codigo} />
         <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
       </div>
       <div>
@@ -211,28 +223,30 @@
         <Textarea id="descripcion" bind:value={productoNuevo.descripcion}
         ></Textarea>
       </div>
-      <div>
-        <Label for="stock">Stock</Label>
-        <Input id="stock" type="number" bind:value={productoNuevo.stock} />
+      <div class="flex flex-row gap-4">
+        <div>
+          <Label for="stock">Stock</Label>
+          <Input id="stock" type="number" bind:value={productoNuevo.stock} />
+        </div>
+        <div>
+          <Label for="precio">Precio</Label>
+          <Input
+            id="precio"
+            type="number"
+            step="0.01"
+            bind:value={productoNuevo.precio}
+          />
+        </div>
+        <div>
+          <Label for="unidad_medida">Unidad de Medida</Label>
+          <Input id="unidad_medida" bind:value={productoNuevo.unidad_medida} />
+        </div>
       </div>
-      <div>
-        <Label for="precio">Precio</Label>
-        <Input
-          id="precio"
-          type="number"
-          step="0.01"
-          bind:value={productoNuevo.precio}
-        />
+      <div class="flex flex-row justify-center mt-2">
+        <Button disabled={form.processing} type="button" onclick={addProduct}
+          >Agregar Producto</Button
+        >
       </div>
-      <div>
-        <Label for="unidad_medida">Unidad de Medida</Label>
-        <Input id="unidad_medida" bind:value={productoNuevo.unidad_medida} />
-      </div>
-    </div>
-    <div class="flex flex-row justify-center">
-      <Button disabled={form.processing} type="button" onclick={addProduct}
-        >Agregar Producto</Button
-      >
     </div>
     <Button disabled={form.processing} type="submit">Actualizar Proforma</Button
     >

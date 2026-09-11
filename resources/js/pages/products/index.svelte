@@ -42,9 +42,11 @@
 
   const form = useForm();
 
-  const handleDelete = (id: number) => {
-    if (confirm('Estas seguro que deseas eliminar este producto?')) {
-      form.delete(ProductController.destroy.url(id));
+  const handleDelete = (product: Product) => {
+    if (
+      confirm(`Estas seguro que desea eliminar el producto: ${product.codigo}?`)
+    ) {
+      form.delete(ProductController.destroy.url(product.id));
     }
   };
 </script>
@@ -66,7 +68,7 @@
         <TableHead>Precio</TableHead>
         <TableHead>Unidad de Medida</TableHead>
         <TableHead>Stock</TableHead>
-        <TableHead>Activo</TableHead>
+        <TableHead class="text-center">Activo</TableHead>
         <TableHead>Acciones</TableHead>
       </TableRow>
     </TableHeader>
@@ -79,7 +81,14 @@
           <TableCell>{item.precio}</TableCell>
           <TableCell>{item.unidad_medida}</TableCell>
           <TableCell>{item.stock}</TableCell>
-          <TableCell>{item.activo}</TableCell>
+          <TableCell class="text-center">
+            {#if item.activo}
+              <span class="inline-block bg-green-500 size-3 rounded-full"
+              ></span>
+            {:else}
+              <span class="inline-block bg-red-500 size-3 rounded-full"></span>
+            {/if}
+          </TableCell>
           <TableCell>
             <Link href={ProductController.edit(item.id)}>
               <Button class="bg-slate-500 hover:bg-slate-700">Editar</Button>
@@ -87,7 +96,7 @@
             <Button
               disabled={form.processing}
               class="bg-red-500 hover:bg-red-700"
-              onclick={() => handleDelete(item.id)}
+              onclick={() => handleDelete(item)}
             >
               Borrar
             </Button>
