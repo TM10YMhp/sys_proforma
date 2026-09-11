@@ -17,6 +17,8 @@
 
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
+  import type { MouseEventHandler } from 'svelte/elements';
+  import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import {
@@ -103,13 +105,23 @@
     form.put(ProformaController.update.url(proforma.id));
   };
 
-  const addProduct = (
-    _e: MouseEvent & {
-      currentTarget: EventTarget & HTMLButtonElement;
-    },
-  ) => {
+  const addProduct = (_: MouseEventHandler<HTMLButtonElement>) => {
     const draft = { ...productoNuevo };
     productos.unshift(draft);
+  };
+
+  const onClickAutocomplete = async (codigo: string) => {
+    let producto = productos.find((p) => p.codigo === codigo);
+
+    if (!producto) {
+      const response = await fetch(ProductController.getByCode.url(codigo));
+      producto = (await response.json()) as Product;
+    }
+
+    productoNuevo.descripcion = producto.descripcion;
+    productoNuevo.stock = producto.stock;
+    productoNuevo.precio = producto.precio;
+    productoNuevo.unidad_medida = producto.unidad_medida;
   };
 </script>
 
@@ -187,7 +199,12 @@
       <div class="bg-stone-900 p-2 rounded">
         <div>
           <Label for="codigo">Codigo</Label>
-          <Autocomplete id="codigo" bind:value={productoNuevo.codigo} />
+          <Autocomplete
+            id="codigo"
+            bind:value={productoNuevo.codigo}
+            api="/products/search"
+            onclick={onClickAutocomplete}
+          />
           <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
         </div>
         <div>

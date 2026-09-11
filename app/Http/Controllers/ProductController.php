@@ -105,12 +105,17 @@ class ProductController extends Controller
     $buscar = str_split(str_replace(" ", "", $buscar));
     $buscar = implode("%", $buscar);
     $buscar = "%" . $buscar . "%";
-    $products = Product::whereRaw('lower(nombre) LIKE ?', [$buscar])
-      ->select('id', 'nombre', 'precio')
+    $products = Product::whereRaw('lower(codigo) LIKE ?', [$buscar])
+      ->select('id', 'codigo', 'precio')
       ->limit(10) // Limitar para mejorar el rendimiento
       // ->dd();
       ->get();
 
     return response()->json($products);
+  }
+
+  public function getByCode(string $code): JsonResponse {
+    $product = Product::where('codigo', '=', $code)->first();
+    return response()->json($product);
   }
 }

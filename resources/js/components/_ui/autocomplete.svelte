@@ -1,16 +1,18 @@
 <script lang="ts">
   import type { HTMLInputAttributes } from 'svelte/elements';
-  import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import { cn } from '@/lib/utils';
+  import type { Product } from '@/types/product';
 
-  type Props = Omit<HTMLInputAttributes, 'type' | 'autocomplete'> & {
+  type Props = Omit<HTMLInputAttributes, 'type' | 'autocomplete' | 'onclick'> & {
     delay?: number;
     limit?: number;
+    api: string;
     value: string;
+    onclick?: (e: string) => void;
   };
 
   type TestProduct = {
-    nombre: string;
+    codigo: string;
     precio: number;
   };
 
@@ -20,6 +22,8 @@
     delay = 300,
     limit = 1,
     value: busqueda = $bindable(),
+    api,
+    onclick,
     ...props
   }: Props = $props();
 
@@ -40,18 +44,16 @@
       buscando = true;
 
       try {
-        // const response = await fetch(
-        //   `products/search?q=${encodeURIComponent(busqueda)}`,
-        // );
         // https://github.com/laravel/wayfinder#query-parameters
-        const response = await fetch(
-          ProductController.search.url({
-            query: {
-              q: busqueda,
-            },
-          }),
-        );
-        resultados = await response.json();
+        // const response = await fetch(
+        //   ProductController.search.url({
+        //     query: {
+        //       q: busqueda,
+        //     },
+        //   }),
+        // );
+        const response = await fetch(`${api}?q=${busqueda}`);
+        resultados = (await response.json()) as Product[];
       } catch (error) {
         console.error('Error buscando productos:', error);
       } finally {
@@ -61,7 +63,7 @@
   }
 
   function seleccionar(producto: TestProduct) {
-    busqueda = producto.nombre;
+    busqueda = producto.codigo;
     resultados = [];
   }
 
@@ -117,11 +119,14 @@
       {#each resultados as producto, idx (idx)}
         <li>
           <button
-            onclick={() => seleccionar(producto)}
+            onclick={() => {
+              seleccionar(producto);
+              onclick?.(producto.codigo);
+            }}
             class="w-full flex justify-between cursor-pointer hover:bg-stone-800"
           >
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            <span>{@html highlightResult(producto.nombre)}</span>
+            <span>{@html highlightResult(producto.codigo)}</span>
             <span class="text-[#10b981] font-bold">${producto.precio}</span>
           </button>
         </li>
