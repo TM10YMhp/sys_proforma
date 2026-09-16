@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cliente;
 use App\Models\Product;
 use App\Models\Proforma;
 use App\Models\User;
@@ -43,5 +44,7 @@ class DatabaseSeeder extends Seeder
         ]
       )->create();
     }
+
+    Cliente::factory(20)->create();
   }
 }
