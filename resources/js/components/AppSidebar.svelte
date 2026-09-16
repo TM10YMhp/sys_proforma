@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Link } from '@inertiajs/svelte';
-  import { FileText, PackageSearch } from 'lucide-svelte';
+  import { Contact, FileText, PackageSearch } from 'lucide-svelte';
   import BookOpen from 'lucide-svelte/icons/book-open';
   import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
   import LayoutGrid from 'lucide-svelte/icons/layout-grid';
@@ -33,6 +33,11 @@
       title: 'Dashboard',
       href: dashboard(),
       icon: LayoutGrid,
+    },
+    {
+      title: 'Clientes',
+      href: '/clientes',
+      icon: Contact,
     },
     {
       title: 'Productos',

@@ -35,6 +35,7 @@
                             {...props}
                             href={toUrl(item.href)}
                             class={props.class}
+                            prefetch
                         >
                             {#if item.icon}
                                 <item.icon class="size-4 shrink-0" />

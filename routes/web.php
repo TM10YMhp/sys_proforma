@@ -12,4 +12,5 @@ Route::inertia('/test', 'test');
 
 require __DIR__.'/product.php';
 require __DIR__.'/proforma.php';
+require __DIR__.'/cliente.php';
 require __DIR__.'/settings.php';
