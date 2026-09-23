@@ -1,5 +1,6 @@
 import PaginationContent from './pagination-content.svelte';
 import PaginationEllipsis from './pagination-ellipsis.svelte';
+import PaginationInertiaLink from './pagination-inertia-link.svelte';
 import PaginationItem from './pagination-item.svelte';
 import PaginationLink from './pagination-link.svelte';
 import PaginationNext from './pagination-next.svelte';
@@ -9,6 +10,7 @@ import Pagination from './pagination.svelte';
 export {
   Pagination,
   PaginationContent,
+  PaginationInertiaLink,
   PaginationItem,
   PaginationLink,
   PaginationEllipsis,

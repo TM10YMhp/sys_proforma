@@ -18,7 +18,7 @@
     Pagination,
     PaginationContent,
     PaginationItem,
-    PaginationLink,
+    PaginationInertiaLink,
     PaginationNext,
     PaginationPrevious,
   } from '@/components/_ui/pagination';
@@ -120,10 +120,11 @@
         {#each clientes.links as item (item.label)}
           {#if !item.label.includes('Previous') && !item.label.includes('Next')}
             <PaginationItem>
-              <PaginationLink
-                href={item.url}
-                class={`flex items-center justify-center px-3 py-2 text-sm leading-tight border ${item.active ? 'hover:bg-primary-100 hover:text-primary-700 border-gray-700 bg-gray-700 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
-                >{item.label}</PaginationLink
+              <PaginationInertiaLink
+                href={item.url!}
+                prefetch
+                class="flex items-center justify-center px-3 py-2 text-sm leading-tight border"
+                isActive={item.active}>{item.label}</PaginationInertiaLink
               >
             </PaginationItem>
           {/if}

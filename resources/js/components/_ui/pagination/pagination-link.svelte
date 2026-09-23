@@ -1,28 +1,36 @@
 <script lang="ts">
   import type { HTMLAnchorAttributes } from 'svelte/elements';
-  let {
-    isActive,
-    children,
-    ...props
-  }: HTMLAnchorAttributes & {
-    // TODO: check this
+  import { cn } from '@/lib/utils';
+
+  type Props = HTMLAnchorAttributes & {
     isActive?: boolean;
-  } = $props();
+  };
+  let { isActive, class: className, children, ...props }: Props = $props();
 </script>
 
 <a
   aria-current={isActive ? 'page' : undefined}
   data-slot="pagination-link"
   data-active={isActive}
+  class={cn(
+    className,
+    isActive
+      ? 'hover:bg-primary-100 hover:text-primary-700 border-gray-700 bg-gray-700 text-white'
+      : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white',
+  )}
   {...props}
 >
   {@render children?.()}
 </a>
 
-
 <!-- TODO:
 - funciona pero afecta a otros componentes
-- los tipos no se infieren correctamente desde afuera -->
+- los tipos no se infieren correctamente desde afuera
+-->
+<!-- NOTE:
+- svelte pasa por compilacion, quizas eso afecta la deteccion de tipos
+- es mas sencillo crear componentes de responsabilidad unica
+-->
 <!-- <script lang="ts" generics="T extends string | Component<any> = 'a'">
   import type { Component, ComponentProps, Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
