@@ -51,18 +51,24 @@ class ClienteController extends Controller
 
   /**
    * Show the form for editing the specified resource.
+   * @return \Inertia\Response
    */
-  public function edit(Cliente $cliente): void
+  public function edit(Cliente $cliente)
   {
-    //
+    return Inertia::render('clientes/edit', [
+      'cliente' => $cliente
+    ]);
   }
 
   /**
    * Update the specified resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
-  public function update(UpdateClienteRequest $request, Cliente $cliente): void
+  public function update(UpdateClienteRequest $request, Cliente $cliente)
   {
-    //
+    $validated = $request->validated();
+    $cliente->update($validated);
+    return to_route('clientes.index');
   }
 
   /**
