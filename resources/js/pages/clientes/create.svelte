@@ -24,6 +24,7 @@
   import Input from '@/components/ui/input/Input.svelte';
   import { Label } from '@/components/ui/label';
   import type { Cliente } from '@/types/cliente';
+  import type { OpenRucResponse } from '@/types/openruc';
 
   const form = useForm<Omit<Cliente, 'id' | 'created_at' | 'updated_at'>>({
     nombres: '',
@@ -33,10 +34,63 @@
     dni: '',
     telefono: '',
   });
+  let buscando = $state.raw(false);
+  const rucCache: Record<string, string> = {};
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     form.post(ClienteController.store.url());
+  };
+
+  const fillRUC = async (
+    e: KeyboardEvent & {
+      currentTarget: EventTarget & HTMLInputElement;
+    },
+  ) => {
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    e.preventDefault();
+
+    if (buscando) {
+      console.log('Esperando a que termine de buscar');
+
+      return;
+    }
+
+    const rucBuscado = form.ruc;
+
+    if (rucBuscado in rucCache) {
+      const cachedValue = rucCache[rucBuscado];
+      console.log('recuperado de cache');
+
+      form.errors.ruc = '';
+
+      if (cachedValue) {
+        form.nombres = cachedValue;
+      } else {
+        form.errors.ruc = 'RUC no encontrado';
+      }
+
+      return;
+    }
+
+    buscando = true;
+    form.errors.ruc = '';
+
+    const response = await fetch(ClienteController.getByRUC.url(rucBuscado));
+
+    if (response.ok) {
+      const data = (await response.json()) as OpenRucResponse;
+      rucCache[rucBuscado] = data.razon_social;
+      form.nombres = data.razon_social;
+    } else {
+      rucCache[rucBuscado] = '';
+      form.errors.ruc = 'RUC no encontrado';
+    }
+
+    buscando = false;
   };
 </script>
 
@@ -64,8 +118,16 @@
     <div class="flex flex-row gap-4">
       <div>
         <Label for="ruc">RUC</Label>
-        <Input id="ruc" type="number" bind:value={form.ruc} />
+        <Input
+          id="ruc"
+          type="number"
+          bind:value={form.ruc}
+          onkeydown={fillRUC}
+        />
         <InputError message={form.errors.ruc} />
+        {#if buscando}
+          <p class="">⏳ Buscando...</p>
+        {/if}
       </div>
       <div>
         <Label for="dni">DNI</Label>

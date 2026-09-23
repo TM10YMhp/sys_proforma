@@ -10,4 +10,6 @@ Route::prefix('clientes')->group(function () {
   Route::get('/edit/{cliente}', [ClienteController::class, 'edit'])->name('clientes.edit');
   Route::put('/{cliente}', [ClienteController::class, 'update'])->name('clientes.update');
   Route::delete('/{cliente}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
+
+  Route::get('/getByRUC/{ruc}', [ClienteController::class, 'getByRUC'])->name('clientes.getByRUC');
 });
