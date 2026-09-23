@@ -15,7 +15,7 @@ class ClienteController extends Controller
    */
   public function index()
   {
-    $clientes = Cliente::orderByDesc('codigo')->paginate(6);
+    $clientes = Cliente::orderByDesc('updated_at')->paginate(6);
     return Inertia::render("clientes/index", [
       'clientes' => $clientes
     ]);
@@ -23,18 +23,22 @@ class ClienteController extends Controller
 
   /**
    * Show the form for creating a new resource.
+   * @return \Inertia\Response
    */
-  public function create(): void
+  public function create()
   {
-    //
+    return Inertia::render('clientes/create');
   }
 
   /**
    * Store a newly created resource in storage.
+   * @return \Illuminate\Http\RedirectResponse
    */
-  public function store(StoreClienteRequest $request): void
+  public function store(StoreClienteRequest $request)
   {
-    //
+    $validated = $request->validated();
+    Cliente::create($validated);
+    return to_route("clientes.index");
   }
 
   /**
