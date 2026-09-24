@@ -24,7 +24,6 @@
   import Input from '@/components/ui/input/Input.svelte';
   import { Label } from '@/components/ui/label';
   import type { Cliente } from '@/types/cliente';
-  import type { OpenRucResponse } from '@/types/openruc';
 
   const form = useForm<Omit<Cliente, 'id' | 'created_at' | 'updated_at'>>({
     nombres: '',
@@ -82,7 +81,7 @@
     const response = await fetch(ClienteController.getByRUC.url(rucBuscado));
 
     if (response.ok) {
-      const data = (await response.json()) as OpenRucResponse;
+      const data = (await response.json()) as { razon_social: string };
       rucCache[rucBuscado] = data.razon_social;
       form.nombres = data.razon_social;
     } else {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
@@ -89,26 +90,36 @@ class ClienteController extends Controller
    */
   public function getByRUC(string $ruc)
   {
-    $url = "https://openruc.com/api/ruc/{$ruc}";
-
-    $response = Http::withoutVerifying()->get($url);
-
-    if ($response->successful()) {
-      $datos = $response->json();
-
-      // NOTE: la api devuelve 200 en caso de error, con esto devolvera el codigo correcto
-      if (isset($datos['error'])) {
-        return response()->json($datos, 404);
-      }
-
-      return response()->json($datos);
+    // NOTE: mantener en cache por 60 segundos para evitar saturar la api,
+    // considerar usar redis
+    $cachedValue = Cache::get($ruc);
+    if ($cachedValue) {
+      return response()->json([
+        'razon_social' => $cachedValue
+      ]);
     }
 
-    return response()->json([
-      'error' => 'desconocido',
-      'mensaje' => 'Servidor de consultas no disponible temporalmente.'
-    ], 500);
+    // NOTE: primero buscar en la base de datos local
+    $clientePorRUC = Cliente::where('ruc', '=', $ruc)->first();
+    if ($clientePorRUC) {
+      Cache::put($ruc, $clientePorRUC->nombres, 60);
+      return response()->json([
+        'razon_social' => $clientePorRUC->nombres
+      ]);
+    }
 
+    $url = "https://openruc.com/api/ruc/{$ruc}";
+    $response = Http::withoutVerifying()->get($url);
+
+    $datos = $response->json();
+    if ($response->successful()) {
+      Cache::put($ruc, $datos['razon_social'], 60);
+      return response()->json([
+        'razon_social' => $datos['razon_social']
+      ], $response->status());
+    }
+
+    return response()->json($datos, $response->status());
 
     // $ch = curl_init();
 
