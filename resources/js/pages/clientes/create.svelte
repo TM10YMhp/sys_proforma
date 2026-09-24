@@ -23,6 +23,7 @@
   import Button from '@/components/ui/button/Button.svelte';
   import Input from '@/components/ui/input/Input.svelte';
   import { Label } from '@/components/ui/label';
+  import { buscarRUC } from '@/core/cliente';
   import type { Cliente } from '@/types/cliente';
 
   const form = useForm<Omit<Cliente, 'id' | 'created_at' | 'updated_at'>>({
@@ -34,7 +35,6 @@
     telefono: '',
   });
   let buscando = $state.raw(false);
-  const rucCache: Record<string, string> = {};
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -50,6 +50,7 @@
       return;
     }
 
+    // TODO: verificar que el campo no este vacio
     e.preventDefault();
 
     if (buscando) {
@@ -58,38 +59,22 @@
       return;
     }
 
-    const rucBuscado = form.ruc;
-
-    if (rucBuscado in rucCache) {
-      const cachedValue = rucCache[rucBuscado];
-      console.log('recuperado de cache');
-
-      form.errors.ruc = '';
-
-      if (cachedValue) {
-        form.nombres = cachedValue;
-      } else {
-        form.errors.ruc = 'RUC no encontrado';
-      }
-
-      return;
-    }
-
     buscando = true;
     form.errors.ruc = '';
 
-    const response = await fetch(ClienteController.getByRUC.url(rucBuscado));
-
-    if (response.ok) {
-      const data = (await response.json()) as { razon_social: string };
-      rucCache[rucBuscado] = data.razon_social;
-      form.nombres = data.razon_social;
-    } else {
-      rucCache[rucBuscado] = '';
-      form.errors.ruc = 'RUC no encontrado';
+    try {
+      // NOTE:Inertia pasa el tipo a number
+      const razonSocial = await buscarRUC(form.ruc.toString());
+      form.nombres = razonSocial;
+    } catch (error) {
+      if (error instanceof Error) {
+        form.errors.ruc = error.message;
+      } else {
+        form.errors.ruc = 'Ocurrio un error inesperado';
+      }
+    } finally {
+      buscando = false;
     }
-
-    buscando = false;
   };
 </script>
 
