@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\DTO\ProductDTO;
+use App\Exports\ProformaData;
 use App\Exports\ProformaExport;
 use App\Models\Product;
 use App\Models\Proforma;
 use App\Http\Requests\StoreProformaRequest;
 use App\Http\Requests\UpdateProformaRequest;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -95,8 +98,25 @@ class ProformaController extends Controller
     return to_route('proformas.index');
   }
 
+  private function convertKeyToPascalCase(mixed $datos): mixed
+  {
+    // caso base de la recursion
+    if (!\is_array($datos)) {
+      return $datos;
+    }
+
+    $resultado = [];
+    foreach ($datos as $llave => $valor) {
+      $nuevaLlave = \is_string($llave) ? Str::studly($llave) : $llave;
+      // recursion
+      $resultado[$nuevaLlave] = $this->convertKeyToPascalCase($valor);
+    }
+
+    return $resultado;
+  }
+
   /**
-   * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+   * @return \Illuminate\Http\Response
    */
   public function exportExcel(Proforma $proforma)
   {
@@ -107,7 +127,22 @@ class ProformaController extends Controller
     $productsDTO = $products->map(ProductDTO::fromModel(...));
     // dd($productsDTO);
 
-    return Excel::download(new ProformaExport($productsDTO), "test.xlsx");
+    // return Excel::download(new ProformaExport($productsDTO), "test.xlsx");
+
+    $data = [
+      "id" => ProformaData::$id,
+      "cliente" => ProformaData::$cliente,
+      "productos" => ProformaData::$products,
+      "condiciones" => ProformaData::$condiciones,
+    ];
+
+    $response = Http::post(
+      'http://localhost:5138/api/proforma/excel',
+      $this->convertKeyToPascalCase($data)
+    );
+
+    return response($response->body(), $response->status())
+      ->withHeaders($response->headers());
   }
 
   /**
