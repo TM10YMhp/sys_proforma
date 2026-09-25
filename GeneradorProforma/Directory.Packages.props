@@ -4,5 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="EPPlus" Version="8.7.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.9" />
   </ItemGroup>
 </Project>

@@ -2,5 +2,6 @@
   <Folder Name="/src/">
     <Project Path="src/GeneradorProforma.Console/GeneradorProforma.Console.csproj" />
     <Project Path="src/GeneradorProforma.Core/GeneradorProforma.Core.csproj" />
+    <Project Path="src/GeneradorProforma.WebAPI/GeneradorProforma.WebAPI.csproj" />
   </Folder>
 </Solution>
