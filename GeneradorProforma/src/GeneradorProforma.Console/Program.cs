@@ -119,16 +119,34 @@ internal class Program
     Console.WriteLine("Ruta de Platilla: {0}", service.RutaPlantilla);
     Console.WriteLine("Ruta de Salida  : {0}", service.RutaSalida);
     Console.WriteLine();
-    Console.WriteLine("Procesando...");
+    Console.WriteLine("Procesando Excel...");
 
-    var namefile = service.GenerateExcel(_id, _cliente, _products, _condiciones);
-
+    var namefile = service.GenerateExcel(
+      new Proforma()
+      {
+        Id = _id,
+        Cliente = _cliente,
+        Productos = _products,
+        Condiciones = _condiciones,
+      }
+    );
     if (namefile is null)
     {
-      Console.WriteLine("Error al generar archivo");
+      Console.WriteLine("Error al generar excel");
       return;
     }
 
-    Console.WriteLine($"Archivo generado: {namefile}");
+    Console.WriteLine($"Excel generado: {namefile}");
+    Console.WriteLine();
+    Console.WriteLine("Procesando PDF...");
+
+    var pdffile = service.GeneratePDF(namefile);
+    if (pdffile is null)
+    {
+      Console.WriteLine("Error al generar pdf");
+      return;
+    }
+
+    Console.WriteLine($"PDF generado: {pdffile}");
   }
 }

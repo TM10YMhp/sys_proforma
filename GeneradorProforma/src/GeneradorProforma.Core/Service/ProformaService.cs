@@ -1,16 +1,14 @@
 using GeneradorProforma.Core.Entity;
 using OfficeOpenXml;
+using Spire.Xls;
 
 namespace GeneradorProforma.Core.Service;
 
 public interface IProformaService
 {
-  string? GenerateExcel(
-    string id,
-    ClienteInfo cliente,
-    List<Producto> productos,
-    CondicionesInfo condiciones
-  );
+  string? GenerateExcel(Proforma proforma);
+
+  string? GeneratePDF(string namefile);
 }
 
 public class ProformaService : IProformaService
@@ -26,11 +24,16 @@ public class ProformaService : IProformaService
 
   public ProformaService()
   {
+    ExcelPackage.License.SetNonCommercialPersonal("<Your Name>");
+
     Directory.CreateDirectory(RutaPlantilla);
     Directory.CreateDirectory(RutaSalida);
   }
 
-  private void FillWithProducts(ExcelWorksheet sheet, List<Producto> productos)
+  private static void FillWithProducts(
+    ExcelWorksheet sheet,
+    List<Producto> productos
+  )
   {
     int filaInicio = 8;
     var celda = new
@@ -54,19 +57,19 @@ public class ProformaService : IProformaService
     }
   }
 
-  private void FillWithId(ExcelWorksheet sheet, string id)
+  private static void FillWithId(ExcelWorksheet sheet, string id)
   {
     sheet.Cells["A2"].Value = $"PROFORMA {id}";
   }
 
-  private void FillWithClient(ExcelWorksheet sheet, ClienteInfo cliente)
+  private static void FillWithClient(ExcelWorksheet sheet, ClienteInfo cliente)
   {
     sheet.Cells["A3"].Value = $"SEÑORES: {cliente.Empresa}";
     sheet.Cells["A4"].Value = $"ATENCIÓN: {cliente.NombreCliente}";
     sheet.Cells["A5"].Value = $"COND. PAGO: {cliente.CondicionPago}";
   }
 
-  private void FillWithConditions(
+  private static void FillWithConditions(
     ExcelWorksheet sheet,
     CondicionesInfo condiciones
   )
@@ -77,15 +80,8 @@ public class ProformaService : IProformaService
       $"VALIDEZ DE LA OFERTA: {condiciones.ValidezOferta}";
   }
 
-  public string? GenerateExcel(
-    string id,
-    ClienteInfo cliente,
-    List<Producto> productos,
-    CondicionesInfo condiciones
-  )
+  public string? GenerateExcel(Proforma proforma)
   {
-    ExcelPackage.License.SetNonCommercialPersonal("<Your Name>");
-
     var rutaArchivoPlantilla = Path.Combine(RutaPlantilla, "plantilla.xlsx");
     if (!File.Exists(rutaArchivoPlantilla))
     {
@@ -102,14 +98,35 @@ public class ProformaService : IProformaService
     {
       ExcelWorksheet sheet = package.Workbook.Worksheets.First();
 
-      FillWithId(sheet, id);
-      FillWithClient(sheet, cliente);
-      FillWithProducts(sheet, productos);
-      FillWithConditions(sheet, condiciones);
+      FillWithId(sheet, proforma.Id);
+      FillWithClient(sheet, proforma.Cliente);
+      FillWithProducts(sheet, proforma.Productos);
+      FillWithConditions(sheet, proforma.Condiciones);
 
       package.SaveAs(rutaArchivoSalida);
     }
 
     return nombreUnico;
+  }
+
+  public string? GeneratePDF(string namefile)
+  {
+    var rutaArchivoExcel = Path.Combine(RutaSalida, namefile);
+    if (!File.Exists(rutaArchivoExcel))
+    {
+      Console.WriteLine("Archivo no encontrado:");
+      Console.WriteLine(rutaArchivoExcel);
+      return null;
+    }
+
+    var nombreArchivo = Path.GetFileNameWithoutExtension(namefile);
+    var filename = $"{nombreArchivo}.pdf";
+    var rutaArchivoSalida = Path.Combine(RutaSalida, filename);
+
+    Workbook workbook = new();
+    workbook.LoadFromFile(rutaArchivoExcel);
+    workbook.SaveToFile(rutaArchivoSalida, FileFormat.PDF);
+
+    return rutaArchivoSalida;
   }
 }
