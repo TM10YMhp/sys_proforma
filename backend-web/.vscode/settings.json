@@ -2,5 +2,6 @@
   "files.watcherExclude": {
     "vendor/**": true,
     "node_modules/**": true,
-  }
+  },
+  "terminal.integrated.cwd": "${workspaceFolder}/.."
 }

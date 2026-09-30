@@ -146,17 +146,18 @@ class ProformaController extends Controller
   }
 
   /**
-   * @return string
+   * NOTE: es necesario que el excel se haya creado antes
+   * TODO: pasar datos de la proforma y manejar el estado interno
+   * TODO: verificar que la webapi este activa
+   * @return \Illuminate\Http\Response
    */
-  public function exportPDF()
+  public function exportPDF(string $id)
   {
-    return "WIP";
+    $response = Http::post("http://localhost:5138/api/proforma/pdf/{$id}");
 
-    // // TODO: probar mpdf
-    // $response = Excel::download(new ProformaExport, "test.pdf", \Maatwebsite\Excel\Excel::MPDF);
-
-    // $response->headers->set('Content-Disposition', 'inline; filename="test.pdf"');
-
-    // return $response;
+    return response($response->body(), $response->status())
+      ->withHeaders($response->headers())
+      ->header('Content-Type', 'application/pdf')
+      ->header('Content-Disposition', "inline; filename=\"proforma_{$id}.pdf\"");
   }
 }

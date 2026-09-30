@@ -138,6 +138,12 @@
               href={ProformaController.exportExcel.url(item.id)}
               class="bg-green-900 py-2 px-4 rounded">Excel</a
             >
+            <!-- HACK: decidir como gestionar la generacion de pdf -->
+            <a
+              href={ProformaController.exportPDF.url("bd8a4dfe-ff6f-4f54-9412-b522e4b3a235")}
+              target="_blank"
+              class="bg-red-900 py-2 px-4 rounded">PDF</a
+            >
           </TableCell>
         </TableRow>
       {/each}
