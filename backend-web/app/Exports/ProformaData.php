@@ -6,11 +6,11 @@ class ProformaData
 {
   public static string $id = "001 - 2547";
   /**
-   * @var array{empresa: string, cliente: string, condicion_pago: string}
+   * @var array{empresa: string, nombre_cliente: string, condicion_pago: string}
    */
   public static array $cliente = [
     "empresa" => "Safresco Peru SAC",
-    "cliente" => "Paul Sanchez",
+    "nombre_cliente" => "Paul Sanchez",
     "condicion_pago" => "Credito 15 dias",
   ];
   /**

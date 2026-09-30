@@ -123,16 +123,19 @@ class ProformaController extends Controller
     $proforma->load("products");
 
     /** @var Collection<int, Product> */
-    $products = $proforma->products;
-    $productsDTO = $products->map(ProductDTO::fromModel(...));
-    // dd($productsDTO);
-
-    // return Excel::download(new ProformaExport($productsDTO), "test.xlsx");
+    $productsDB = $proforma->products;
+    $productos = $productsDB->map(fn($it) => [
+      "descripcion" => $it->descripcion,
+      "cantidad" => $it->stock,
+      "medida" => $it->unidad_medida,
+      "precio_unitario" => $it->precio,
+      "total" => 0,
+    ])->toArray();
 
     $data = [
-      "id" => ProformaData::$id,
+      "id" => $proforma->codigo,
       "cliente" => ProformaData::$cliente,
-      "productos" => ProformaData::$products,
+      "productos" => $productos,
       "condiciones" => ProformaData::$condiciones,
     ];
 
