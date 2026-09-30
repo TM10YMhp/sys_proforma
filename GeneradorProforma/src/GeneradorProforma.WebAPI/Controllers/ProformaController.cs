@@ -1,139 +1,133 @@
-using System.Text;
 using GeneradorProforma.Core.Entity;
 using GeneradorProforma.Core.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeneradorProforma.WebAPI.Controllers;
 
-public class ProformaRequest
-{
-  public required string Id { get; set; }
-  public required ClienteInfo Cliente { get; set; }
-  public required List<Producto> Productos { get; set; }
-  public required CondicionesInfo Condiciones { get; set; }
-
-  public override string ToString()
-  {
-    return $"ID: {Id}\n" +
-      $"Cliente: {Cliente}\n" +
-      $"Condiciones: {Condiciones}\n" +
-      $"Productos: {Productos}";
-  }
-}
-
 [Route("api/[controller]")]
 [ApiController]
 public class ProformaController : ControllerBase
 {
-  private static readonly string _id = "001 - 2547";
-
-  private static readonly ClienteInfo _cliente = new()
+  private static Proforma GetDatosPrueba()
   {
-    Empresa = "Safresco Peru SAC",
-    NombreCliente = "Paul Sanchez",
-    CondicionPago = "Credito 15 dias",
-  };
+    const string id = "001 - 2547";
 
-  private static readonly CondicionesInfo _condiciones = new()
-  {
-    TiempoFabricacion = "2 dias",
-    ValidezOferta = "7 dias",
-  };
+    ClienteInfo cliente = new()
+    {
+      Empresa = "Safresco Peru SAC",
+      NombreCliente = "Paul Sanchez",
+      CondicionPago = "Credito 15 dias",
+    };
 
-  private static readonly List<Producto> _products =
-  [
-    new()
+    CondicionesInfo condiciones = new()
     {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 22 cm",
-      Cantidad = 27,
-      Medida = "UN",
-      PrecioUnitario = 10,
-      Total = 270,
-    },
-    new()
+      TiempoFabricacion = "2 dias",
+      ValidezOferta = "7 dias",
+    };
+
+    List<Producto> products =
+    [
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 22 cm",
+        Cantidad = 27,
+        Medida = "UN",
+        PrecioUnitario = 10,
+        Total = 270,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 60 cm x 30 cm",
+        Cantidad = 20,
+        Medida = "UN",
+        PrecioUnitario = 24,
+        Total = 480,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 30 cm",
+        Cantidad = 8,
+        Medida = "UN",
+        PrecioUnitario = 12.5,
+        Total = 100,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 25 cm",
+        Cantidad = 2,
+        Medida = "UN",
+        PrecioUnitario = 10,
+        Total = 20,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 100 cm x 60 cm",
+        Cantidad = 6,
+        Medida = "UN",
+        PrecioUnitario = 65,
+        Total = 390,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 40 cm x 30 cm",
+        Cantidad = 8,
+        Medida = "UN",
+        PrecioUnitario = 15,
+        Total = 120,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil adhesivo 15 cm x 21 cm",
+        Cantidad = 20,
+        Medida = "UN",
+        PrecioUnitario = 2.5,
+        Total = 50,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil adhesivo 25 cm x 10 cm",
+        Cantidad = 22,
+        Medida = "UN",
+        PrecioUnitario = 3.5,
+        Total = 77,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil adhesivo 20 cm x 20 cm",
+        Cantidad = 20,
+        Medida = "UN",
+        PrecioUnitario = 4,
+        Total = 80,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil adhesivo A4",
+        Cantidad = 12,
+        Medida = "UN",
+        PrecioUnitario = 5,
+        Total = 60,
+      },
+      new()
+      {
+        Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 20 cm",
+        Cantidad = 20,
+        Medida = "UN",
+        PrecioUnitario = 9,
+        Total = 180,
+      },
+    ];
+
+    return new Proforma
     {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 60 cm x 30 cm",
-      Cantidad = 20,
-      Medida = "UN",
-      PrecioUnitario = 24,
-      Total = 480,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 30 cm",
-      Cantidad = 8,
-      Medida = "UN",
-      PrecioUnitario = 12.5,
-      Total = 100,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 25 cm",
-      Cantidad = 2,
-      Medida = "UN",
-      PrecioUnitario = 10,
-      Total = 20,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 100 cm x 60 cm",
-      Cantidad = 6,
-      Medida = "UN",
-      PrecioUnitario = 65,
-      Total = 390,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 40 cm x 30 cm",
-      Cantidad = 8,
-      Medida = "UN",
-      PrecioUnitario = 15,
-      Total = 120,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil adhesivo 15 cm x 21 cm",
-      Cantidad = 20,
-      Medida = "UN",
-      PrecioUnitario = 2.5,
-      Total = 50,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil adhesivo 25 cm x 10 cm",
-      Cantidad = 22,
-      Medida = "UN",
-      PrecioUnitario = 3.5,
-      Total = 77,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil adhesivo 20 cm x 20 cm",
-      Cantidad = 20,
-      Medida = "UN",
-      PrecioUnitario = 4,
-      Total = 80,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil adhesivo A4",
-      Cantidad = 12,
-      Medida = "UN",
-      PrecioUnitario = 5,
-      Total = 60,
-    },
-    new()
-    {
-      Descripcion = "Cartel vinil en base celtex 3 mm de 30 cm x 20 cm",
-      Cantidad = 20,
-      Medida = "UN",
-      PrecioUnitario = 9,
-      Total = 180,
-    },
-  ];
+      Id = id,
+      Cliente = cliente,
+      Productos = products,
+      Condiciones = condiciones,
+    };
+  }
 
   [HttpPost("excel")]
-  public IActionResult GenerarExcel([FromBody] ProformaRequest? request)
+  public IActionResult GenerarExcel([FromBody] Proforma? request)
   {
     if (request is null)
     {
@@ -143,22 +137,19 @@ public class ProformaController : ControllerBase
     }
 
     // NOTE: prueba
-    // request = new ProformaRequest()
-    // {
-    //   Id = _id,
-    //   Cliente = _cliente,
-    //   Productos = _products,
-    //   Condiciones = _condiciones,
-    // };
+    // request = GetDatosPrueba();
 
-    Console.WriteLine(request.ToString());
+    Console.WriteLine(request);
 
     var service = new ProformaService();
     var namefile = service.GenerateExcel(
-      request.Id,
-      request.Cliente,
-      request.Productos,
-      request.Condiciones
+      new Proforma()
+      {
+        Id = request.Id,
+        Cliente = request.Cliente,
+        Productos = request.Productos,
+        Condiciones = request.Condiciones,
+      }
     );
 
     if (namefile is null)
@@ -175,7 +166,6 @@ public class ProformaController : ControllerBase
     string extension = Path.GetExtension(filePath).ToLowerInvariant();
     string contentType = extension switch
     {
-      ".pdf" => "application/pdf",
       ".xlsx" =>
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       _ => "application/octet-stream",
@@ -184,6 +174,33 @@ public class ProformaController : ControllerBase
 
     return PhysicalFile(
       filePath,
+      contentType,
+      fileName,
+      enableRangeProcessing: true
+    );
+  }
+
+  [HttpPost("pdf/{id}")]
+  public IActionResult GenerarPDF([FromRoute] string id)
+  {
+    var service = new ProformaService();
+    // HACK: pasar solo el nombre?
+    var rutaSalidaPdf = service.GeneratePDF($"{id}.xlsx");
+    if (rutaSalidaPdf is null)
+    {
+      return BadRequest(new { mensaje = "Error al generar archivo" });
+    }
+
+    string extension = Path.GetExtension(rutaSalidaPdf).ToLowerInvariant();
+    string contentType = extension switch
+    {
+      ".pdf" => "application/pdf",
+      _ => "application/octet-stream",
+    };
+    string fileName = Path.GetFileName(rutaSalidaPdf);
+
+    return PhysicalFile(
+      rutaSalidaPdf,
       contentType,
       fileName,
       enableRangeProcessing: true
