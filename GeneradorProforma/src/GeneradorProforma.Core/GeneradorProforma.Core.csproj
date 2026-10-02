@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" />
+    <PackageReference Include="ErrorOr" />
     <PackageReference Include="FreeSpire.XLS" />
   </ItemGroup>
 

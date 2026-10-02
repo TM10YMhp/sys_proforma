@@ -1,3 +1,4 @@
+using ErrorOr;
 using GeneradorProforma.Core.Entity;
 using OfficeOpenXml;
 using Spire.Xls;
@@ -8,9 +9,9 @@ public interface IProformaService
 {
   string RutaPlantilla { get; }
   string RutaSalida { get; }
-  string? GenerateExcel(Proforma proforma);
+  ErrorOr<string> GenerateExcel(Proforma proforma);
 
-  string? GeneratePDF(Proforma proforma);
+  ErrorOr<string> GeneratePDF(Proforma proforma);
 }
 
 public class ProformaService : IProformaService
@@ -78,19 +79,33 @@ public class ProformaService : IProformaService
       $"VALIDEZ DE LA OFERTA: {condiciones.ValidezOferta}";
   }
 
-  public string? GenerateExcel(Proforma proforma)
+  public ErrorOr<string> GenerateExcel(Proforma proforma)
   {
-    var rutaArchivoPlantilla = Path.Combine(RutaPlantilla, "plantilla.xlsx");
-    if (!File.Exists(rutaArchivoPlantilla))
+    var nombrePlantilla = "plantilla.xlsx";
+
+    if (Path.GetExtension(nombrePlantilla).ToLowerInvariant() != ".xlsx")
     {
-      Console.WriteLine("Plantilla no encontrada");
-      return null;
+      return Error.Unexpected(
+        description: "Plantilla debe ser un archivo xlsx"
+      );
     }
 
-    // TODO: deberia evitar duplicados o ser unicos?
-    var extension = Path.GetExtension(rutaArchivoPlantilla).ToLowerInvariant();
-    var nombreUnico = $"{Guid.NewGuid()}{extension}";
-    var rutaArchivoSalida = Path.Combine(RutaSalida, nombreUnico);
+    var rutaArchivoPlantilla = Path.Combine(RutaPlantilla, nombrePlantilla);
+    if (!File.Exists(rutaArchivoPlantilla))
+    {
+      return Error.Unexpected(description: "Plantilla no encontrada");
+    }
+
+    var id = proforma.Id.Trim().Replace(" ", "_");
+    var nombreSalida = $"proforma-{id}.xlsx";
+    var rutaArchivoSalida = Path.Combine(RutaSalida, nombreSalida);
+
+    // if (File.Exists(rutaArchivoSalida))
+    // {
+    //   return Error.Unexpected(
+    //     description: "Ya existe un archivo con el mismo nombre"
+    //   );
+    // }
 
     using (var package = new ExcelPackage(rutaArchivoPlantilla))
     {
@@ -104,31 +119,29 @@ public class ProformaService : IProformaService
       package.SaveAs(rutaArchivoSalida);
     }
 
-    return nombreUnico;
+    return rutaArchivoSalida;
   }
 
-  public string? GeneratePDF(Proforma proforma)
+  public ErrorOr<string> GeneratePDF(Proforma proforma)
   {
-    var namefile = GenerateExcel(proforma);
-    if (namefile is null)
+    var result = GenerateExcel(proforma);
+    if (result.IsError)
     {
-      return null;
+      return Error.Unexpected(description: "Error al generar archivo");
     }
 
-    var rutaArchivoExcel = Path.Combine(RutaSalida, namefile);
-    if (!File.Exists(rutaArchivoExcel))
+    var rutaSalidaExcel = result.Value;
+    if (!File.Exists(rutaSalidaExcel))
     {
-      Console.WriteLine("Archivo no encontrado:");
-      Console.WriteLine(rutaArchivoExcel);
-      return null;
+      return Error.Unexpected(description: "Archivo no encontrado");
     }
 
-    var nombreArchivo = Path.GetFileNameWithoutExtension(namefile);
+    var nombreArchivo = Path.GetFileNameWithoutExtension(rutaSalidaExcel);
     var filename = $"{nombreArchivo}.pdf";
     var rutaArchivoSalida = Path.Combine(RutaSalida, filename);
 
     Workbook workbook = new();
-    workbook.LoadFromFile(rutaArchivoExcel);
+    workbook.LoadFromFile(rutaSalidaExcel);
     workbook.SaveToFile(rutaArchivoSalida, FileFormat.PDF);
 
     return rutaArchivoSalida;

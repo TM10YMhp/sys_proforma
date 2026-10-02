@@ -141,9 +141,7 @@ public class ProformaController(IProformaService service) : ControllerBase
       );
     }
 
-    Console.WriteLine(request);
-
-    var namefile = _service.GenerateExcel(
+    var result = _service.GenerateExcel(
       new Proforma()
       {
         Id = request.Id,
@@ -153,28 +151,28 @@ public class ProformaController(IProformaService service) : ControllerBase
       }
     );
 
-    if (namefile is null)
+    if (result.IsError)
     {
-      return BadRequest(new { mensaje = "Error al generar archivo" });
+      return BadRequest(result.Errors);
     }
 
-    string filePath = Path.Combine(_service.RutaSalida, namefile);
-    if (!System.IO.File.Exists(filePath))
+    var rutaSalidaExcel = result.Value;
+    if (!System.IO.File.Exists(rutaSalidaExcel))
     {
       return NotFound(new { mensaje = "Archivo no encontrado" });
     }
 
-    string extension = Path.GetExtension(filePath).ToLowerInvariant();
+    string extension = Path.GetExtension(rutaSalidaExcel).ToLowerInvariant();
     string contentType = extension switch
     {
       ".xlsx" =>
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       _ => "application/octet-stream",
     };
-    string fileName = Path.GetFileName(filePath);
+    string fileName = Path.GetFileName(rutaSalidaExcel);
 
     return PhysicalFile(
-      filePath,
+      rutaSalidaExcel,
       contentType,
       fileName,
       enableRangeProcessing: true
@@ -193,7 +191,7 @@ public class ProformaController(IProformaService service) : ControllerBase
       );
     }
 
-    var rutaSalidaPdf = _service.GeneratePDF(
+    var result = _service.GeneratePDF(
       new Proforma()
       {
         Id = request.Id,
@@ -202,11 +200,12 @@ public class ProformaController(IProformaService service) : ControllerBase
         Condiciones = request.Condiciones,
       }
     );
-    if (rutaSalidaPdf is null)
+    if (result.IsError)
     {
-      return BadRequest(new { mensaje = "Error al generar archivo" });
+      return BadRequest(result.Errors);
     }
 
+    var rutaSalidaPdf = result.Value;
     string extension = Path.GetExtension(rutaSalidaPdf).ToLowerInvariant();
     string contentType = extension switch
     {
