@@ -10,7 +10,7 @@ public interface IProformaService
   string RutaSalida { get; }
   string? GenerateExcel(Proforma proforma);
 
-  string? GeneratePDF(string namefile);
+  string? GeneratePDF(Proforma proforma);
 }
 
 public class ProformaService : IProformaService
@@ -107,8 +107,14 @@ public class ProformaService : IProformaService
     return nombreUnico;
   }
 
-  public string? GeneratePDF(string namefile)
+  public string? GeneratePDF(Proforma proforma)
   {
+    var namefile = GenerateExcel(proforma);
+    if (namefile is null)
+    {
+      return null;
+    }
+
     var rutaArchivoExcel = Path.Combine(RutaSalida, namefile);
     if (!File.Exists(rutaArchivoExcel))
     {

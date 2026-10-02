@@ -181,11 +181,27 @@ public class ProformaController(IProformaService service) : ControllerBase
     );
   }
 
-  [HttpPost("pdf/{id}")]
-  public IActionResult GenerarPDF([FromRoute] string id)
+  [HttpPost("pdf")]
+  public IActionResult GenerarPDF([FromBody] Proforma? request)
   {
-    // HACK: pasar solo el nombre?
-    var rutaSalidaPdf = _service.GeneratePDF($"{id}.xlsx");
+    // request = GetDatosPrueba();
+
+    if (request is null)
+    {
+      return BadRequest(
+        new { mensaje = "El cuerpo de la solicitud no puede estar vacio." }
+      );
+    }
+
+    var rutaSalidaPdf = _service.GeneratePDF(
+      new Proforma()
+      {
+        Id = request.Id,
+        Cliente = request.Cliente,
+        Productos = request.Productos,
+        Condiciones = request.Condiciones,
+      }
+    );
     if (rutaSalidaPdf is null)
     {
       return BadRequest(new { mensaje = "Error al generar archivo" });
