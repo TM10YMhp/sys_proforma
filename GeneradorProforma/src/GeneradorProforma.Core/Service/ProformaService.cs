@@ -12,6 +12,8 @@ public interface IProformaService
   ErrorOr<string> GenerateExcel(Proforma proforma);
 
   ErrorOr<string> GeneratePDF(Proforma proforma);
+
+  ErrorOr<string> GetExcelById(string id);
 }
 
 public class ProformaService : IProformaService
@@ -145,5 +147,16 @@ public class ProformaService : IProformaService
     workbook.SaveToFile(rutaArchivoSalida, FileFormat.PDF);
 
     return rutaArchivoSalida;
+  }
+
+  public ErrorOr<string> GetExcelById(string id)
+  {
+    var ruta = Path.Combine(RutaSalida, $"proforma-{id}.xlsx");
+    if (!File.Exists(ruta))
+    {
+      return Error.Unexpected(description: "Archivo no encontrado");
+    }
+
+    return ruta;
   }
 }

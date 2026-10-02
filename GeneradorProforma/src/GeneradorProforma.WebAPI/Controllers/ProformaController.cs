@@ -221,4 +221,31 @@ public class ProformaController(IProformaService service) : ControllerBase
       enableRangeProcessing: true
     );
   }
+
+  [HttpGet("excel/{id}")]
+  public IActionResult GenerarExcelPorId([FromRoute] string id)
+  {
+    var result = _service.GetExcelById(id);
+    if (result.IsError)
+    {
+      return NotFound(result.Errors);
+    }
+
+    var rutaArchivoExcel = result.Value;
+    string extension = Path.GetExtension(rutaArchivoExcel).ToLowerInvariant();
+    string contentType = extension switch
+    {
+      ".xlsx" =>
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      _ => "application/octet-stream",
+    };
+    string fileName = Path.GetFileName(rutaArchivoExcel);
+
+    return PhysicalFile(
+      rutaArchivoExcel,
+      contentType,
+      fileName,
+      enableRangeProcessing: true
+    );
+  }
 }
