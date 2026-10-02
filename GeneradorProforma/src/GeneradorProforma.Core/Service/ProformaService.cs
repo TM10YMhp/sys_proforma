@@ -6,6 +6,8 @@ namespace GeneradorProforma.Core.Service;
 
 public interface IProformaService
 {
+  string RutaPlantilla { get; }
+  string RutaSalida { get; }
   string? GenerateExcel(Proforma proforma);
 
   string? GeneratePDF(string namefile);
@@ -13,14 +15,10 @@ public interface IProformaService
 
 public class ProformaService : IProformaService
 {
-  public readonly string RutaPlantilla = Path.Combine(
-    AppContext.BaseDirectory,
-    "Plantillas"
-  );
-  public readonly string RutaSalida = Path.Combine(
-    AppContext.BaseDirectory,
-    "ArchivosProcesados"
-  );
+  public string RutaPlantilla { get; } =
+    Path.Combine(AppContext.BaseDirectory, "Plantillas");
+  public string RutaSalida { get; } =
+    Path.Combine(AppContext.BaseDirectory, "ArchivosProcesados");
 
   public ProformaService()
   {

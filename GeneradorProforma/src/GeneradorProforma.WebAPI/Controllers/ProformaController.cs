@@ -6,8 +6,10 @@ namespace GeneradorProforma.WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProformaController : ControllerBase
+public class ProformaController(IProformaService service) : ControllerBase
 {
+  private readonly IProformaService _service = service;
+
   private static Proforma GetDatosPrueba()
   {
     const string id = "001 - 2547";
@@ -129,6 +131,9 @@ public class ProformaController : ControllerBase
   [HttpPost("excel")]
   public IActionResult GenerarExcel([FromBody] Proforma? request)
   {
+    // NOTE: prueba
+    // request = GetDatosPrueba();
+
     if (request is null)
     {
       return BadRequest(
@@ -136,13 +141,9 @@ public class ProformaController : ControllerBase
       );
     }
 
-    // NOTE: prueba
-    // request = GetDatosPrueba();
-
     Console.WriteLine(request);
 
-    var service = new ProformaService();
-    var namefile = service.GenerateExcel(
+    var namefile = _service.GenerateExcel(
       new Proforma()
       {
         Id = request.Id,
@@ -157,7 +158,7 @@ public class ProformaController : ControllerBase
       return BadRequest(new { mensaje = "Error al generar archivo" });
     }
 
-    string filePath = Path.Combine(service.RutaSalida, namefile);
+    string filePath = Path.Combine(_service.RutaSalida, namefile);
     if (!System.IO.File.Exists(filePath))
     {
       return NotFound(new { mensaje = "Archivo no encontrado" });
@@ -183,9 +184,8 @@ public class ProformaController : ControllerBase
   [HttpPost("pdf/{id}")]
   public IActionResult GenerarPDF([FromRoute] string id)
   {
-    var service = new ProformaService();
     // HACK: pasar solo el nombre?
-    var rutaSalidaPdf = service.GeneratePDF($"{id}.xlsx");
+    var rutaSalidaPdf = _service.GeneratePDF($"{id}.xlsx");
     if (rutaSalidaPdf is null)
     {
       return BadRequest(new { mensaje = "Error al generar archivo" });
