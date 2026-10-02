@@ -11,6 +11,17 @@ builder.Services.AddSingleton<IProformaService, ProformaService>();
 
 builder.Services.AddControllers();
 
+builder.Services.AddHttpLogging(logging =>
+{
+  logging.LoggingFields =
+    Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestMethod
+    | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPath
+    // | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestQuery
+    // | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.Duration
+    | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponseStatusCode;
+  logging.CombineLogs = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,6 +65,8 @@ app.MapGet(
     }
   )
   .WithName("GetWeatherForecast");
+
+app.UseHttpLogging();
 
 app.MapControllers();
 
