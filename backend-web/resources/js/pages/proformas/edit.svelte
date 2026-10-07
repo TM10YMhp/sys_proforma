@@ -21,20 +21,13 @@
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from '@/components/_ui/table';
   import Textarea from '@/components/_ui/textarea.svelte';
   import AppHead from '@/components/AppHead.svelte';
   import InputError from '@/components/InputError.svelte';
   import Button from '@/components/ui/button/Button.svelte';
   import Input from '@/components/ui/input/Input.svelte';
   import { Label } from '@/components/ui/label';
+  import { table } from '@/lib/variants';
   import type { Product } from '@/types/product';
   import type { Proforma } from '@/types/proforma';
 
@@ -196,7 +189,9 @@
           </div>
         </div>
       </div>
-      <div class="bg-stone-900 p-2 rounded">
+
+      <fieldset class="rounded-box border border-base-content/25 px-2">
+        <legend class="px-2 leading-none">Producto</legend>
         <div>
           <Label for="codigo">Codigo</Label>
           <Autocomplete
@@ -239,42 +234,46 @@
             >Agregar Producto</Button
           >
         </div>
-      </div>
+      </fieldset>
     </div>
-    <Table>
-      <TableHeader class="sticky top-0 bg-background">
-        <TableRow>
-          <TableHead>#</TableHead>
-          <TableHead>Codigo</TableHead>
-          <TableHead>Descripcion</TableHead>
-          <TableHead>Precio</TableHead>
-          <TableHead>U. Medida</TableHead>
-          <TableHead>Stock</TableHead>
-          <TableHead class="text-center">Activo</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {#each productos as item, idx (idx)}
-          <TableRow>
-            <TableCell>{idx + 1}</TableCell>
-            <TableCell>{item.codigo}</TableCell>
-            <TableCell>{item.descripcion}</TableCell>
-            <TableCell>{item.precio}</TableCell>
-            <TableCell>{item.unidad_medida}</TableCell>
-            <TableCell>{item.stock}</TableCell>
-            <TableCell class="text-center">
-              {#if item.activo}
-                <span class="inline-block bg-green-500 size-3 rounded-full"
-                ></span>
-              {:else}
-                <span class="inline-block bg-red-500 size-3 rounded-full"
-                ></span>
-              {/if}
-            </TableCell>
-          </TableRow>
-        {/each}
-      </TableBody>
-    </Table>
+
+    <div class="overflow-x-auto">
+      <table class={table()}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th class="text-right">Precio</th>
+            <th class="text-center">U. Medida</th>
+            <th class="text-center">Stock</th>
+            <th class="text-center">Activo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each productos as item, idx (idx)}
+            <tr>
+              <th>{idx + 1}</th>
+              <td class="font-mono">{item.codigo}</td>
+              <td class="truncate max-w-50">{item.descripcion}</td>
+              <td class="font-mono text-right">{item.precio}</td>
+              <td class="text-center">{item.unidad_medida}</td>
+              <td class="text-center">{item.stock}</td>
+              <td class="text-center">
+                {#if item.activo}
+                  <span class="inline-block bg-green-500 size-3 rounded-full"
+                  ></span>
+                {:else}
+                  <span class="inline-block bg-red-500 size-3 rounded-full"
+                  ></span>
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+
     <Button disabled={form.processing} type="submit">Actualizar Proforma</Button
     >
   </form>
