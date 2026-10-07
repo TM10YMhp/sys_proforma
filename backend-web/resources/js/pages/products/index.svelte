@@ -76,8 +76,8 @@
               {/if}
             </td>
             <td class="flex flex-row gap-1">
-              <Link href={ProductController.edit(item.id)}>
-                <button class="btn btn-info">Editar</button>
+              <Link href={ProductController.edit(item.id)} class="btn btn-info">
+                Editar
               </Link>
               <button
                 disabled={form.processing}

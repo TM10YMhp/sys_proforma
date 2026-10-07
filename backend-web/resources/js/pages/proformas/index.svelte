@@ -14,24 +14,9 @@
 <script lang="ts">
   import { Link, useForm } from '@inertiajs/svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
-  import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from '@/components/_ui/pagination';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from '@/components/_ui/table';
   import AppHead from '@/components/AppHead.svelte';
-  import Button from '@/components/ui/button/Button.svelte';
+  import { cn } from '@/lib/utils';
+  import { table } from '@/lib/variants';
   import type { LaravelPaginator } from '@/types/paginate';
   import type { Proforma } from '@/types/proforma';
 
@@ -81,74 +66,80 @@
 <AppHead title="Proforma" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <!-- TODO: el cursor no se establece -->
-  <Link href={ProformaController.create.url()} class="w-fit">
-    <Button>Nueva Proforma</Button>
+  <Link href={ProformaController.create.url()} class="btn btn-primary w-fit">
+    Nuevo Proforma
   </Link>
 
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>#</TableHead>
-        <TableHead>Codigo</TableHead>
-        <TableHead>Productos</TableHead>
-        <TableHead>Fecha Emision</TableHead>
-        <TableHead>Fecha Vencimiento</TableHead>
-        <TableHead>Subtotal</TableHead>
-        <TableHead>Tasa IGV</TableHead>
-        <TableHead>Monto IGV</TableHead>
-        <TableHead>Total</TableHead>
-        <TableHead>Acciones</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {#each proformas.data as item, index (item.id)}
-        <TableRow
-          class={[index == selectedIndex && 'bg-muted']}
-          onclick={() => {
-            // showProducts = !showProducts;
-            selectedIndex = index;
-          }}
-        >
-          <TableCell>{index + Number(proformas.from)}</TableCell>
-          <TableCell>{item.codigo}</TableCell>
-          <TableCell>{item.products.length}</TableCell>
-          <TableCell class="font-mono"
-            >{formatDate(item.fecha_emision)}</TableCell
+  <div class="overflow-x-auto">
+    <table class={table()}>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Codigo</th>
+          <th class="text-center">Productos</th>
+          <th>Fecha Emision</th>
+          <th>Fecha Vencimiento</th>
+          <th>Subtotal</th>
+          <th>Tasa IGV</th>
+          <th>Monto IGV</th>
+          <th>Total</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each proformas.data as item, index (item.id)}
+          <tr
+            class={[index == selectedIndex && 'bg-muted']}
+            onclick={() => {
+              // showProducts = !showProducts;
+              selectedIndex = index;
+            }}
           >
-          <TableCell class="font-mono"
-            >{formatDate(item.fecha_vencimiento)}</TableCell
-          >
-          <TableCell>{item.subtotal}</TableCell>
-          <TableCell>{formatPercent(item.igv_tasa)}</TableCell>
-          <TableCell>{formatFixed(item.igv_monto)}</TableCell>
-          <TableCell>{item.total}</TableCell>
-          <TableCell>
-            <Link href={ProformaController.edit(item.id)}>
-              <Button class="bg-slate-500 hover:bg-slate-700">Editar</Button>
-            </Link>
-            <Button
-              disabled={form.processing}
-              class="bg-red-500 hover:bg-red-700"
-              onclick={() => handleDelete(item.id)}
+            <th>{index + Number(proformas.from)}</th>
+            <td class="font-mono text-nowrap">{item.codigo}</td>
+            <td class="text-center">{item.products.length}</td>
+            <td class="font-mono text-nowrap"
+              >{formatDate(item.fecha_emision)}</td
             >
-              Borrar
-            </Button>
-            <a
-              href={ProformaController.exportExcel.url(item.id)}
-              class="bg-green-900 py-2 px-4 rounded">Excel</a
+            <td class="font-mono text-nowrap"
+              >{formatDate(item.fecha_vencimiento)}</td
             >
-            <!-- HACK: decidir como gestionar la generacion de pdf -->
-            <a
-              href={ProformaController.exportPDF.url("bd8a4dfe-ff6f-4f54-9412-b522e4b3a235")}
-              target="_blank"
-              class="bg-red-900 py-2 px-4 rounded">PDF</a
-            >
-          </TableCell>
-        </TableRow>
-      {/each}
-    </TableBody>
-  </Table>
+            <td class="text-right font-mono">{item.subtotal}</td>
+            <td class="text-right font-mono">{formatPercent(item.igv_tasa)}</td>
+            <td class="text-right font-mono">{formatFixed(item.igv_monto)}</td>
+            <td class="text-right font-mono">{item.total}</td>
+            <td class="flex flex-row gap-1">
+              <Link
+                href={ProformaController.edit(item.id)}
+                class="btn btn-info"
+              >
+                Editar
+              </Link>
+              <button
+                disabled={form.processing}
+                class="btn btn-error"
+                onclick={() => handleDelete(item.id)}
+              >
+                Borrar
+              </button>
+              <a
+                href={ProformaController.exportExcel.url(item.id)}
+                class="btn [--btn-color:var(--color-green-900)]">Excel</a
+              >
+              <!-- HACK: decidir como gestionar la generacion de pdf -->
+              <a
+                href={ProformaController.exportPDF.url(
+                  'bd8a4dfe-ff6f-4f54-9412-b522e4b3a235',
+                )}
+                target="_blank"
+                class="btn [--btn-color:var(--color-red-900)]">PDF</a
+              >
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 
   <div class="flex flex-row justify-between p-4">
     <span class="text-gray-400"
@@ -158,64 +149,65 @@
       de
       <span class="text-white">{proformas.total}</span></span
     >
-    <Pagination class="mx-0 w-auto">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            href={proformas.prev_page_url}
-          />
-        </PaginationItem>
-        {#each proformas.links as item (item.label)}
-          {#if !item.label.includes('Previous') && !item.label.includes('Next')}
-            <PaginationItem>
-              <PaginationLink
-                href={item.url}
-                class={`flex items-center justify-center px-3 py-2 text-sm leading-tight border ${item.active ? 'hover:bg-primary-100 hover:text-primary-700 border-gray-700 bg-gray-700 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
-                >{item.label}</PaginationLink
-              >
-            </PaginationItem>
-          {/if}
-        {/each}
-        <PaginationItem>
-          <PaginationNext
-            class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            href={proformas.next_page_url}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+
+    <div class="join">
+      <Link
+        prefetch="click"
+        cacheFor="3m"
+        href={proformas.prev_page_url!}
+        class="join-item btn btn-soft">«</Link
+      >
+      {#each proformas.links as item (item.label)}
+        {#if !item.label.includes('Previous') && !item.label.includes('Next')}
+          <Link
+            prefetch="click"
+            cacheFor="3m"
+            href={item.url!}
+            class={cn('join-item btn btn-soft', item.active && 'btn-active')}
+            >{item.label}</Link
+          >
+        {/if}
+      {/each}
+      <Link
+        prefetch="click"
+        cacheFor="3m"
+        href={proformas.next_page_url!}
+        class="join-item btn btn-soft">»</Link
+      >
+    </div>
   </div>
 
   {#if showProducts}
     <p>
-      Productos de la Proforma <span class="font-bold">{proformas.data[selectedIndex].codigo}</span>
+      Productos de la Proforma <span class="font-bold"
+        >{proformas.data[selectedIndex].codigo}</span
+      >
     </p>
-    <div class="relative w-full overflow-x-auto max-h-56 border">
-      <table class="w-full caption-bottom text-sm">
-        <TableHeader class="sticky top-0 bg-background">
-          <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Codigo</TableHead>
-            <TableHead>Descripcion</TableHead>
-            <TableHead>Precio</TableHead>
-            <TableHead>U. Medida</TableHead>
-            <TableHead>Stock</TableHead>
-            <TableHead class="text-center">Activo</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <!-- TODO: esta sintaxis ya no se usa pero prettier aun no lo reconoce -->
-          {@const productos = proformas.data[selectedIndex].products}
+
+    <div class="overflow-x-auto max-h-56">
+      <table class={table() + ' table-pin-rows'}>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th class="text-right">Precio</th>
+            <th class="text-center">U. Medida</th>
+            <th class="text-center">Stock</th>
+            <th class="text-center">Activo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {const productos = $derived(proformas.data[selectedIndex].products)}
           {#each productos as item, idx (item.id)}
-            <TableRow>
-              <TableCell>{idx + 1}</TableCell>
-              <TableCell>{item.codigo}</TableCell>
-              <TableCell>{item.descripcion}</TableCell>
-              <TableCell>{item.precio}</TableCell>
-              <TableCell>{item.unidad_medida}</TableCell>
-              <TableCell>{item.stock}</TableCell>
-              <TableCell class="text-center">
+            <tr>
+              <th>{idx + 1}</th>
+              <td class="font-mono">{item.codigo}</td>
+              <td class="truncate max-w-50">{item.descripcion}</td>
+              <td class="font-mono text-right">{item.precio}</td>
+              <td class="text-center">{item.unidad_medida}</td>
+              <td class="text-center">{item.stock}</td>
+              <td class="text-center">
                 {#if item.activo}
                   <span class="inline-block bg-green-500 size-3 rounded-full"
                   ></span>
@@ -223,10 +215,10 @@
                   <span class="inline-block bg-red-500 size-3 rounded-full"
                   ></span>
                 {/if}
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           {/each}
-        </TableBody>
+        </tbody>
       </table>
     </div>
   {/if}
