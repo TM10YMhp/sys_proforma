@@ -32,6 +32,7 @@
   } from '@/components/_ui/table';
   import AppHead from '@/components/AppHead.svelte';
   import Button from '@/components/ui/button/Button.svelte';
+  import { cn } from '@/lib/utils';
   import type { LaravelPaginator } from '@/types/paginate';
   import type { Product } from '@/types/product';
 
@@ -114,32 +115,32 @@
       de
       <span class="text-white">{products.total}</span></span
     >
-    <Pagination class="mx-0 w-auto">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            href={products.prev_page_url}
-          />
-        </PaginationItem>
+
+    <!-- NOTE: prefetch click necesita el cacheFor sino no funciona -->
+    <div class="join">
+      <Link
+        prefetch="click"
+        cacheFor="3m"
+        href={products.prev_page_url!}
+        class="join-item btn btn-soft">«</Link
+      >
         {#each products.links as item (item.label)}
           {#if !item.label.includes('Previous') && !item.label.includes('Next')}
-            <PaginationItem>
-              <PaginationLink
-                href={item.url}
-                class={`flex items-center justify-center px-3 py-2 text-sm leading-tight border ${item.active ? 'hover:bg-primary-100 hover:text-primary-700 border-gray-700 bg-gray-700 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white'}`}
-                >{item.label}</PaginationLink
+          <Link
+            prefetch="click"
+            cacheFor="3m"
+            href={item.url!}
+            class={cn('join-item btn btn-soft', item.active && 'btn-active')}
+            >{item.label}</Link
               >
-            </PaginationItem>
           {/if}
         {/each}
-        <PaginationItem>
-          <PaginationNext
-            class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-            href={products.next_page_url}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+      <Link
+        prefetch="click"
+        cacheFor="3m"
+        href={products.next_page_url!}
+        class="join-item btn btn-soft">»</Link
+      >
+    </div>
   </div>
 </div>
