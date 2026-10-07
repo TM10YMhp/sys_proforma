@@ -14,22 +14,6 @@
 <script lang="ts">
   import { Link, useForm } from '@inertiajs/svelte';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
-  import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from '@/components/_ui/pagination';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from '@/components/_ui/table';
   import AppHead from '@/components/AppHead.svelte';
   import Button from '@/components/ui/button/Button.svelte';
   import { cn } from '@/lib/utils';
@@ -60,52 +44,57 @@
     <Button>Nuevo Producto</Button>
   </Link>
 
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>#</TableHead>
-        <TableHead>Codigo</TableHead>
-        <TableHead>Descripcion</TableHead>
-        <TableHead>Precio</TableHead>
-        <TableHead>Unidad de Medida</TableHead>
-        <TableHead>Stock</TableHead>
-        <TableHead class="text-center">Activo</TableHead>
-        <TableHead>Acciones</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {#each products.data as item, idx (item.id)}
-        <TableRow>
-          <TableCell>{idx + Number(products.from)}</TableCell>
-          <TableCell>{item.codigo}</TableCell>
-          <TableCell>{item.descripcion}</TableCell>
-          <TableCell>{item.precio}</TableCell>
-          <TableCell>{item.unidad_medida}</TableCell>
-          <TableCell>{item.stock}</TableCell>
-          <TableCell class="text-center">
-            {#if item.activo}
-              <span class="inline-block bg-green-500 size-3 rounded-full"
-              ></span>
-            {:else}
-              <span class="inline-block bg-red-500 size-3 rounded-full"></span>
-            {/if}
-          </TableCell>
-          <TableCell>
-            <Link href={ProductController.edit(item.id)}>
-              <Button class="bg-slate-500 hover:bg-slate-700">Editar</Button>
-            </Link>
-            <Button
-              disabled={form.processing}
-              class="bg-red-500 hover:bg-red-700"
-              onclick={() => handleDelete(item)}
-            >
-              Borrar
-            </Button>
-          </TableCell>
-        </TableRow>
-      {/each}
-    </TableBody>
-  </Table>
+  <div class="overflow-x-auto">
+    <table
+      class="table [&_tr]:hover:bg-base-300 rounded-box border border-base-content/5"
+    >
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Codigo</th>
+          <th>Descripcion</th>
+          <th>Precio</th>
+          <th>Unidad de Medida</th>
+          <th>Stock</th>
+          <th class="text-center">Activo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each products.data as item, idx (item.id)}
+          <tr>
+            <th>{idx + Number(products.from)}</th>
+            <td>{item.codigo}</td>
+            <td class="truncate max-w-50">{item.descripcion}</td>
+            <td>{item.precio}</td>
+            <td>{item.unidad_medida}</td>
+            <td>{item.stock}</td>
+            <td class="text-center">
+              {#if item.activo}
+                <span class="inline-block bg-green-500 size-3 rounded-full"
+                ></span>
+              {:else}
+                <span class="inline-block bg-red-500 size-3 rounded-full"
+                ></span>
+              {/if}
+            </td>
+            <td class="flex flex-row gap-1">
+              <Link href={ProductController.edit(item.id)}>
+                <Button class="bg-slate-500 hover:bg-slate-700">Editar</Button>
+              </Link>
+              <Button
+                disabled={form.processing}
+                class="bg-red-500 hover:bg-red-700"
+                onclick={() => handleDelete(item)}
+              >
+                Borrar
+              </Button>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 
   <div class="flex flex-row justify-between p-4">
     <span class="text-gray-400"
@@ -124,17 +113,17 @@
         href={products.prev_page_url!}
         class="join-item btn btn-soft">«</Link
       >
-        {#each products.links as item (item.label)}
-          {#if !item.label.includes('Previous') && !item.label.includes('Next')}
+      {#each products.links as item (item.label)}
+        {#if !item.label.includes('Previous') && !item.label.includes('Next')}
           <Link
             prefetch="click"
             cacheFor="3m"
             href={item.url!}
             class={cn('join-item btn btn-soft', item.active && 'btn-active')}
             >{item.label}</Link
-              >
-          {/if}
-        {/each}
+          >
+        {/if}
+      {/each}
       <Link
         prefetch="click"
         cacheFor="3m"
