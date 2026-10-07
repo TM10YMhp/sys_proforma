@@ -15,8 +15,8 @@
   import { Link, useForm } from '@inertiajs/svelte';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import AppHead from '@/components/AppHead.svelte';
-  import Button from '@/components/ui/button/Button.svelte';
   import { cn } from '@/lib/utils';
+  import { table } from '@/lib/variants';
   import type { LaravelPaginator } from '@/types/paginate';
   import type { Product } from '@/types/product';
 
@@ -39,23 +39,20 @@
 <AppHead title="Productos" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <!-- TODO: el cursor no se establece -->
-  <Link href={ProductController.create.url()} class="w-fit">
-    <Button>Nuevo Producto</Button>
+  <Link href={ProductController.create.url()} class="btn btn-primary w-fit">
+    Nuevo Producto
   </Link>
 
   <div class="overflow-x-auto">
-    <table
-      class="table [&_tr]:hover:bg-base-300 rounded-box border border-base-content/5"
-    >
+    <table class={table()}>
       <thead>
         <tr>
           <th>#</th>
           <th>Codigo</th>
           <th>Descripcion</th>
-          <th>Precio</th>
-          <th>Unidad de Medida</th>
-          <th>Stock</th>
+          <th class="text-right">Precio</th>
+          <th class="text-center">U. Medida</th>
+          <th class="text-center">Stock</th>
           <th class="text-center">Activo</th>
           <th>Acciones</th>
         </tr>
@@ -64,11 +61,11 @@
         {#each products.data as item, idx (item.id)}
           <tr>
             <th>{idx + Number(products.from)}</th>
-            <td>{item.codigo}</td>
+            <td class="font-mono">{item.codigo}</td>
             <td class="truncate max-w-50">{item.descripcion}</td>
-            <td>{item.precio}</td>
-            <td>{item.unidad_medida}</td>
-            <td>{item.stock}</td>
+            <td class="font-mono text-right">{item.precio}</td>
+            <td class="text-center">{item.unidad_medida}</td>
+            <td class="text-center">{item.stock}</td>
             <td class="text-center">
               {#if item.activo}
                 <span class="inline-block bg-green-500 size-3 rounded-full"
@@ -80,15 +77,15 @@
             </td>
             <td class="flex flex-row gap-1">
               <Link href={ProductController.edit(item.id)}>
-                <Button class="bg-slate-500 hover:bg-slate-700">Editar</Button>
+                <button class="btn btn-info">Editar</button>
               </Link>
-              <Button
+              <button
                 disabled={form.processing}
-                class="bg-red-500 hover:bg-red-700"
+                class="btn btn-error"
                 onclick={() => handleDelete(item)}
               >
                 Borrar
-              </Button>
+              </button>
             </td>
           </tr>
         {/each}
