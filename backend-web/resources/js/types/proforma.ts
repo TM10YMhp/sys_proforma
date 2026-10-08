@@ -20,8 +20,8 @@ export interface Proforma {
 interface ProformaItem {
   id: number;
 
-  proforma_id: string;
-  product_id: string;
+  proforma_id: number;
+  product_id: number;
   cantidad: number;
   precio_unitario: number;
   subtotal: number;

@@ -17,7 +17,7 @@
 
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
-  import { MinusIcon, PlusIcon } from 'lucide-svelte';
+  import { MinusIcon, PlusIcon, XIcon } from 'lucide-svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import AppHead from '@/components/AppHead.svelte';
@@ -39,11 +39,12 @@
   let porcentaje = $state(proforma.igv_tasa * 100);
   // svelte-ignore state_referenced_locally
   let productos = $state<
-    (Omit<Product, 'stock' | 'id' | 'created_at' | 'updated_at'> & {
+    (Omit<Product, 'stock' | 'created_at' | 'updated_at'> & {
       cantidad: number;
     })[]
   >(
     proforma.products.map((x) => ({
+      id: x.id,
       codigo: x.codigo,
       descripcion: x.descripcion,
       precio: x.pivot.precio_unitario,
@@ -69,7 +70,7 @@
     'igv_monto' | 'total' | 'codigo' | 'created_at' | 'updated_at' | 'products'
   > & {
     products: {
-      id: string;
+      id: number;
       cantidad: number;
     }[];
   };
@@ -152,6 +153,32 @@
   const obtenerTotal = () => {
     return obtenerMontoIgv() + obtenerSubtotal();
   };
+
+  const incrementarCantidad = (id: number) => {
+    const producto = productos.find((p) => p.id === id);
+
+    if (producto) {
+      producto.cantidad++;
+    }
+  };
+
+  const decrementarCantidad = (id: number) => {
+    const producto = productos.find((p) => p.id === id);
+
+    if (!producto) {
+      return;
+    }
+
+    if (producto.cantidad > 1) {
+      producto.cantidad--;
+    } else {
+      productos = productos.filter((p) => p.id !== id);
+    }
+  };
+
+  const eliminarProducto = (id: number) => {
+    productos = productos.filter((p) => p.id !== id);
+  };
 </script>
 
 <AppHead title="Proformas | Editar" />
@@ -216,6 +243,13 @@
       <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
         <legend class="fieldset-legend px-2 leading-none">Producto</legend>
 
+        <div
+          class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
+        >
+          <span>Stock:</span>
+          <span>{productoNuevo.stock}</span>
+        </div>
+
         <div>
           <label for="codigo" class="label">Codigo</label>
           <Autocomplete
@@ -227,43 +261,36 @@
           />
           <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
         </div>
-        <div>
-          <label for="descripcion" class="label">Descripcion</label>
+        <label>
+          <span class="label">Descripcion</span>
           <textarea
-            id="descripcion"
-            class="textarea"
+            class="textarea min-h-0 h-14"
             bind:value={productoNuevo.descripcion}></textarea>
-        </div>
+        </label>
         <div class="flex flex-row gap-4">
-          <div>
-            <label for="stock" class="label">Stock</label>
+          <label>
+            <span class="label">Cantidad</span>
             <input
-              id="stock"
               type="number"
               class="input"
               bind:value={productoNuevo.stock}
               min="0"
             />
-          </div>
-          <div>
-            <label for="precio" class="label">Precio</label>
+          </label>
+          <label>
+            <span class="label">Precio</span>
             <input
-              id="precio"
               type="number"
               class="input"
               step="0.01"
               bind:value={productoNuevo.precio}
               min="0"
             />
-          </div>
-          <div>
-            <label for="unidad_medida" class="label">Unidad de Medida</label>
-            <input
-              id="unidad_medida"
-              class="input"
-              bind:value={productoNuevo.unidad_medida}
-            />
-          </div>
+          </label>
+          <label>
+            <span class="label">U. Medida</span>
+            <input class="input" bind:value={productoNuevo.unidad_medida} />
+          </label>
         </div>
         <button
           class="btn btn-secondary mt-2"
@@ -338,7 +365,8 @@
               <td class="font-mono text-right">{item.precio}</td>
               <td class="text-center">{item.unidad_medida}</td>
               <td class="text-center">{item.cantidad}</td>
-              <td class="font-mono text-right">{item.precio * item.cantidad}</td
+              <td class="font-mono text-right"
+                >{(item.precio * item.cantidad).toFixed(2)}</td
               >
               <td class="text-center">
                 {#if item.activo}
@@ -353,16 +381,24 @@
                 <button
                   disabled={form.processing}
                   class="btn btn-square btn-info"
-                  onclick={() => {}}
+                  onclick={() => incrementarCantidad(item.id)}
                 >
                   <PlusIcon />
                 </button>
                 <button
                   disabled={form.processing}
                   class="btn btn-square btn-error"
-                  onclick={() => {}}
+                  onclick={() => decrementarCantidad(item.id)}
                 >
                   <MinusIcon />
+                </button>
+                <div class="divider divider-horizontal mx-1"></div>
+                <button
+                  disabled={form.processing}
+                  class="btn btn-square btn-error btn-soft"
+                  onclick={() => eliminarProducto(item.id)}
+                >
+                  <XIcon />
                 </button>
               </td>
             </tr>
