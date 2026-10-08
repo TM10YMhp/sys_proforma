@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Schema;
 
 #[Fillable(
   'codigo',
@@ -35,6 +36,8 @@ class Proforma extends Model
    */
   public function products()
   {
-    return $this->belongsToMany(Product::class, "proforma_items");
+    $pivotColumns = Schema::getColumnListing('proforma_items');
+    return $this->belongsToMany(Product::class, "proforma_items")
+      ->withPivot($pivotColumns);
   }
 }

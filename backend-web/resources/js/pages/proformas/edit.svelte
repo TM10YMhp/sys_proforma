@@ -34,10 +34,24 @@
   let { proforma }: Props = $props();
 
   // svelte-ignore state_referenced_locally
+  let info = $state(proforma);
+
+  // svelte-ignore state_referenced_locally
   let porcentaje = $state(proforma.igv_tasa * 100);
   // svelte-ignore state_referenced_locally
-  let productos = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>[]>(
-    proforma.products,
+  let productos = $state<
+    (Omit<Product, 'stock' | 'id' | 'created_at' | 'updated_at'> & {
+      cantidad: number;
+    })[]
+  >(
+    proforma.products.map((x) => ({
+      codigo: x.codigo,
+      descripcion: x.descripcion,
+      precio: x.pivot.precio_unitario,
+      unidad_medida: x.unidad_medida,
+      cantidad: x.pivot.cantidad,
+      activo: x.activo,
+    })),
   );
 
   let productoNuevo = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>>(
@@ -51,24 +65,34 @@
     },
   );
 
+  type Form = Omit<
+    Proforma,
+    'igv_monto' | 'total' | 'codigo' | 'created_at' | 'updated_at' | 'products'
+  > & {
+    products: {
+      id: string;
+      cantidad: number;
+    }[];
+  };
   // svelte-ignore state_referenced_locally
-  const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
-    codigo: proforma.codigo,
+  const form = useForm<Form>({
+    id: proforma.id,
     fecha_emision: proforma.fecha_emision,
     fecha_vencimiento: proforma.fecha_vencimiento,
     subtotal: proforma.subtotal,
     igv_tasa: proforma.igv_tasa,
-    igv_monto: proforma.igv_monto,
-    total: proforma.total,
-    products: proforma.products,
+    products: proforma.products.map((x) => ({
+      id: x.pivot.product_id,
+      cantidad: x.pivot.cantidad,
+    })),
   });
 
   const onChangeSubtotal = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.valueAsNumber;
     // form.subtotal = value;
-    form.igv_monto = value * form.igv_tasa;
-    form.total = value + form.igv_monto;
+    info.igv_monto = value * info.igv_tasa;
+    info.total = value + info.igv_monto;
   };
 
   const stringToDatetime = (fecha_utc: string) => {
@@ -90,9 +114,9 @@
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    console.log(form);
+    console.log(form.data());
 
-    return
+    return;
 
     // eslint-disable-next-line no-unreachable
     form.igv_tasa = porcentaje / 100;
@@ -136,12 +160,15 @@
         <legend class="fieldset-legend px-2 leading-none mb-0">Proforma</legend>
 
         <div>
-          <p>Codigo: <span class="font-bold">{form.codigo}</span></p>
-          <InputError message={form.errors.codigo} />
-          <p>IGV Monto: <span class="font-bold">{form.igv_monto}</span></p>
-          <InputError message={form.errors.igv_monto} />
-          <p>Total: <span class="font-bold">{form.total}</span></p>
-          <InputError message={form.errors.total} />
+          <p>Codigo: <span class="font-bold">{info.codigo}</span></p>
+          <p>
+            Subtotal: <span class="font-bold">{info.subtotal.toFixed(2)}</span>
+          </p>
+          <p>
+            IGV Monto: <span class="font-bold">{info.igv_monto.toFixed(2)}</span
+            >
+          </p>
+          <p>Total: <span class="font-bold">{info.total.toFixed(2)}</span></p>
         </div>
 
         <div class="flex flex-row gap-2">
@@ -167,24 +194,9 @@
           </div>
         </div>
 
-        <div class="flex flex-row gap-2">
-          <div>
-            <label for="subtotal" class="label">Subtotal</label>
-            <input
-              id="subtotal"
-              class="input"
-              bind:value={form.subtotal}
-              type="number"
-              min="0"
-              step="0.1"
-              oninput={onChangeSubtotal}
-            />
-            <InputError message={form.errors.subtotal} />
-          </div>
-          <div>
             <label for="igv_tasa" class="label">IGV Tasa (%)</label>
             <input
-              class="input"
+          class="input w-fit"
               id="igv_tasa"
               bind:value={porcentaje}
               type="number"
@@ -193,8 +205,6 @@
               step="0.1"
             />
             <InputError message={form.errors.igv_tasa} />
-          </div>
-        </div>
       </fieldset>
 
       <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
@@ -307,7 +317,8 @@
             <th>Descripcion</th>
             <th class="text-right">Precio</th>
             <th class="text-center">U. Medida</th>
-            <th class="text-center">Stock</th>
+            <th class="text-center">Cantidad</th>
+            <th class="text-center">Total</th>
             <th class="text-center">Activo</th>
             <th>Acciones</th>
           </tr>
@@ -320,7 +331,8 @@
               <td class="truncate max-w-50">{item.descripcion}</td>
               <td class="font-mono text-right">{item.precio}</td>
               <td class="text-center">{item.unidad_medida}</td>
-              <td class="text-center">{item.stock}</td>
+              <td class="text-center">{item.cantidad}</td>
+              <td class="font-mono text-right">{item.precio * item.cantidad}</td>
               <td class="text-center">
                 {#if item.activo}
                   <span class="inline-block bg-green-500 size-3 rounded-full"
