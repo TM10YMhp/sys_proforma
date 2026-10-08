@@ -175,3 +175,11 @@
 @utility btn {
     @apply btn-sm text-sm
 }
+
+@utility input {
+    @apply input-sm text-sm
+}
+
+@utility fieldset {
+    @apply text-sm
+}

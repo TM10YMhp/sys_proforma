@@ -17,16 +17,13 @@
 
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
-  import type { MouseEventHandler } from 'svelte/elements';
+  import { MinusIcon, PlusIcon } from 'lucide-svelte';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
-  import Textarea from '@/components/_ui/textarea.svelte';
   import AppHead from '@/components/AppHead.svelte';
   import InputError from '@/components/InputError.svelte';
   import Button from '@/components/ui/button/Button.svelte';
-  import Input from '@/components/ui/input/Input.svelte';
-  import { Label } from '@/components/ui/label';
   import { table } from '@/lib/variants';
   import type { Product } from '@/types/product';
   import type { Proforma } from '@/types/proforma';
@@ -92,13 +89,23 @@
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
+
+    console.log(form);
+
+    return
+
+    // eslint-disable-next-line no-unreachable
     form.igv_tasa = porcentaje / 100;
     form.fecha_emision = datetimeToUTC(fecha_emision);
     form.fecha_vencimiento = datetimeToUTC(fecha_vencimiento);
     form.put(ProformaController.update.url(proforma.id));
   };
 
-  const addProduct = (_: MouseEventHandler<HTMLButtonElement>) => {
+  const addProduct = (
+    _: MouseEvent & {
+      currentTarget: EventTarget & HTMLButtonElement;
+    },
+  ) => {
     const draft = { ...productoNuevo };
     productos.unshift(draft);
   };
@@ -123,36 +130,49 @@
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="space-y-4">
     <div class="flex flex-row gap-6">
-      <div class="space-y-4">
+      <fieldset
+        class="fieldset rounded-box border border-base-100 px-2 w-xs space-y-2"
+      >
+        <legend class="fieldset-legend px-2 leading-none mb-0">Proforma</legend>
+
         <div>
           <p>Codigo: <span class="font-bold">{form.codigo}</span></p>
           <InputError message={form.errors.codigo} />
+          <p>IGV Monto: <span class="font-bold">{form.igv_monto}</span></p>
+          <InputError message={form.errors.igv_monto} />
+          <p>Total: <span class="font-bold">{form.total}</span></p>
+          <InputError message={form.errors.total} />
         </div>
+
         <div class="flex flex-row gap-2">
           <div>
-            <Label for="emision">Fecha de Emision</Label>
-            <Input
+            <label for="emision" class="label">Fecha de Emision</label>
+            <input
               id="emision"
+              class="input"
               type="datetime-local"
               bind:value={fecha_emision}
             />
             <InputError message={form.errors.fecha_emision} />
           </div>
           <div>
-            <Label for="vencimiento">Fecha de Vencimiento</Label>
-            <Input
+            <label for="vencimiento" class="label">Fecha de Vencimiento</label>
+            <input
               id="vencimiento"
+              class="input"
               type="datetime-local"
               bind:value={fecha_vencimiento}
             />
             <InputError message={form.errors.fecha_vencimiento} />
           </div>
         </div>
+
         <div class="flex flex-row gap-2">
           <div>
-            <Label for="subtotal">Subtotal</Label>
-            <Input
+            <label for="subtotal" class="label">Subtotal</label>
+            <input
               id="subtotal"
+              class="input"
               bind:value={form.subtotal}
               type="number"
               min="0"
@@ -162,10 +182,9 @@
             <InputError message={form.errors.subtotal} />
           </div>
           <div>
-            <Label for="igv_tasa">IGV Tasa (%)</Label>
-            <!-- TODO: el ancho debe establecerse -->
-            <Input
-              class="w-fit"
+            <label for="igv_tasa" class="label">IGV Tasa (%)</label>
+            <input
+              class="input"
               id="igv_tasa"
               bind:value={porcentaje}
               type="number"
@@ -176,26 +195,16 @@
             <InputError message={form.errors.igv_tasa} />
           </div>
         </div>
-        <div class="flex flex-row gap-2">
-          <div>
-            <Label for="igv_monto">IGV Monto</Label>
-            <Input id="igv_monto" bind:value={form.igv_monto} readonly />
-            <InputError message={form.errors.igv_monto} />
-          </div>
-          <div>
-            <Label for="total">Total</Label>
-            <Input id="total" bind:value={form.total} readonly />
-            <InputError message={form.errors.total} />
-          </div>
-        </div>
-      </div>
+      </fieldset>
 
-      <fieldset class="rounded-box border border-base-content/25 px-2">
-        <legend class="px-2 leading-none">Producto</legend>
+      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
+        <legend class="fieldset-legend px-2 leading-none">Producto</legend>
+
         <div>
-          <Label for="codigo">Codigo</Label>
+          <label for="codigo" class="label">Codigo</label>
           <Autocomplete
             id="codigo"
+            class="input"
             bind:value={productoNuevo.codigo}
             api="/products/search"
             onclick={onClickAutocomplete}
@@ -203,37 +212,89 @@
           <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
         </div>
         <div>
-          <Label for="descripcion">Descripcion</Label>
-          <Textarea id="descripcion" bind:value={productoNuevo.descripcion}
-          ></Textarea>
+          <label for="descripcion" class="label">Descripcion</label>
+          <textarea
+            id="descripcion"
+            class="textarea"
+            bind:value={productoNuevo.descripcion}></textarea>
         </div>
         <div class="flex flex-row gap-4">
           <div>
-            <Label for="stock">Stock</Label>
-            <Input id="stock" type="number" bind:value={productoNuevo.stock} />
-          </div>
-          <div>
-            <Label for="precio">Precio</Label>
-            <Input
-              id="precio"
+            <label for="stock" class="label">Stock</label>
+            <input
+              id="stock"
               type="number"
-              step="0.01"
-              bind:value={productoNuevo.precio}
+              class="input"
+              bind:value={productoNuevo.stock}
+              min="0"
             />
           </div>
           <div>
-            <Label for="unidad_medida">Unidad de Medida</Label>
-            <Input
+            <label for="precio" class="label">Precio</label>
+            <input
+              id="precio"
+              type="number"
+              class="input"
+              step="0.01"
+              bind:value={productoNuevo.precio}
+              min="0"
+            />
+          </div>
+          <div>
+            <label for="unidad_medida" class="label">Unidad de Medida</label>
+            <input
               id="unidad_medida"
+              class="input"
               bind:value={productoNuevo.unidad_medida}
             />
           </div>
         </div>
-        <div class="flex flex-row justify-center mt-2">
-          <Button disabled={form.processing} type="button" onclick={addProduct}
-            >Agregar Producto</Button
-          >
+        <button
+          class="btn btn-secondary mt-2"
+          disabled={form.processing}
+          type="button"
+          onclick={addProduct}>Agregar Producto</button
+        >
+      </fieldset>
+
+      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
+        <legend class="fieldset-legend px-2 leading-none">Cliente</legend>
+
+        <label>
+          <span class="label">Nombres</span>
+          <input class="input" />
+        </label>
+        <div class="flex flex-row gap-4">
+          <label>
+            <span class="label">Primer Apellido</span>
+            <input class="input" />
+          </label>
+          <label>
+            <span class="label">Segundo Apellido</span>
+            <input class="input" />
+          </label>
         </div>
+        <div class="flex flex-row gap-4">
+          <label>
+            <span class="label">RUC</span>
+            <input type="number" class="input" />
+          </label>
+          <label>
+            <span class="label">DNI</span>
+            <input type="number" class="input" />
+          </label>
+          <label>
+            <span class="label">Telefono</span>
+            <input class="input" />
+          </label>
+        </div>
+
+        <button
+          class="btn btn-secondary mt-2"
+          disabled={form.processing}
+          type="button"
+          onclick={(_) => {}}>Establecer Cliente</button
+        >
       </fieldset>
     </div>
 
@@ -248,6 +309,7 @@
             <th class="text-center">U. Medida</th>
             <th class="text-center">Stock</th>
             <th class="text-center">Activo</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -267,6 +329,22 @@
                   <span class="inline-block bg-red-500 size-3 rounded-full"
                   ></span>
                 {/if}
+              </td>
+              <td class="flex flex-row gap-1">
+                <button
+                  disabled={form.processing}
+                  class="btn btn-square btn-info"
+                  onclick={() => {}}
+                >
+                  <PlusIcon />
+                </button>
+                <button
+                  disabled={form.processing}
+                  class="btn btn-square btn-error"
+                  onclick={() => {}}
+                >
+                  <MinusIcon />
+                </button>
               </td>
             </tr>
           {/each}
