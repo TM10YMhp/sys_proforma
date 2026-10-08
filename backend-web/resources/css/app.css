@@ -183,3 +183,7 @@
 @utility fieldset {
     @apply text-sm
 }
+
+@utility fieldset-legend {
+    @apply py-0
+}

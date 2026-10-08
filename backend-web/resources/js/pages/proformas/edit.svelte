@@ -18,7 +18,6 @@
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
   import { MinusIcon, PlusIcon } from 'lucide-svelte';
-  import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import AppHead from '@/components/AppHead.svelte';
@@ -87,14 +86,6 @@
     })),
   });
 
-  const onChangeSubtotal = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = target.valueAsNumber;
-    // form.subtotal = value;
-    info.igv_monto = value * info.igv_tasa;
-    info.total = value + info.igv_monto;
-  };
-
   const stringToDatetime = (fecha_utc: string) => {
     const dateLocal = new Date(fecha_utc);
     const offset = dateLocal.getTimezoneOffset() * 60000;
@@ -125,27 +116,41 @@
     form.put(ProformaController.update.url(proforma.id));
   };
 
+  // TODO: ahora debe enviarse a la base de datos
   const addProduct = (
     _: MouseEvent & {
       currentTarget: EventTarget & HTMLButtonElement;
     },
   ) => {
-    const draft = { ...productoNuevo };
-    productos.unshift(draft);
+    // const draft = { ...productoNuevo };
+    // productos.unshift(draft);
   };
 
-  const onClickAutocomplete = async (codigo: string) => {
-    let producto = productos.find((p) => p.codigo === codigo);
+  const onClickAutocomplete = async (_codigo: string) => {
+    // let producto = productos.find((p) => p.codigo === codigo);
+    // if (!producto) {
+    //   const response = await fetch(ProductController.getByCode.url(codigo));
+    //   producto = (await response.json()) as Product;
+    // }
+    // productoNuevo.descripcion = producto.descripcion;
+    // productoNuevo.stock = producto.stock;
+    // productoNuevo.precio = producto.precio;
+    // productoNuevo.unidad_medida = producto.unidad_medida;
+  };
 
-    if (!producto) {
-      const response = await fetch(ProductController.getByCode.url(codigo));
-      producto = (await response.json()) as Product;
-    }
+  const obtenerSubtotal = () => {
+    return productos.reduce(
+      (acum, producto) => acum + producto.cantidad * producto.precio,
+      0,
+    );
+  };
 
-    productoNuevo.descripcion = producto.descripcion;
-    productoNuevo.stock = producto.stock;
-    productoNuevo.precio = producto.precio;
-    productoNuevo.unidad_medida = producto.unidad_medida;
+  const obtenerMontoIgv = () => {
+    return obtenerSubtotal() * info.igv_tasa;
+  };
+
+  const obtenerTotal = () => {
+    return obtenerMontoIgv() + obtenerSubtotal();
   };
 </script>
 
@@ -153,22 +158,23 @@
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="space-y-4">
-    <div class="flex flex-row gap-6">
+    <div class="flex flex-row gap-2">
       <fieldset
         class="fieldset rounded-box border border-base-100 px-2 w-xs space-y-2"
       >
         <legend class="fieldset-legend px-2 leading-none mb-0">Proforma</legend>
 
-        <div>
-          <p>Codigo: <span class="font-bold">{info.codigo}</span></p>
-          <p>
-            Subtotal: <span class="font-bold">{info.subtotal.toFixed(2)}</span>
-          </p>
-          <p>
-            IGV Monto: <span class="font-bold">{info.igv_monto.toFixed(2)}</span
-            >
-          </p>
-          <p>Total: <span class="font-bold">{info.total.toFixed(2)}</span></p>
+        <div
+          class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
+        >
+          <span>Codigo:</span>
+          <span>{info.codigo}</span>
+          <span>Subtotal:</span>
+          <span>{obtenerSubtotal().toFixed(2)}</span>
+          <span>IGV Monto:</span>
+          <span>{obtenerMontoIgv().toFixed(2)}</span>
+          <span>Total:</span>
+          <span>{obtenerTotal().toFixed(2)}</span>
         </div>
 
         <div class="flex flex-row gap-2">
@@ -194,17 +200,17 @@
           </div>
         </div>
 
-            <label for="igv_tasa" class="label">IGV Tasa (%)</label>
-            <input
+        <label for="igv_tasa" class="label">IGV Tasa (%)</label>
+        <input
           class="input w-fit"
-              id="igv_tasa"
-              bind:value={porcentaje}
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-            />
-            <InputError message={form.errors.igv_tasa} />
+          id="igv_tasa"
+          bind:value={porcentaje}
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+        />
+        <InputError message={form.errors.igv_tasa} />
       </fieldset>
 
       <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
@@ -332,7 +338,8 @@
               <td class="font-mono text-right">{item.precio}</td>
               <td class="text-center">{item.unidad_medida}</td>
               <td class="text-center">{item.cantidad}</td>
-              <td class="font-mono text-right">{item.precio * item.cantidad}</td>
+              <td class="font-mono text-right">{item.precio * item.cantidad}</td
+              >
               <td class="text-center">
                 {#if item.activo}
                   <span class="inline-block bg-green-500 size-3 rounded-full"
