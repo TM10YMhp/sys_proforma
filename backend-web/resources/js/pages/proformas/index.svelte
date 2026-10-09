@@ -61,6 +61,8 @@
   const formatFixed = (numero: number) => {
     return numero.toFixed(2);
   };
+
+  let dialog: HTMLDialogElement;
 </script>
 
 <AppHead title="Proforma" />
@@ -176,6 +178,72 @@
       >
     </div>
   </div>
+
+  <button class="btn" onclick={() => dialog.showModal()}>open modal</button>
+  <dialog bind:this={dialog} class="modal modal-open">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <p class="text-lg font-bold">
+        Proforma {proformas.data[selectedIndex].codigo}
+      </p>
+      <div class="py-4 flex flex-row gap-2">
+        <img
+          class="w-80"
+          src="http://localhost:5138/api/proforma/img/1234"
+          alt=""
+        />
+
+        <div class="overflow-x-auto max-h-56">
+          <table class={table() + ' table-pin-rows'}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th class="text-right">Precio</th>
+                <th class="text-center">U. Medida</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Activo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {const productos = $derived(
+                proformas.data[selectedIndex].products,
+              )}
+              {#each productos as item, idx (item.id)}
+                <tr>
+                  <th>{idx + 1}</th>
+                  <td class="font-mono">{item.codigo}</td>
+                  <td class="truncate max-w-50">{item.descripcion}</td>
+                  <td class="font-mono text-right">{item.precio}</td>
+                  <td class="text-center">{item.unidad_medida}</td>
+                  <td class="text-center">{item.stock}</td>
+                  <td class="text-center">
+                    {#if item.activo}
+                      <span
+                        class="inline-block bg-green-500 size-3 rounded-full"
+                      ></span>
+                    {:else}
+                      <span class="inline-block bg-red-500 size-3 rounded-full"
+                      ></span>
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          >✕</button
+        >
+      </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   {#if showProducts}
     <p>
