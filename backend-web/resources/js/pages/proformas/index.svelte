@@ -13,6 +13,8 @@
 
 <script lang="ts">
   import { Link, useForm } from '@inertiajs/svelte';
+  import { useZoomImageClick } from '@zoom-image/svelte';
+  import { onMount } from 'svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
   import { cn } from '@/lib/utils';
@@ -63,6 +65,15 @@
   };
 
   let dialog: HTMLDialogElement;
+
+  let imageContainer: HTMLDivElement;
+  const { createZoomImage: createZoomImageClick } = useZoomImageClick();
+
+  onMount(() => {
+    createZoomImageClick(imageContainer, {
+      zoomImageSource: 'http://localhost:5138/api/proforma/img/1234',
+    });
+  });
 </script>
 
 <AppHead title="Proforma" />
@@ -185,12 +196,18 @@
       <p class="text-lg font-bold">
         Proforma {proformas.data[selectedIndex].codigo}
       </p>
-      <div class="py-4 flex flex-row gap-2">
-        <img
-          class="w-80"
-          src="http://localhost:5138/api/proforma/img/1234"
-          alt=""
-        />
+      <div class="py-4 flex flex-row flex-wrap gap-2">
+        <!-- NOTE: hay que establecer medidas de imagen -->
+        <div
+          class="relative w-[339.52px] h-[480px] cursor-crosshair overflow-hidden"
+          bind:this={imageContainer}
+        >
+          <img
+            class="w-full h-full"
+            src="http://localhost:5138/api/proforma/img/1234"
+            alt=""
+          />
+        </div>
 
         <div class="overflow-x-auto max-h-56">
           <table class={table() + ' table-pin-rows'}>

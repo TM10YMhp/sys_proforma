@@ -39,6 +39,8 @@
         "@inertiajs/vite": "^3.0.0",
         "@lynstack/class-recipe": "^1.1.1",
         "@sveltejs/vite-plugin-svelte": "^7.0.0",
+        "@zoom-image/core": "^0.43.0",
+        "@zoom-image/svelte": "^0.3.10",
         "bits-ui": "^2.15.0",
         "clsx": "^2.1.1",
         "laravel-vite-plugin": "^3.0.0",
