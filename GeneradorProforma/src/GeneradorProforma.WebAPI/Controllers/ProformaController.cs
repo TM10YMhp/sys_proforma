@@ -278,4 +278,19 @@ public class ProformaController(IProformaService service) : ControllerBase
       enableRangeProcessing: true
     );
   }
+
+  [HttpGet("img/{id}")]
+  public IActionResult GenerarImgPorId([FromRoute] string id)
+  {
+    var result = _service.GetImgById(id);
+    if (result.IsError)
+    {
+      return NotFound(result.Errors);
+    }
+
+    var rutaImagen = result.Value;
+    string fileName = Path.GetFileName(rutaImagen);
+
+    return PhysicalFile(rutaImagen, "image/webp", fileName);
+  }
 }

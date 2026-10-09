@@ -11,13 +11,12 @@ public interface IProformaService
 {
   string RutaPlantilla { get; }
   string RutaSalida { get; }
+
   ErrorOr<string> GenerateExcel(Proforma proforma);
-
   ErrorOr<string> GeneratePDF(Proforma proforma);
-
   ErrorOr<string> GenerateImg(Proforma proforma);
-
   ErrorOr<string> GetExcelById(string id);
+  ErrorOr<string> GetImgById(string id);
 }
 
 public class ProformaService : IProformaService
@@ -215,6 +214,21 @@ public class ProformaService : IProformaService
     if (!File.Exists(ruta))
     {
       return Error.Unexpected(description: "Archivo no encontrado");
+    }
+
+    return ruta;
+  }
+
+  public ErrorOr<string> GetImgById(string id)
+  {
+    var filename = $"proforma-{id}.webp";
+    var ruta = Path.Combine(RutaSalida, filename);
+    if (!File.Exists(ruta))
+    {
+      return Error.Unexpected(
+        description: "Archivo no encontrado",
+        metadata: new() { { "filename", filename } }
+      );
     }
 
     return ruta;
