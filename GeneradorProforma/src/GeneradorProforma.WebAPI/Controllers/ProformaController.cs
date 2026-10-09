@@ -222,6 +222,36 @@ public class ProformaController(IProformaService service) : ControllerBase
     );
   }
 
+  [HttpPost("img")]
+  public IActionResult GenerarImg([FromBody] Proforma? request)
+  {
+    // request = GetDatosPrueba();
+
+    if (request is null)
+    {
+      return BadRequest(
+        new { mensaje = "El cuerpo de la solicitud no puede estar vacio." }
+      );
+    }
+
+    var result = _service.GenerateImg(
+      new Proforma()
+      {
+        Id = request.Id,
+        Cliente = request.Cliente,
+        Productos = request.Productos,
+        Condiciones = request.Condiciones,
+      }
+    );
+    if (result.IsError)
+    {
+      return BadRequest(result.Errors);
+    }
+
+    var rutaSalidaImg = result.Value;
+    return PhysicalFile(rutaSalidaImg, "image/webp");
+  }
+
   [HttpGet("excel/{id}")]
   public IActionResult GenerarExcelPorId([FromRoute] string id)
   {
