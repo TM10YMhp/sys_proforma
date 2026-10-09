@@ -10,6 +10,9 @@
     <PackageReference Include="EPPlus" />
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="FreeSpire.XLS" />
+    <PackageReference Include="PDFtoImage" />
+    <PackageReference Include="PhotoSauce.MagicScaler" />
+    <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" />
   </ItemGroup>
 
   <ItemGroup>

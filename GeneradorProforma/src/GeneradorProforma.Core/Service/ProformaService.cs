@@ -1,6 +1,8 @@
 using ErrorOr;
 using GeneradorProforma.Core.Entity;
 using OfficeOpenXml;
+using PhotoSauce.MagicScaler;
+using PhotoSauce.NativeCodecs.Libwebp;
 using Spire.Xls;
 
 namespace GeneradorProforma.Core.Service;
@@ -12,6 +14,8 @@ public interface IProformaService
   ErrorOr<string> GenerateExcel(Proforma proforma);
 
   ErrorOr<string> GeneratePDF(Proforma proforma);
+
+  ErrorOr<string> GenerateImg(Proforma proforma);
 
   ErrorOr<string> GetExcelById(string id);
 }
@@ -25,10 +29,15 @@ public class ProformaService : IProformaService
 
   public ProformaService()
   {
-    ExcelPackage.License.SetNonCommercialPersonal("<Your Name>");
+    ExcelPackage.License.SetNonCommercialPersonal("Focus Digital");
 
     Directory.CreateDirectory(RutaPlantilla);
     Directory.CreateDirectory(RutaSalida);
+
+    CodecManager.Configure(codecs =>
+    {
+      codecs.UseLibwebp();
+    });
   }
 
   private static void FillWithProducts(
@@ -145,6 +154,57 @@ public class ProformaService : IProformaService
     Workbook workbook = new();
     workbook.LoadFromFile(rutaSalidaExcel);
     workbook.SaveToFile(rutaArchivoSalida, FileFormat.PDF);
+
+    return rutaArchivoSalida;
+  }
+
+  public ErrorOr<string> GenerateImg(Proforma proforma)
+  {
+    var result = GeneratePDF(proforma);
+    if (result.IsError)
+    {
+      return Error.Unexpected(description: "Error al generar archivo");
+    }
+
+    var rutaSalidaPdf = result.Value;
+    if (!File.Exists(rutaSalidaPdf))
+    {
+      return Error.Unexpected(description: "Archivo no encontrado");
+    }
+
+    var nombreArchivo = Path.GetFileNameWithoutExtension(rutaSalidaPdf);
+    var filename = $"{nombreArchivo}.webp";
+    var rutaArchivoSalida = Path.Combine(RutaSalida, filename);
+    var rutaArchivoSalidaTemporal = Path.Combine(RutaSalida, filename + ".tmp");
+
+    var pdf = File.OpenRead(rutaSalidaPdf);
+
+#pragma warning disable CA1416
+    PDFtoImage.Conversion.SaveWebp(
+      imageFilename: rutaArchivoSalida,
+      pdfStream: pdf,
+      page: 0,
+      options: new PDFtoImage.RenderOptions
+      {
+        Dpi = 150,
+        AntiAliasing = PDFtoImage.PdfAntiAliasing.None,
+      }
+    );
+#pragma warning restore CA1416
+
+    var settings = new ProcessImageSettings
+    {
+      EncoderOptions = new WebpLosslessEncoderOptions(9),
+    };
+    settings.TrySetEncoderFormat(ImageMimeTypes.Webp);
+
+    MagicImageProcessor.ProcessImage(
+      rutaArchivoSalida,
+      rutaArchivoSalidaTemporal,
+      settings
+    );
+
+    File.Replace(rutaArchivoSalidaTemporal, rutaArchivoSalida, null);
 
     return rutaArchivoSalida;
   }

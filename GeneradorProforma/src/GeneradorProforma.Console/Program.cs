@@ -121,32 +121,46 @@ internal class Program
     Console.WriteLine();
     Console.WriteLine("Procesando Excel...");
 
-    var namefile = service.GenerateExcel(
-      new Proforma()
-      {
-        Id = _id,
-        Cliente = _cliente,
-        Productos = _products,
-        Condiciones = _condiciones,
-      }
-    );
-    if (namefile is null)
+    var proforma = new Proforma()
     {
-      Console.WriteLine("Error al generar excel");
+      Id = _id,
+      Cliente = _cliente,
+      Productos = _products,
+      Condiciones = _condiciones,
+    };
+
+    // var result = service.GenerateExcel(proforma);
+    // if (result.IsError)
+    // {
+    //   Console.WriteLine("Error al generar excel");
+    //   return;
+    // }
+
+    // var rutaSalidaExcel = result.Value;
+    // Console.WriteLine($"Excel generado: {rutaSalidaExcel}");
+    // Console.WriteLine();
+    // Console.WriteLine("Procesando PDF...");
+
+    // result = service.GeneratePDF(proforma);
+    // if (result.IsError)
+    // {
+    //   Console.WriteLine("Error al generar pdf");
+    //   return;
+    // }
+    // var rutaSalidaPdf = result.Value;
+
+    // Console.WriteLine($"PDF generado: {rutaSalidaPdf}");
+    // Console.WriteLine();
+    // Console.WriteLine("Procesando Imagen...");
+
+    var result = service.GenerateImg(proforma);
+    if (result.IsError)
+    {
+      Console.WriteLine("Error al generar imagen");
       return;
     }
+    var rutaSalidaImg = result.Value;
 
-    Console.WriteLine($"Excel generado: {namefile}");
-    Console.WriteLine();
-    Console.WriteLine("Procesando PDF...");
-
-    var pdffile = service.GeneratePDF(namefile);
-    if (pdffile is null)
-    {
-      Console.WriteLine("Error al generar pdf");
-      return;
-    }
-
-    Console.WriteLine($"PDF generado: {pdffile}");
+    Console.WriteLine($"Imagen generada: {rutaSalidaImg}");
   }
 }
