@@ -57,10 +57,9 @@
     <label for="codigo" class="label">Codigo</label>
     <Autocomplete
       id="codigo"
-      class="input"
       bind:value={productoNuevo.codigo}
-      api="/products/search"
-      onclick={onClickAutocomplete}
+      urlTemplate="/products/search?q=%s"
+      onAccept={onClickAutocomplete}
     />
     <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
   </div>
