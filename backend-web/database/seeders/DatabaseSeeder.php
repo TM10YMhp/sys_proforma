@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cliente;
-use App\Models\Product;
-use App\Models\Proforma;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,26 +22,10 @@ class DatabaseSeeder extends Seeder
       'email' => 'test@example.com',
     ]);
 
-    // $this->call([
-    //   ProductSeeder::class,
-    //   ProformaSeeder::class,
-    // ]);
-
-    $products = Product::factory(30)->create();
-
-    foreach (range(1, 20) as $_) {
-      $cantidad = fake()->randomElement([8, 15]);
-      $productos = $products->random($cantidad);
-      Proforma::factory()->hasAttached(
-        $productos,
-        fn() => [
-          'cantidad' => fake()->randomDigit() + 3,
-          'precio_unitario' => fake()->randomFloat(2, 5, 100),
-          'subtotal' => fake()->randomFloat(2, 5, 100),
-        ]
-      )->create();
-    }
-
-    Cliente::factory(20)->create();
+    $this->call([
+      ProductSeeder::class,
+      ProformaSeeder::class,
+      ClienteSeeder::class
+    ]);
   }
 }

@@ -65,14 +65,14 @@
     },
   );
 
-  type Form = Omit<
-    Proforma,
-    'igv_monto' | 'total' | 'codigo' | 'created_at' | 'updated_at' | 'products'
-  > & {
-    products: {
-      id: number;
-      cantidad: number;
-    }[];
+  type Form = {
+    id: number;
+    fecha_emision: string;
+    fecha_vencimiento: string;
+    subtotal: number;
+    igv_tasa: number;
+    productos: { id: number; cantidad: number }[];
+    // cliente: { id: number };
   };
   // svelte-ignore state_referenced_locally
   const form = useForm<Form>({
@@ -81,10 +81,10 @@
     fecha_vencimiento: proforma.fecha_vencimiento,
     subtotal: proforma.subtotal,
     igv_tasa: proforma.igv_tasa,
-    products: proforma.products.map((x) => ({
+    productos: proforma.products.map((x) => ({
       id: x.pivot.product_id,
       cantidad: x.pivot.cantidad,
-    })),
+    }))
   });
 
   const stringToDatetime = (fecha_utc: string) => {
@@ -105,6 +105,8 @@
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
+
+    form.subtotal = Number(obtenerSubtotal().toFixed(2));
 
     console.log(form.data());
 
@@ -184,11 +186,9 @@
 <AppHead title="Proformas | Editar" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <form onsubmit={handleSubmit} class="space-y-4">
+  <form onsubmit={handleSubmit} class="space-y-2">
     <div class="flex flex-row gap-2">
-      <fieldset
-        class="fieldset rounded-box border border-base-100 px-2 w-xs space-y-2"
-      >
+      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
         <legend class="fieldset-legend px-2 leading-none mb-0">Proforma</legend>
 
         <div
@@ -204,28 +204,23 @@
           <span>{obtenerTotal().toFixed(2)}</span>
         </div>
 
-        <div class="flex flex-row gap-2">
-          <div>
-            <label for="emision" class="label">Fecha de Emision</label>
-            <input
-              id="emision"
-              class="input"
-              type="datetime-local"
-              bind:value={fecha_emision}
-            />
-            <InputError message={form.errors.fecha_emision} />
-          </div>
-          <div>
-            <label for="vencimiento" class="label">Fecha de Vencimiento</label>
-            <input
-              id="vencimiento"
-              class="input"
-              type="datetime-local"
-              bind:value={fecha_vencimiento}
-            />
-            <InputError message={form.errors.fecha_vencimiento} />
-          </div>
-        </div>
+        <label for="emision" class="label">Fecha de Emision</label>
+        <input
+          id="emision"
+          class="input"
+          type="datetime-local"
+          bind:value={fecha_emision}
+        />
+        <InputError message={form.errors.fecha_emision} />
+
+        <label for="vencimiento" class="label">Fecha de Vencimiento</label>
+        <input
+          id="vencimiento"
+          class="input"
+          type="datetime-local"
+          bind:value={fecha_vencimiento}
+        />
+        <InputError message={form.errors.fecha_vencimiento} />
 
         <label for="igv_tasa" class="label">IGV Tasa (%)</label>
         <input

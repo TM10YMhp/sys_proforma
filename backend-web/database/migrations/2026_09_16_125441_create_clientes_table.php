@@ -14,11 +14,11 @@ return new class extends Migration {
       $table->id();
 
       $table->string('nombres');
-      $table->string('apellido_primario');
-      $table->string('apellido_secundario');
-      $table->string('ruc')->unique();
-      $table->string('dni')->unique();
-      $table->string('telefono')->unique();
+      $table->string('apellido_primario')->nullable();
+      $table->string('apellido_secundario')->nullable();
+      $table->string('ruc')->unique()->nullable();
+      $table->string('dni')->unique()->nullable();
+      $table->string('telefono')->unique()->nullable();
 
       $table->timestamps();
     });
