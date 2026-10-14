@@ -163,4 +163,15 @@ class ProformaController extends Controller
       ->header('Content-Type', 'application/pdf')
       ->header('Content-Disposition', "inline; filename=\"proforma_{$id}.pdf\"");
   }
+
+  /**
+   * @return \Illuminate\Http\Response
+   */
+  public function getImgById(string $id)
+  {
+    $response = Http::get("http://localhost:5138/api/proforma/img/{$id}");
+
+    return response($response->body(), $response->status())
+      ->withHeaders($response->headers());
+  }
 }

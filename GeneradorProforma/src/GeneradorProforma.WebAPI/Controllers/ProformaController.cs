@@ -289,8 +289,8 @@ public class ProformaController(IProformaService service) : ControllerBase
     }
 
     var rutaImagen = result.Value;
-    string fileName = Path.GetFileName(rutaImagen);
+    // string fileName = Path.GetFileName(rutaImagen);
 
-    return PhysicalFile(rutaImagen, "image/webp", fileName);
+    return PhysicalFile(rutaImagen, "image/webp");
   }
 }

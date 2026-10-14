@@ -13,4 +13,5 @@ Route::prefix('proformas')->group(function () {
 
   Route::get('/exportExcel/{proforma}', [ProformaController::class, 'exportExcel']);
   Route::get('/exportPDF/{id}', [ProformaController::class, 'exportPDF']);
+  Route::get('/getImgById/{id}', [ProformaController::class, 'getImgById']);
 });

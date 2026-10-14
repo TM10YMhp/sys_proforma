@@ -70,9 +70,7 @@
   const { createZoomImage: createZoomImageClick } = useZoomImageClick();
 
   onMount(() => {
-    createZoomImageClick(imageContainer, {
-      zoomImageSource: 'http://localhost:5138/api/proforma/img/1234',
-    });
+    createZoomImageClick(imageContainer);
   });
 </script>
 
@@ -191,7 +189,7 @@
   </div>
 
   <button class="btn" onclick={() => dialog.showModal()}>open modal</button>
-  <dialog bind:this={dialog} class="modal modal-open">
+  <dialog bind:this={dialog} class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
       <p class="text-lg font-bold">
         Proforma {proformas.data[selectedIndex].codigo}
@@ -202,11 +200,7 @@
           class="relative w-[339.52px] h-[480px] cursor-crosshair overflow-hidden"
           bind:this={imageContainer}
         >
-          <img
-            class="w-full h-full"
-            src="http://localhost:5138/api/proforma/img/1234"
-            alt=""
-          />
+          <img class="w-full h-full" src="/proformas/getImgById/1234" alt="" />
         </div>
 
         <div class="overflow-x-auto max-h-56">
