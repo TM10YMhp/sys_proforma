@@ -19,13 +19,13 @@
   import { useForm } from '@inertiajs/svelte';
   import { MinusIcon, PlusIcon, XIcon } from 'lucide-svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
-  import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import AppHead from '@/components/AppHead.svelte';
   import InputError from '@/components/InputError.svelte';
   import Button from '@/components/ui/button/Button.svelte';
   import { table } from '@/lib/variants';
   import type { Product } from '@/types/product';
-  import type { Proforma } from '@/types/proforma';
+  import type { Proforma, ProformaForm } from '@/types/proforma';
+  import SeccionProducto from './partials/SeccionProducto.svelte';
 
   type Props = {
     proforma: Proforma;
@@ -54,28 +54,8 @@
     })),
   );
 
-  let productoNuevo = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>>(
-    {
-      codigo: '',
-      descripcion: '',
-      precio: 0,
-      unidad_medida: '',
-      stock: 0,
-      activo: true,
-    },
-  );
-
-  type Form = {
-    id: number;
-    fecha_emision: string;
-    fecha_vencimiento: string;
-    subtotal: number;
-    igv_tasa: number;
-    productos: { id: number; cantidad: number }[];
-    // cliente: { id: number };
-  };
   // svelte-ignore state_referenced_locally
-  const form = useForm<Form>({
+  const form = useForm<ProformaForm>({
     id: proforma.id,
     fecha_emision: proforma.fecha_emision,
     fecha_vencimiento: proforma.fecha_vencimiento,
@@ -117,28 +97,6 @@
     form.fecha_emision = datetimeToUTC(fecha_emision);
     form.fecha_vencimiento = datetimeToUTC(fecha_vencimiento);
     form.put(ProformaController.update.url(proforma.id));
-  };
-
-  // TODO: ahora debe enviarse a la base de datos
-  const addProduct = (
-    _: MouseEvent & {
-      currentTarget: EventTarget & HTMLButtonElement;
-    },
-  ) => {
-    // const draft = { ...productoNuevo };
-    // productos.unshift(draft);
-  };
-
-  const onClickAutocomplete = async (_codigo: string) => {
-    // let producto = productos.find((p) => p.codigo === codigo);
-    // if (!producto) {
-    //   const response = await fetch(ProductController.getByCode.url(codigo));
-    //   producto = (await response.json()) as Product;
-    // }
-    // productoNuevo.descripcion = producto.descripcion;
-    // productoNuevo.stock = producto.stock;
-    // productoNuevo.precio = producto.precio;
-    // productoNuevo.unidad_medida = producto.unidad_medida;
   };
 
   const obtenerSubtotal = () => {
@@ -235,65 +193,7 @@
         <InputError message={form.errors.igv_tasa} />
       </fieldset>
 
-      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
-        <legend class="fieldset-legend px-2 leading-none">Producto</legend>
-
-        <div
-          class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
-        >
-          <span>Stock:</span>
-          <span>{productoNuevo.stock}</span>
-        </div>
-
-        <div>
-          <label for="codigo" class="label">Codigo</label>
-          <Autocomplete
-            id="codigo"
-            class="input"
-            bind:value={productoNuevo.codigo}
-            api="/products/search"
-            onclick={onClickAutocomplete}
-          />
-          <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
-        </div>
-        <label>
-          <span class="label">Descripcion</span>
-          <textarea
-            class="textarea min-h-0 h-14"
-            bind:value={productoNuevo.descripcion}></textarea>
-        </label>
-        <div class="flex flex-row gap-4">
-          <label>
-            <span class="label">Cantidad</span>
-            <input
-              type="number"
-              class="input"
-              bind:value={productoNuevo.stock}
-              min="0"
-            />
-          </label>
-          <label>
-            <span class="label">Precio</span>
-            <input
-              type="number"
-              class="input"
-              step="0.01"
-              bind:value={productoNuevo.precio}
-              min="0"
-            />
-          </label>
-          <label>
-            <span class="label">U. Medida</span>
-            <input class="input" bind:value={productoNuevo.unidad_medida} />
-          </label>
-        </div>
-        <button
-          class="btn btn-secondary mt-2"
-          disabled={form.processing}
-          type="button"
-          onclick={addProduct}>Agregar Producto</button
-        >
-      </fieldset>
+      <SeccionProducto {form} />
 
       <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
         <legend class="fieldset-legend px-2 leading-none">Cliente</legend>

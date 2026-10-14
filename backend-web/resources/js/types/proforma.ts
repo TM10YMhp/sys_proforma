@@ -29,3 +29,13 @@ interface ProformaItem {
   created_at: string;
   updated_at: string;
 }
+
+export interface ProformaForm {
+  id: number;
+  fecha_emision: string;
+  fecha_vencimiento: string;
+  subtotal: number;
+  igv_tasa: number;
+  productos: { id: number; cantidad: number }[];
+  // cliente: { id: number };
+}
