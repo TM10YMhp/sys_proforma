@@ -101,6 +101,11 @@
     {#if buscando}
       <span class="absolute right-2.5">⏳</span>
     {/if}
+    {#if resultados.length > 0}
+      <span class="absolute right-2.5 badge badge-info px-2 font-bold"
+        >{resultados.length}</span
+      >
+    {/if}
   </div>
 
   {#if resultados.length > 0}
