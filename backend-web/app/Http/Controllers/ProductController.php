@@ -130,9 +130,21 @@ class ProductController extends Controller
     return response()->json($products);
   }
 
-  public function getByCode(string $code): JsonResponse
+  public function get(Request $request): JsonResponse
   {
-    $product = Product::where('codigo', '=', $code)->first();
+    $buscar = $request->query('q');
+    $by = $request->query('by', 'codigo');
+
+    if (empty($buscar)) {
+      return response()->json((object) []);
+    }
+
+    $columnasPermitidas = ['codigo', 'descripcion'];
+    if (!\in_array($by, $columnasPermitidas)) {
+      return response()->json(['error' => 'Criterio de búsqueda inválido'], 400);
+    }
+
+    $product = Product::where($by, '=', $buscar)->first();
     return response()->json($product);
   }
 }
