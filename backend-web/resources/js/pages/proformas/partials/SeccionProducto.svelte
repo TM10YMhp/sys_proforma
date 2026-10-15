@@ -43,7 +43,26 @@
   };
 
   const handleAcceptCode = async (codigo: string) => {
-    const response = await fetch(ProductController.getByCode.url(codigo));
+    const response = await fetch(
+      ProductController.get.url({ query: { q: codigo, by: 'codigo' } }),
+    );
+    const producto = (await response.json()) as Product;
+
+    productItem = {
+      id: producto.id,
+      codigo: producto.codigo,
+      cantidad: 0,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      unidad_medida: producto.unidad_medida,
+      activo: producto.activo,
+    };
+  };
+
+  const handleAcceptDescription = async (codigo: string) => {
+    const response = await fetch(
+      ProductController.get.url({ query: { q: codigo, by: 'descripcion' } }),
+    );
     const producto = (await response.json()) as Product;
 
     productItem = {
@@ -74,6 +93,7 @@
     <Autocomplete
       bind:value={productItem.descripcion}
       urlTemplate="/products/search?q=%s&by=descripcion"
+      onAccept={handleAcceptDescription}
     />
   </label>
 
@@ -86,7 +106,7 @@
         onAccept={handleAcceptCode}
       />
     </label>
-    <label>
+    <label class="min-w-18">
       <span class="label">Cantidad</span>
       <input
         type="number"
@@ -95,7 +115,7 @@
         min="0"
       />
     </label>
-    <label>
+    <label class="min-w-18">
       <span class="label">Precio</span>
       <input
         type="number"

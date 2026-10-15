@@ -146,7 +146,7 @@
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="space-y-2">
     <div class="flex flex-row gap-2">
-      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
+      <fieldset class="fieldset rounded-box border border-base-100 px-2">
         <legend class="fieldset-legend px-2 leading-none mb-0">Proforma</legend>
 
         <div
@@ -165,7 +165,7 @@
         <label for="emision" class="label">Fecha de Emision</label>
         <input
           id="emision"
-          class="input"
+          class="input font-mono"
           type="datetime-local"
           bind:value={fecha_emision}
         />
@@ -174,7 +174,7 @@
         <label for="vencimiento" class="label">Fecha de Vencimiento</label>
         <input
           id="vencimiento"
-          class="input"
+          class="input font-mono"
           type="datetime-local"
           bind:value={fecha_vencimiento}
         />
