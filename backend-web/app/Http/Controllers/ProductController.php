@@ -95,26 +95,37 @@ class ProductController extends Controller
   public function search(Request $request): JsonResponse
   {
     // TODO: probar laravel/scout
-    $buscar = $request->input('q');
+    // $buscar = $request->input('q');
+    $buscar = $request->query('q');
+    $by = $request->query('by', 'codigo');
 
     if (empty($buscar)) {
       return response()->json([]);
+    }
+
+    $columnasPermitidas = ['codigo', 'descripcion'];
+    if (!\in_array($by, $columnasPermitidas)) {
+      return response()->json(['error' => 'Criterio de búsqueda inválido'], 400);
     }
 
     $buscar = strtolower($buscar);
     $buscar = str_split(str_replace(" ", "", $buscar));
     $buscar = implode("%", $buscar);
     $buscar = "%" . $buscar . "%";
-    $products = Product::whereRaw('lower(codigo) LIKE ?', [$buscar])
+
+    // TODO: esto podria causar inyeccion sql
+    /** @phpstan-ignore argument.type */
+    $products = Product::whereRaw("lower({$by}) LIKE ?", [$buscar])
       ->select(
         // 'id',
-        'codigo',
+        // 'codigo',
         // 'precio'
+        $by
       )
       ->limit(10) // Limitar para mejorar el rendimiento
       // ->dd();
       // ->get();
-      ->pluck('codigo');
+      ->pluck($by);
 
     return response()->json($products);
   }

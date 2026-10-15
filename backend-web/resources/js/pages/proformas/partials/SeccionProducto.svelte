@@ -61,13 +61,16 @@
       urlTemplate="/products/search?q=%s"
       onAccept={onClickAutocomplete}
     />
-    <!-- <Input id="nombre" bind:value={productoNuevo.nombre} /> -->
   </div>
   <label>
     <span class="label">Descripcion</span>
-    <textarea
+    <!-- <textarea
       class="textarea min-h-0 h-14"
-      bind:value={productoNuevo.descripcion}></textarea>
+      bind:value={productoNuevo.descripcion}></textarea> -->
+    <Autocomplete
+      bind:value={productoNuevo.descripcion}
+      urlTemplate="/products/search?q=%s&by=descripcion"
+    />
   </label>
   <div class="flex flex-row gap-4">
     <label>

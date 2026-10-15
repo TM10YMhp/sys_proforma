@@ -114,7 +114,7 @@
               handleClick(item);
               onAccept?.(item);
             }}
-            class="list-col-grow btn btn-ghost px-2 flex justify-between"
+            class="list-col-grow btn btn-ghost px-2 flex justify-between text-left h-auto"
           >
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             <span>{@html highlightResult(item)}</span>
