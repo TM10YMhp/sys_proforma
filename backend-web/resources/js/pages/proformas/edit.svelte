@@ -9,7 +9,6 @@
       },
       {
         title: 'Editar',
-        href: proformasRoutes.edit.url(0),
       },
     ],
   };
@@ -23,7 +22,7 @@
   import InputError from '@/components/InputError.svelte';
   import Button from '@/components/ui/button/Button.svelte';
   import { table } from '@/lib/variants';
-  import type { Product } from '@/types/product';
+  import type { ProductItem } from '@/types/product';
   import type { Proforma, ProformaForm } from '@/types/proforma';
   import SeccionProducto from './partials/SeccionProducto.svelte';
 
@@ -38,11 +37,7 @@
   // svelte-ignore state_referenced_locally
   let porcentaje = $state(proforma.igv_tasa * 100);
   // svelte-ignore state_referenced_locally
-  let productos = $state<
-    (Omit<Product, 'stock' | 'created_at' | 'updated_at'> & {
-      cantidad: number;
-    })[]
-  >(
+  let productos = $state<ProductItem[]>(
     proforma.products.map((x) => ({
       id: x.id,
       codigo: x.codigo,
@@ -64,7 +59,7 @@
     productos: proforma.products.map((x) => ({
       id: x.pivot.product_id,
       cantidad: x.pivot.cantidad,
-    }))
+    })),
   });
 
   const stringToDatetime = (fecha_utc: string) => {
@@ -139,6 +134,10 @@
   const eliminarProducto = (id: number) => {
     productos = productos.filter((p) => p.id !== id);
   };
+
+  const addProduct = (productItem: ProductItem) => {
+    productos.unshift(productItem);
+  };
 </script>
 
 <AppHead title="Proformas | Editar" />
@@ -193,7 +192,7 @@
         <InputError message={form.errors.igv_tasa} />
       </fieldset>
 
-      <SeccionProducto {form} />
+      <SeccionProducto {form} onAddProduct={addProduct} />
 
       <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
         <legend class="fieldset-legend px-2 leading-none">Cliente</legend>

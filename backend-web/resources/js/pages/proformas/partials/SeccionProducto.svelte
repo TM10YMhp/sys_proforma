@@ -1,19 +1,16 @@
 <script lang="ts">
   import type { InertiaForm } from '@inertiajs/svelte';
+  import * as v from 'valibot';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
-  import type { Product } from '@/types/product';
+  import type { Product, ProductItem } from '@/types/product';
   import type { ProformaForm } from '@/types/proforma';
 
-  type ProductItem = {
-    id: number;
-    codigo: string;
-    descripcion: string;
-    precio: number;
-    unidad_medida: string;
-    cantidad: number;
-    activo: boolean;
+  type Props = {
+    form: InertiaForm<ProformaForm>;
+    onAddProduct?: (productItem: ProductItem) => void;
   };
+  let { form, onAddProduct }: Props = $props();
 
   let productItem = $state<ProductItem>({
     id: 0,
@@ -25,21 +22,37 @@
     activo: true,
   });
 
-  // TODO: ahora debe enviarse a la base de datos
+  const productItemSchema = v.object({
+    id: v.pipe(v.number(), v.minValue(1, 'Debe seleccionar un producto')),
+    codigo: v.pipe(v.string(), v.nonEmpty('Debe seleccionar un codigo')),
+    descripcion: v.pipe(
+      v.string(),
+      v.nonEmpty('Debe seleccionar una descripcion'),
+    ),
+    precio: v.pipe(
+      v.number('Debe ingresar un precio'),
+      v.minValue(1, 'Debe ingresar un precio mayor a 0'),
+    ),
+    cantidad: v.pipe(
+      v.number('Debe ingresar una cantidad'),
+      v.minValue(1, 'Debe ingresar una cantidad mayor a 0'),
+    ),
+  });
+
   const addProduct = (
     _: MouseEvent & {
       currentTarget: EventTarget & HTMLButtonElement;
     },
   ) => {
-    if (productItem.cantidad <= 0) {
-      alert('Debe ingresar una cantidad mayor a 0');
+    const result = v.safeParse(productItemSchema, productItem);
+
+    if (!result.success) {
+      alert(result.issues[0].message);
 
       return;
     }
 
-    // const draft = { ...productoNuevo };
-    // productos.unshift(draft);
-    console.log(productItem);
+    onAddProduct?.(productItem);
   };
 
   const handleAcceptCode = async (codigo: string) => {
@@ -75,11 +88,6 @@
       activo: producto.activo,
     };
   };
-
-  type Props = {
-    form: InertiaForm<ProformaForm>;
-  };
-  let { form }: Props = $props();
 </script>
 
 <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
