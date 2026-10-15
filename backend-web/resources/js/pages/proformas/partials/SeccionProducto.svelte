@@ -1,19 +1,29 @@
 <script lang="ts">
   import type { InertiaForm } from '@inertiajs/svelte';
+  import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import type { Product } from '@/types/product';
   import type { ProformaForm } from '@/types/proforma';
 
-  let productoNuevo = $state<Omit<Product, 'id' | 'created_at' | 'updated_at'>>(
-    {
-      codigo: '',
-      descripcion: '',
-      precio: 0,
-      unidad_medida: '',
-      stock: 0,
-      activo: true,
-    },
-  );
+  type ProductItem = {
+    id: number;
+    codigo: string;
+    descripcion: string;
+    precio: number;
+    unidad_medida: string;
+    cantidad: number;
+    activo: boolean;
+  };
+
+  let productItem = $state<ProductItem>({
+    id: 0,
+    codigo: '',
+    cantidad: 0,
+    descripcion: '',
+    precio: 0,
+    unidad_medida: '',
+    activo: true,
+  });
 
   // TODO: ahora debe enviarse a la base de datos
   const addProduct = (
@@ -21,20 +31,30 @@
       currentTarget: EventTarget & HTMLButtonElement;
     },
   ) => {
+    if (productItem.cantidad <= 0) {
+      alert('Debe ingresar una cantidad mayor a 0');
+
+      return;
+    }
+
     // const draft = { ...productoNuevo };
     // productos.unshift(draft);
+    console.log(productItem);
   };
 
-  const onClickAutocomplete = async (_codigo: string) => {
-    // let producto = productos.find((p) => p.codigo === codigo);
-    // if (!producto) {
-    //   const response = await fetch(ProductController.getByCode.url(codigo));
-    //   producto = (await response.json()) as Product;
-    // }
-    // productoNuevo.descripcion = producto.descripcion;
-    // productoNuevo.stock = producto.stock;
-    // productoNuevo.precio = producto.precio;
-    // productoNuevo.unidad_medida = producto.unidad_medida;
+  const handleAcceptCode = async (codigo: string) => {
+    const response = await fetch(ProductController.getByCode.url(codigo));
+    const producto = (await response.json()) as Product;
+
+    productItem = {
+      id: producto.id,
+      codigo: producto.codigo,
+      cantidad: 0,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      unidad_medida: producto.unidad_medida,
+      activo: producto.activo,
+    };
   };
 
   type Props = {
@@ -46,39 +66,32 @@
 <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
   <legend class="fieldset-legend px-2 leading-none">Producto</legend>
 
-  <div
-    class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
-  >
-    <span>Stock:</span>
-    <span>{productoNuevo.stock}</span>
-  </div>
-
-  <div>
-    <label for="codigo" class="label">Codigo</label>
-    <Autocomplete
-      id="codigo"
-      bind:value={productoNuevo.codigo}
-      urlTemplate="/products/search?q=%s"
-      onAccept={onClickAutocomplete}
-    />
-  </div>
   <label>
     <span class="label">Descripcion</span>
     <!-- <textarea
       class="textarea min-h-0 h-14"
       bind:value={productoNuevo.descripcion}></textarea> -->
     <Autocomplete
-      bind:value={productoNuevo.descripcion}
+      bind:value={productItem.descripcion}
       urlTemplate="/products/search?q=%s&by=descripcion"
     />
   </label>
+
   <div class="flex flex-row gap-4">
+    <label class="min-w-24">
+      <span class="label">Codigo</span>
+      <Autocomplete
+        bind:value={productItem.codigo}
+        urlTemplate="/products/search?q=%s"
+        onAccept={handleAcceptCode}
+      />
+    </label>
     <label>
       <span class="label">Cantidad</span>
       <input
         type="number"
         class="input"
-        bind:value={productoNuevo.stock}
+        bind:value={productItem.cantidad}
         min="0"
       />
     </label>
@@ -87,16 +100,22 @@
       <input
         type="number"
         class="input"
-        step="0.01"
-        bind:value={productoNuevo.precio}
+        step="0.1"
+        bind:value={productItem.precio}
         min="0"
       />
     </label>
-    <label>
-      <span class="label">U. Medida</span>
-      <input class="input" bind:value={productoNuevo.unidad_medida} />
-    </label>
   </div>
+
+  <div
+    class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
+  >
+    <span>Total:</span>
+    <span>{productItem.precio * productItem.cantidad}</span>
+    <span>U. Medida:</span>
+    <span>{productItem.unidad_medida}</span>
+  </div>
+
   <button
     class="btn btn-secondary mt-2"
     disabled={form.processing}
