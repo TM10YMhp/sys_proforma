@@ -16,6 +16,7 @@
 
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
+  import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
   import type { ProductItem } from '@/types/product';
   import type { Proforma, ProformaForm } from '@/types/proforma';
@@ -55,20 +56,23 @@
     })),
   });
 
+  // NOTE: $effect solo debe usarse de forma excepcional
+  $effect(() => {
+    form.subtotal = productos.reduce(
+      (acum, producto) => acum + producto.cantidad * producto.precio,
+      0,
+    );
+  });
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    // form.subtotal = Number(obtenerSubtotal().toFixed(2));
     form.productos = productos.map((p) => ({
       id: p.id,
       cantidad: p.cantidad,
     }));
 
-    console.log('hola', form.data());
-
-    return;
-
-    // form.put(ProformaController.update.url(proforma.id));
+    form.put(ProformaController.update.url(proforma.id));
   };
 
   const addProduct = (productItem: ProductItem) => {
@@ -87,7 +91,7 @@
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
   <form onsubmit={handleSubmit} class="space-y-2">
     <div class="flex flex-row gap-2">
-      <SeccionProforma bind:form {productos} {proforma} />
+      <SeccionProforma bind:form {proforma} />
 
       <SeccionProducto {form} onAddProduct={addProduct} />
 

@@ -1,15 +1,13 @@
 <script lang="ts">
   import type { InertiaForm } from '@inertiajs/svelte';
   import InputError from '@/components/InputError.svelte';
-  import type { ProductItem } from '@/types/product';
   import type { Proforma, ProformaForm } from '@/types/proforma';
 
   type Props = {
     form: InertiaForm<ProformaForm>;
-    productos: ProductItem[];
     proforma: Proforma;
   };
-  const { form = $bindable(), productos, proforma }: Props = $props();
+  const { form = $bindable(), proforma }: Props = $props();
 
   const stringToDatetime = (fecha_utc: string) => {
     const dateLocal = new Date(fecha_utc);
@@ -22,13 +20,8 @@
     return new Date(datetime).toISOString();
   };
 
-  const obtenerSubtotal = () =>
-    productos.reduce(
-      (acum, producto) => acum + producto.cantidad * producto.precio,
-      0,
-    );
-  const obtenerMontoIgv = () => obtenerSubtotal() * form.igv_tasa;
-  const obtenerTotal = () => obtenerMontoIgv() + obtenerSubtotal();
+  const montoIgv = $derived(form.subtotal * form.igv_tasa);
+  const total = $derived(form.subtotal + montoIgv);
 </script>
 
 <fieldset class="fieldset rounded-box border border-base-100 px-2">
@@ -40,11 +33,11 @@
     <span>Codigo:</span>
     <span>{proforma.codigo}</span>
     <span>Subtotal:</span>
-    <span>{obtenerSubtotal().toFixed(2)}</span>
+    <span>{form.subtotal.toFixed(2)}</span>
     <span>IGV Monto:</span>
-    <span>{obtenerMontoIgv().toFixed(2)}</span>
+    <span>{montoIgv.toFixed(2)}</span>
     <span>Total:</span>
-    <span>{obtenerTotal().toFixed(2)}</span>
+    <span>{total.toFixed(2)}</span>
   </div>
 
   <label for="emision" class="label">Fecha de Emision</label>

@@ -10,6 +10,8 @@ use App\Models\Proforma;
 use App\Http\Requests\StoreProformaRequest;
 use App\Http\Requests\UpdateProformaRequest;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -79,10 +81,56 @@ class ProformaController extends Controller
    * Update the specified resource in storage.
    * @return \Illuminate\Http\RedirectResponse
    */
-  public function update(UpdateProformaRequest $request, Proforma $proforma)
+  public function update(Request $request, Proforma $proforma)
   {
-    $validated = $request->validated();
-    $proforma->update($validated);
+    // TODO: se quito la validacion por falta de tiempo
+    // $validated = $request->validated();
+
+    $validated = $request->validate([
+      'fecha_emision' => 'required',
+      'fecha_vencimiento' => 'required',
+      'subtotal' => 'required|numeric',
+      'igv_tasa' => 'required|numeric',
+      'productos' => 'required|array',
+      'productos.*.id' => 'required|exists:products,id',
+      'productos.*.cantidad' => 'required|integer|min:1',
+    ]);
+
+    $productIds = collect($validated['productos'])->pluck('id')->all();
+    $products = Product::whereIn('id', $productIds)->get();
+    $productsIndexed = $products->keyBy('id');
+
+    DB::transaction(function () use ($proforma, $validated, $productsIndexed) {
+      $igvMonto = $validated['subtotal'] * $validated['igv_tasa'];
+      $proforma->update([
+        'fecha_emision' => $validated['fecha_emision'],
+        'fecha_vencimiento' => $validated['fecha_vencimiento'],
+        'subtotal' => $validated['subtotal'],
+        'igv_tasa' => $validated['igv_tasa'],
+        'igv_monto' => $igvMonto,
+        'total' => $validated['subtotal'] + $igvMonto,
+      ]);
+
+      // NOTE: formato requerido [ id_producto => [columna_pivote => valor] ]
+      $productosPivot = [];
+      foreach ($validated['productos'] as $item) {
+        $prod = $productsIndexed->get($item['id']);
+
+        // NOTE: quizas el id no exista
+        if (!$prod) {
+          continue;
+        }
+
+        $productosPivot[$item['id']] = [
+          'cantidad' => $item['cantidad'],
+          'precio_unitario' => $prod->precio,
+          'subtotal' => $prod->precio * $item['cantidad'],
+        ];
+      }
+
+      $proforma->products()->sync($productosPivot);
+    });
+
     return to_route('proformas.index');
   }
 

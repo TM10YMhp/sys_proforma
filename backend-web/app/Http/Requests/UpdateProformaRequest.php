@@ -22,14 +22,15 @@ class UpdateProformaRequest extends FormRequest
    */
   public function rules(): array
   {
+    // TODO: estas validaciones deberian sincronizarse con el tipo del form
     return [
-      'codigo' => ["required", "string", "max:255"],
+      // 'codigo' => ["required", "string", "max:255"],
       'fecha_emision' => ["required", "date"],
       'fecha_vencimiento' => ["required", "date", "after_or_equal:fecha_emision"],
       'subtotal' => ["required", "decimal:0,2", "min:0"],
       'igv_tasa' => ["required", "decimal:0,2", "min:0"],
-      'igv_monto' => ["required", "decimal:0,2", "min:0"],
-      'total' => ["required", "decimal:0,2", "gt:subtotal"]
+      // 'igv_monto' => ["required", "decimal:0,2", "min:0"],
+      // 'total' => ["required", "decimal:0,2", "gt:subtotal"]
     ];
   }
 }
