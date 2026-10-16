@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { InertiaForm } from '@inertiajs/svelte';
+  import type { MouseEventHandler } from 'svelte/elements';
   import * as v from 'valibot';
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
@@ -39,11 +40,7 @@
     ),
   });
 
-  const addProduct = (
-    _: MouseEvent & {
-      currentTarget: EventTarget & HTMLButtonElement;
-    },
-  ) => {
+  const addProduct: MouseEventHandler<HTMLButtonElement> = (_) => {
     const result = v.safeParse(productItemSchema, productItem);
 
     if (!result.success) {
@@ -64,7 +61,7 @@
     productItem = {
       id: producto.id,
       codigo: producto.codigo,
-      cantidad: 0,
+      cantidad: 1,
       descripcion: producto.descripcion,
       precio: producto.precio,
       unidad_medida: producto.unidad_medida,
@@ -81,7 +78,7 @@
     productItem = {
       id: producto.id,
       codigo: producto.codigo,
-      cantidad: 0,
+      cantidad: 1,
       descripcion: producto.descripcion,
       precio: producto.precio,
       unidad_medida: producto.unidad_medida,
@@ -123,21 +120,13 @@
         min="0"
       />
     </label>
-    <label class="min-w-18">
-      <span class="label">Precio</span>
-      <input
-        type="number"
-        class="input"
-        step="0.1"
-        bind:value={productItem.precio}
-        min="0"
-      />
-    </label>
   </div>
 
   <div
     class="grid grid-cols-[auto_1fr] gap-x-2 [&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right"
   >
+    <span>Precio:</span>
+    <span>{productItem.precio}</span>
     <span>Total:</span>
     <span>{productItem.precio * productItem.cantidad}</span>
     <span>U. Medida:</span>

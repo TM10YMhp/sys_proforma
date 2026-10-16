@@ -82,6 +82,10 @@
     e.preventDefault();
 
     form.subtotal = Number(obtenerSubtotal().toFixed(2));
+    form.productos = productos.map((p) => ({
+      id: p.id,
+      cantidad: p.cantidad,
+    }));
 
     console.log(form.data());
 
@@ -136,7 +140,13 @@
   };
 
   const addProduct = (productItem: ProductItem) => {
-    productos.unshift(productItem);
+    const producto = productos.find((p) => p.id === productItem.id);
+
+    if (producto) {
+      producto.cantidad += productItem.cantidad;
+    } else {
+      productos.unshift({ ...productItem });
+    }
   };
 </script>
 
