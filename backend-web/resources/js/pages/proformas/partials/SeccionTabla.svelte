@@ -76,6 +76,7 @@
           <td class="flex flex-row gap-1">
             <button
               disabled={form.processing}
+              type="button"
               class="btn btn-square btn-info"
               onclick={() => incrementarCantidad(item.id)}
             >
@@ -83,6 +84,7 @@
             </button>
             <button
               disabled={form.processing}
+              type="button"
               class="btn btn-square btn-error"
               onclick={() => decrementarCantidad(item.id)}
             >
@@ -91,6 +93,7 @@
             <div class="divider divider-horizontal mx-1"></div>
             <button
               disabled={form.processing}
+              type="button"
               class="btn btn-square btn-error btn-soft"
               onclick={() => eliminarProducto(item.id)}
             >
