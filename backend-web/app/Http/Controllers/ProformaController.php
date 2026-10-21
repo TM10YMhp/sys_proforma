@@ -58,11 +58,14 @@ class ProformaController extends Controller
 
   /**
    * Display the specified resource.
-   * @return void
+   * @return \Inertia\Response
    */
   public function show(Proforma $proforma)
   {
-    //
+    $proforma->load('products');
+    return Inertia::render("proformas/show", [
+      'proforma' => $proforma
+    ]);
   }
 
   /**

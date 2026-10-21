@@ -12,9 +12,7 @@
 </script>
 
 <script lang="ts">
-  import { Link, useForm } from '@inertiajs/svelte';
-  import { useZoomImageClick } from '@zoom-image/svelte';
-  import { onMount } from 'svelte';
+  import { Link, router, useForm } from '@inertiajs/svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
   import { cn } from '@/lib/utils';
@@ -27,7 +25,6 @@
   };
   let { proformas }: Props = $props();
 
-  let showProducts = $state(!false);
   let selectedIndex = $state(0);
 
   const form = useForm();
@@ -63,15 +60,6 @@
   const formatFixed = (numero: number) => {
     return numero.toFixed(2);
   };
-
-  let dialog: HTMLDialogElement;
-
-  let imageContainer: HTMLDivElement;
-  const { createZoomImage: createZoomImageClick } = useZoomImageClick();
-
-  onMount(() => {
-    createZoomImageClick(imageContainer);
-  });
 </script>
 
 <AppHead title="Proforma" />
@@ -102,23 +90,31 @@
           <tr
             class={[index == selectedIndex && 'bg-muted']}
             onclick={() => {
-              // showProducts = !showProducts;
               selectedIndex = index;
+            }}
+            ondblclick={(e) => {
+              if ((e.target as HTMLElement).matches('a, button')) {
+                return;
+              }
+
+              router.visit(ProformaController.show.url(item.id));
             }}
           >
             <th>{index + Number(proformas.from)}</th>
-            <td class="font-mono text-nowrap">{item.codigo}</td>
-            <td class="text-center">{item.products.length}</td>
+            <td class="font-mono text-nowrap"><span>{item.codigo}</span></td>
+            <td class="text-center">
+              {item.products.length}
+            </td>
             <td class="font-mono text-nowrap"
               >{formatDate(item.fecha_emision)}</td
             >
             <td class="font-mono text-nowrap"
               >{formatDate(item.fecha_vencimiento)}</td
             >
-            <td class="text-right font-mono">{item.subtotal}</td>
+            <td class="text-right font-mono">{formatFixed(item.subtotal)}</td>
             <td class="text-right font-mono">{formatPercent(item.igv_tasa)}</td>
             <td class="text-right font-mono">{formatFixed(item.igv_monto)}</td>
-            <td class="text-right font-mono">{item.total}</td>
+            <td class="text-right font-mono">{formatFixed(item.total)}</td>
             <td class="flex flex-row gap-1">
               <Link
                 href={ProformaController.edit(item.id)}
@@ -187,118 +183,4 @@
       >
     </div>
   </div>
-
-  <button class="btn" onclick={() => dialog.showModal()}>open modal</button>
-  <dialog bind:this={dialog} class="modal">
-    <div class="modal-box w-11/12 max-w-5xl">
-      <p class="text-lg font-bold">
-        Proforma {proformas.data[selectedIndex].codigo}
-      </p>
-      <div class="py-4 flex flex-row flex-wrap gap-2">
-        <!-- NOTE: hay que establecer medidas de imagen -->
-        <div
-          class="relative w-[339.52px] h-[480px] cursor-crosshair overflow-hidden"
-          bind:this={imageContainer}
-        >
-          <img class="w-full h-full" src="/proformas/getImgById/1234" alt="" />
-        </div>
-
-        <div class="overflow-x-auto max-h-56">
-          <table class={table() + ' table-pin-rows'}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Codigo</th>
-                <th>Descripcion</th>
-                <th class="text-right">Precio</th>
-                <th class="text-center">U. Medida</th>
-                <th class="text-center">Stock</th>
-                <th class="text-center">Activo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {const productos = $derived(
-                proformas.data[selectedIndex].products,
-              )}
-              {#each productos as item, idx (item.id)}
-                <tr>
-                  <th>{idx + 1}</th>
-                  <td class="font-mono">{item.codigo}</td>
-                  <td class="truncate max-w-50">{item.descripcion}</td>
-                  <td class="font-mono text-right">{item.precio}</td>
-                  <td class="text-center">{item.unidad_medida}</td>
-                  <td class="text-center">{item.stock}</td>
-                  <td class="text-center">
-                    {#if item.activo}
-                      <span
-                        class="inline-block bg-green-500 size-3 rounded-full"
-                      ></span>
-                    {:else}
-                      <span class="inline-block bg-red-500 size-3 rounded-full"
-                      ></span>
-                    {/if}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-          >✕</button
-        >
-      </form>
-    </div>
-
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-
-  {#if showProducts}
-    <p>
-      Productos de la Proforma <span class="font-bold"
-        >{proformas.data[selectedIndex].codigo}</span
-      >
-    </p>
-
-    <div class="overflow-x-auto max-h-56">
-      <table class={table() + ' table-pin-rows'}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Codigo</th>
-            <th>Descripcion</th>
-            <th class="text-right">Precio</th>
-            <th class="text-center">U. Medida</th>
-            <th class="text-center">Stock</th>
-            <th class="text-center">Activo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {const productos = $derived(proformas.data[selectedIndex].products)}
-          {#each productos as item, idx (item.id)}
-            <tr>
-              <th>{idx + 1}</th>
-              <td class="font-mono">{item.codigo}</td>
-              <td class="truncate max-w-50">{item.descripcion}</td>
-              <td class="font-mono text-right">{item.precio}</td>
-              <td class="text-center">{item.unidad_medida}</td>
-              <td class="text-center">{item.stock}</td>
-              <td class="text-center">
-                {#if item.activo}
-                  <span class="inline-block bg-green-500 size-3 rounded-full"
-                  ></span>
-                {:else}
-                  <span class="inline-block bg-red-500 size-3 rounded-full"
-                  ></span>
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  {/if}
 </div>
