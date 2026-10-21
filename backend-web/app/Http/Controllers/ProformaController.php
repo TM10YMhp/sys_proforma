@@ -46,11 +46,60 @@ class ProformaController extends Controller
    * Store a newly created resource in storage.
    * @return \Illuminate\Http\RedirectResponse
    */
-  public function store(StoreProformaRequest $request)
+  public function store(Request $request)
   {
-    $validated = $request->validated();
-    Proforma::create($validated);
-    return to_route("proformas.index");
+    // TODO: se quito la validacion por falta de tiempo
+    // $validated = $request->validated();
+    // Proforma::create($validated);
+
+    $validated = $request->validate([
+      'codigo' => 'required',
+      'fecha_emision' => 'required',
+      'fecha_vencimiento' => 'required',
+      'subtotal' => 'required|numeric',
+      'igv_tasa' => 'required|numeric',
+      'productos' => 'required|array',
+      'productos.*.id' => 'required|exists:products,id',
+      'productos.*.cantidad' => 'required|integer|min:1',
+    ]);
+
+    $productIds = collect($validated['productos'])->pluck('id')->all();
+    $products = Product::whereIn('id', $productIds)->get();
+    $productsIndexed = $products->keyBy('id');
+
+    DB::transaction(function () use ($validated, $productsIndexed) {
+      $igvMonto = $validated['subtotal'] * $validated['igv_tasa'];
+      $proforma = Proforma::create([
+        'codigo' => $validated['codigo'],
+        'fecha_emision' => $validated['fecha_emision'],
+        'fecha_vencimiento' => $validated['fecha_vencimiento'],
+        'subtotal' => $validated['subtotal'],
+        'igv_tasa' => $validated['igv_tasa'],
+        'igv_monto' => $igvMonto,
+        'total' => $validated['subtotal'] + $igvMonto,
+      ]);
+
+      // NOTE: formato requerido [ id_producto => [columna_pivote => valor] ]
+      $productosPivot = [];
+      foreach ($validated['productos'] as $item) {
+        $prod = $productsIndexed->get($item['id']);
+
+        // NOTE: quizas el id no exista
+        if (!$prod) {
+          continue;
+        }
+
+        $productosPivot[$item['id']] = [
+          'cantidad' => $item['cantidad'],
+          'precio_unitario' => $prod->precio,
+          'subtotal' => $prod->precio * $item['cantidad'],
+        ];
+      }
+
+      $proforma->products()->sync($productosPivot);
+    });
+
+    return to_route('proformas.index');
   }
 
   /**

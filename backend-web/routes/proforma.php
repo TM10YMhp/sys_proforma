@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('proformas')->group(function () {
   Route::get('/', [ProformaController::class, 'index'])->name('proformas.index');
-  Route::get('/{proforma}', [ProformaController::class, 'show'])->name('proformas.show');
   Route::get('/create', [ProformaController::class, 'create'])->name('proformas.create');
+  Route::get('/{proforma}', [ProformaController::class, 'show'])->name('proformas.show');
   Route::post('/', [ProformaController::class, 'store'])->name('proformas.store');
   Route::get('/edit/{proforma}', [ProformaController::class, 'edit'])->name('proformas.edit');
   Route::put('/{proforma}', [ProformaController::class, 'update'])->name('proformas.update');

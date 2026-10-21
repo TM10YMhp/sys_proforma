@@ -5,10 +5,10 @@
   import ProductController from '@/actions/App/Http/Controllers/ProductController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import type { Product, ProductItem } from '@/types/product';
-  import type { ProformaForm } from '@/types/proforma';
 
+  // HACK: tomar solo propiedades que se necesitan
   type Props = {
-    form: InertiaForm<ProformaForm>;
+    form: InertiaForm<any>;
     onAddProduct?: (productItem: ProductItem) => void;
   };
   let { form, onAddProduct }: Props = $props();

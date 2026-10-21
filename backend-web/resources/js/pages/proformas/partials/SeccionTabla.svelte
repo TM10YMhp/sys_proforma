@@ -3,10 +3,10 @@
   import { MinusIcon, PlusIcon, XIcon } from 'lucide-svelte';
   import { table } from '@/lib/variants';
   import type { ProductItem } from '@/types/product';
-  import type { ProformaForm } from '@/types/proforma';
 
+  // HACK: tomar solo propiedades que se necesitan
   type Props = {
-    form: InertiaForm<ProformaForm>;
+    form: InertiaForm<any>;
     productos: ProductItem[];
   };
   let { form, productos = $bindable() }: Props = $props();

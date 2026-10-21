@@ -9,7 +9,6 @@
       },
       {
         title: 'Nuevo',
-        href: proformasRoutes.create.url(),
       },
     ],
   };
@@ -19,95 +18,82 @@
   import { useForm } from '@inertiajs/svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
-  import InputError from '@/components/InputError.svelte';
-  import Button from '@/components/ui/button/Button.svelte';
-  import Input from '@/components/ui/input/Input.svelte';
-  import { Label } from '@/components/ui/label';
-  import type { Proforma } from '@/types/proforma';
+  import type { ProductItem } from '@/types/product';
+  import type { ProformaForm } from '@/types/proforma';
+  import SeccionProducto from './partials/SeccionProducto.svelte';
+  import SeccionProforma from './partials/SeccionProforma.svelte';
+  import SeccionTabla from './partials/SeccionTabla.svelte';
 
-  const { codigo } = $props();
+  type Props = {
+    codigo: string;
+  };
+  const { codigo }: Props = $props();
 
+  // HACK: usar codigo en lugar de id
   // svelte-ignore state_referenced_locally
-  const form = useForm<Omit<Proforma, 'id' | 'created_at' | 'updated_at'>>({
-    // codigo: crypto.randomUUID().split('-')[0],
+  // svelte-ignore non_reactive_update
+  let form = useForm<Omit<ProformaForm, 'id'> & { codigo: string }>({
     codigo: codigo,
-    fecha_emision: '',
-    fecha_vencimiento: '',
+    fecha_emision: new Date().toISOString(),
+    fecha_vencimiento: (() => {
+      // TODO: esto es seguro?
+      // eslint-disable-next-line svelte/prefer-svelte-reactivity
+      const mañana = new Date();
+      mañana.setDate(mañana.getDate() + 1);
+
+      return mañana.toISOString();
+    })(),
     subtotal: 0,
     igv_tasa: 0.18,
-    igv_monto: 0,
-    total: 0,
-    products: [],
+    productos: [],
   });
+
+  // NOTE: $effect solo debe usarse de forma excepcional
+  $effect(() => {
+    form.subtotal = productos.reduce(
+      (acum, producto) => acum + producto.cantidad * producto.precio,
+      0,
+    );
+  });
+
+  let productos = $state<ProductItem[]>([]);
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
+
+    form.productos = productos.map((p) => ({
+      id: p.id,
+      cantidad: p.cantidad,
+    }));
+
     form.post(ProformaController.store.url());
   };
 
-  const onChangeSubtotal = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = target.valueAsNumber;
-    // form.subtotal = value;
-    form.igv_monto = value * form.igv_tasa;
-    form.total = value + form.igv_monto;
+  const addProduct = (productItem: ProductItem) => {
+    const producto = productos.find((p) => p.id === productItem.id);
+
+    if (producto) {
+      producto.cantidad += productItem.cantidad;
+    } else {
+      productos.unshift({ ...productItem });
+    }
   };
 </script>
 
 <AppHead title="Proformas | Nuevo" />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <form onsubmit={handleSubmit} class="w-8/12 space-y-4">
-    <div>
-      <p>Codigo: <span class="font-bold">{codigo}</span></p>
-      <InputError message={form.errors.codigo} />
-    </div>
+  <form onsubmit={handleSubmit} class="space-y-2">
     <div class="flex flex-row gap-2">
-      <div>
-        <Label for="emision">Fecha de Emision</Label>
-        <Input id="emision" type="date" bind:value={form.fecha_emision} />
-        <InputError message={form.errors.fecha_emision} />
-      </div>
-      <div>
-        <Label for="vencimiento">Fecha de Vencimiento</Label>
-        <Input
-          id="vencimiento"
-          type="date"
-          bind:value={form.fecha_vencimiento}
-        />
-        <InputError message={form.errors.fecha_vencimiento} />
-      </div>
+      <SeccionProforma bind:form proforma={{ codigo }} />
+
+      <SeccionProducto {form} onAddProduct={addProduct} />
     </div>
-    <div class="flex flex-row gap-2">
-      <div>
-        <Label for="subtotal">Subtotal</Label>
-        <Input
-          id="subtotal"
-          type="number"
-          step="0.01"
-          bind:value={form.subtotal}
-          oninput={onChangeSubtotal}
-        />
-        <InputError message={form.errors.subtotal} />
-      </div>
-      <div>
-        <Label for="igv_tasa">IGV Tasa</Label>
-        <Input id="igv_tasa" bind:value={form.igv_tasa} />
-        <InputError message={form.errors.igv_tasa} />
-      </div>
-    </div>
-    <div class="flex flex-row gap-2">
-      <div>
-        <Label for="igv_monto">IGV Monto</Label>
-        <Input id="igv_monto" bind:value={form.igv_monto} readonly />
-        <InputError message={form.errors.igv_monto} />
-      </div>
-      <div>
-        <Label for="total">Total</Label>
-        <Input id="total" bind:value={form.total} readonly />
-        <InputError message={form.errors.total} />
-      </div>
-    </div>
-    <Button disabled={form.processing} type="submit">Crear Proforma</Button>
+
+    <SeccionTabla {form} bind:productos />
+
+    <button class="btn btn-primary" disabled={form.processing} type="submit"
+      >Crear Proforma</button
+    >
   </form>
 </div>

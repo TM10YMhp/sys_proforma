@@ -3,9 +3,15 @@
   import InputError from '@/components/InputError.svelte';
   import type { Proforma, ProformaForm } from '@/types/proforma';
 
+  // HACK: tomar solo propiedades que se necesitan
   type Props = {
-    form: InertiaForm<ProformaForm>;
-    proforma: Proforma;
+    form: InertiaForm<
+      Pick<
+        ProformaForm,
+        'fecha_emision' | 'fecha_vencimiento' | 'igv_tasa' | 'subtotal'
+      >
+    >;
+    proforma: Pick<Proforma, 'codigo'>;
   };
   const { form = $bindable(), proforma }: Props = $props();
 
