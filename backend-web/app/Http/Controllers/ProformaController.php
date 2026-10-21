@@ -205,16 +205,48 @@ class ProformaController extends Controller
    * NOTE: es necesario que el excel se haya creado antes
    * TODO: pasar datos de la proforma y manejar el estado interno
    * TODO: verificar que la webapi este activa
-   * @return \Illuminate\Http\Response
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
    */
-  public function exportPDF(string $id)
+  public function exportPDF(Proforma $proforma)
   {
-    $response = Http::post("http://localhost:5138/api/proforma/pdf/{$id}");
+    $proforma->load("products");
 
-    return response($response->body(), $response->status())
-      ->withHeaders($response->headers())
-      ->header('Content-Type', 'application/pdf')
-      ->header('Content-Disposition', "inline; filename=\"proforma_{$id}.pdf\"");
+    $productos = $proforma->products->map(fn($it) => [
+      "descripcion" => $it->descripcion,
+      "cantidad" => $it->pivot->cantidad,
+      "medida" => $it->unidad_medida,
+      "precio_unitario" => $it->precio,
+    ])->toArray();
+
+    $data = $this->convertKeyToPascalCase([
+      "id" => $proforma->codigo,
+      "cliente" => ProformaData::$cliente,
+      "productos" => $productos,
+      "condiciones" => ProformaData::$condiciones,
+      "fecha_emision" => $proforma->fecha_emision,
+      "fecha_vencimiento" => $proforma->fecha_vencimiento,
+    ]);
+
+    try {
+      $response = Http::post(
+        'http://localhost:5138/api/proforma/pdf',
+        $data
+      );
+
+      if ($response->successful()) {
+        $contentDisposition = $response->header('Content-Disposition');
+        $inlineDisposition = str_replace('attachment', 'inline', $contentDisposition);
+        return response($response->body(), $response->status())
+          ->withHeaders($response->headers())
+          ->header('Content-Disposition', $inlineDisposition);
+      }
+
+      return response($response->body(), $response->status());
+    } catch (ConnectionException $e) {
+      return response()->json([
+        'error' => 'El servicio de la API no esta disponible.'
+      ], 503);
+    }
   }
 
   /**

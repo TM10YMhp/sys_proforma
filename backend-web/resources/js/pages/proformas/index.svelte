@@ -133,11 +133,8 @@
                 href={ProformaController.exportExcel.url(item.id)}
                 class="btn [--btn-color:var(--color-green-900)]">Excel</a
               >
-              <!-- HACK: decidir como gestionar la generacion de pdf -->
               <a
-                href={ProformaController.exportPDF.url(
-                  'bd8a4dfe-ff6f-4f54-9412-b522e4b3a235',
-                )}
+                href={ProformaController.exportPDF.url(item.id)}
                 target="_blank"
                 class="btn [--btn-color:var(--color-red-900)]">PDF</a
               >
