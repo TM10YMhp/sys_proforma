@@ -15,8 +15,10 @@
 </script>
 
 <script lang="ts">
+  import { Link } from '@inertiajs/svelte';
   import { useZoomImageClick } from '@zoom-image/svelte';
   import { onMount } from 'svelte';
+  import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
   import { table } from '@/lib/variants';
   import type { Proforma } from '@/types/proforma';
@@ -56,39 +58,26 @@
 <AppHead title={`Proforma | ${proforma.codigo}`} />
 
 <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <div class="flex flex-row flex-wrap gap-x-4 justify-evenly">
-    <div
-      class={[
-        'h-fit',
-        'grid grid-cols-[auto_1fr] gap-x-2',
-        '[&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right',
-        '[&>*:nth-child(even)]:font-mono',
-      ]}
-    >
-      <span>Codigo:</span>
-      <span>{proforma.codigo}</span>
-      <span>Fecha Emision:</span>
-      <span>{formatDate(proforma.fecha_emision)}</span>
-      <span>Fecha Vencimiento:</span>
-      <span>{formatDate(proforma.fecha_vencimiento)}</span>
-    </div>
-
-    <div
-      class={[
-        // HACK: para que este alineado se establecio un ancho fijo
-        'h-fit w-50.5',
-        'grid grid-cols-[auto_1fr] gap-x-2',
-        '[&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right',
-        '[&>*:nth-child(even)]:font-mono',
-      ]}
-    >
-      <span>Subtotal:</span>
-      <span>{proforma.subtotal.toFixed(2)}</span>
-      <span>IGV Monto:</span>
-      <span>{proforma.igv_monto.toFixed(2)}</span>
-      <span>Total:</span>
-      <span>{proforma.total.toFixed(2)}</span>
-    </div>
+  <div
+    class={[
+      'h-fit',
+      'grid grid-cols-[auto_1fr] gap-x-2',
+      '[&>*:nth-child(odd)]:font-bold [&>*:nth-child(odd)]:text-right',
+      '[&>*:nth-child(even)]:font-mono',
+    ]}
+  >
+    <span>Codigo:</span>
+    <span>{proforma.codigo}</span>
+    <span>Fecha Emision:</span>
+    <span>{formatDate(proforma.fecha_emision)}</span>
+    <span>Fecha Vencimiento:</span>
+    <span>{formatDate(proforma.fecha_vencimiento)}</span>
+    <span>Subtotal:</span>
+    <span>{proforma.subtotal.toFixed(2)}</span>
+    <span>IGV Monto:</span>
+    <span>{proforma.igv_monto.toFixed(2)}</span>
+    <span>Total:</span>
+    <span>{proforma.total.toFixed(2)}</span>
   </div>
 
   <div class="overflow-x-auto">
@@ -130,6 +119,21 @@
         {/each}
       </tbody>
     </table>
+  </div>
+
+  <div class="flex flex-row gap-x-2">
+    <Link href={ProformaController.edit(proforma.id)} class="btn btn-info">
+      Editar
+    </Link>
+    <a
+      href={ProformaController.exportExcel.url(proforma.id)}
+      class="btn [--btn-color:var(--color-green-900)]">Excel</a
+    >
+    <a
+      href={ProformaController.exportPDF.url(proforma.id)}
+      target="_blank"
+      class="btn [--btn-color:var(--color-red-900)]">PDF</a
+    >
   </div>
 
   <div
