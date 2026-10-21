@@ -1,3 +1,4 @@
+using System.Globalization;
 using ErrorOr;
 using GeneradorProforma.Core.Entity;
 using OfficeOpenXml;
@@ -89,6 +90,18 @@ public class ProformaService : IProformaService
       $"VALIDEZ DE LA OFERTA: {condiciones.ValidezOferta}";
   }
 
+  private static void FillWithDates(ExcelWorksheet sheet, Proforma proforma)
+  {
+    // NOTE: aplicar directamente el desfase de peru (UTC-5 => -5 horas)
+    DateTimeOffset fechaPeru = proforma.FechaEmision.ToOffset(
+      TimeSpan.FromHours(-5)
+    );
+    string formatDate = fechaPeru
+      .ToString("dd 'DE' MMMM 'DEL' yyyy", new CultureInfo("es-ES"))
+      .ToUpper();
+    sheet.Cells["D47"].Value = $"CHINCHA ALTA, {formatDate}";
+  }
+
   public ErrorOr<string> GenerateExcel(Proforma proforma)
   {
     var nombrePlantilla = "plantilla.xlsx";
@@ -125,6 +138,7 @@ public class ProformaService : IProformaService
       FillWithClient(sheet, proforma.Cliente);
       FillWithProducts(sheet, proforma.Productos);
       FillWithConditions(sheet, proforma.Condiciones);
+      FillWithDates(sheet, proforma);
 
       package.SaveAs(rutaArchivoSalida);
     }

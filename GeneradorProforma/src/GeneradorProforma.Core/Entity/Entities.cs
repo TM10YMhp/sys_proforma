@@ -19,7 +19,6 @@ public record Producto
   public required int Cantidad { get; init; }
   public required string Medida { get; init; }
   public required double PrecioUnitario { get; init; }
-  public required double Total { get; init; }
 }
 
 public record Proforma
@@ -28,4 +27,6 @@ public record Proforma
   public required ClienteInfo Cliente { get; init; }
   public required List<Producto> Productos { get; init; }
   public required CondicionesInfo Condiciones { get; init; }
+  public required DateTimeOffset FechaEmision { get; init; }
+  public required DateTimeOffset FechaVencimiento { get; init; }
 };

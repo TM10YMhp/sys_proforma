@@ -35,7 +35,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 27,
         Medida = "UN",
         PrecioUnitario = 10,
-        Total = 270,
       },
       new()
       {
@@ -43,7 +42,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 20,
         Medida = "UN",
         PrecioUnitario = 24,
-        Total = 480,
       },
       new()
       {
@@ -51,7 +49,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 8,
         Medida = "UN",
         PrecioUnitario = 12.5,
-        Total = 100,
       },
       new()
       {
@@ -59,7 +56,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 2,
         Medida = "UN",
         PrecioUnitario = 10,
-        Total = 20,
       },
       new()
       {
@@ -67,7 +63,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 6,
         Medida = "UN",
         PrecioUnitario = 65,
-        Total = 390,
       },
       new()
       {
@@ -75,7 +70,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 8,
         Medida = "UN",
         PrecioUnitario = 15,
-        Total = 120,
       },
       new()
       {
@@ -83,7 +77,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 20,
         Medida = "UN",
         PrecioUnitario = 2.5,
-        Total = 50,
       },
       new()
       {
@@ -91,7 +84,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 22,
         Medida = "UN",
         PrecioUnitario = 3.5,
-        Total = 77,
       },
       new()
       {
@@ -99,7 +91,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 20,
         Medida = "UN",
         PrecioUnitario = 4,
-        Total = 80,
       },
       new()
       {
@@ -107,7 +98,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 12,
         Medida = "UN",
         PrecioUnitario = 5,
-        Total = 60,
       },
       new()
       {
@@ -115,7 +105,6 @@ public class ProformaController(IProformaService service) : ControllerBase
         Cantidad = 20,
         Medida = "UN",
         PrecioUnitario = 9,
-        Total = 180,
       },
     ];
 
@@ -125,6 +114,8 @@ public class ProformaController(IProformaService service) : ControllerBase
       Cliente = cliente,
       Productos = products,
       Condiciones = condiciones,
+      FechaEmision = DateTimeOffset.Now,
+      FechaVencimiento = DateTimeOffset.Now.AddDays(7),
     };
   }
 
@@ -141,15 +132,7 @@ public class ProformaController(IProformaService service) : ControllerBase
       );
     }
 
-    var result = _service.GenerateExcel(
-      new Proforma()
-      {
-        Id = request.Id,
-        Cliente = request.Cliente,
-        Productos = request.Productos,
-        Condiciones = request.Condiciones,
-      }
-    );
+    var result = _service.GenerateExcel(request);
 
     if (result.IsError)
     {
@@ -191,15 +174,7 @@ public class ProformaController(IProformaService service) : ControllerBase
       );
     }
 
-    var result = _service.GeneratePDF(
-      new Proforma()
-      {
-        Id = request.Id,
-        Cliente = request.Cliente,
-        Productos = request.Productos,
-        Condiciones = request.Condiciones,
-      }
-    );
+    var result = _service.GeneratePDF(request);
     if (result.IsError)
     {
       return BadRequest(result.Errors);
@@ -234,15 +209,7 @@ public class ProformaController(IProformaService service) : ControllerBase
       );
     }
 
-    var result = _service.GenerateImg(
-      new Proforma()
-      {
-        Id = request.Id,
-        Cliente = request.Cliente,
-        Productos = request.Productos,
-        Condiciones = request.Condiciones,
-      }
-    );
+    var result = _service.GenerateImg(request);
     if (result.IsError)
     {
       return BadRequest(result.Errors);

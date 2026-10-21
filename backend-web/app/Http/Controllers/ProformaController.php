@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\ProductDTO;
 use App\Exports\ProformaData;
-use App\Exports\ProformaExport;
 use App\Models\Product;
 use App\Models\Proforma;
 use App\Http\Requests\StoreProformaRequest;
-use App\Http\Requests\UpdateProformaRequest;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ProformaController extends Controller
 {
@@ -167,36 +164,41 @@ class ProformaController extends Controller
   }
 
   /**
-   * @return \Illuminate\Http\Response
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
    */
   public function exportExcel(Proforma $proforma)
   {
     $proforma->load("products");
 
-    /** @var Collection<int, Product> */
-    $productsDB = $proforma->products;
-    $productos = $productsDB->map(fn($it) => [
+    $productos = $proforma->products->map(fn($it) => [
       "descripcion" => $it->descripcion,
-      "cantidad" => $it->stock,
+      "cantidad" => $it->pivot->cantidad,
       "medida" => $it->unidad_medida,
       "precio_unitario" => $it->precio,
-      "total" => 0,
     ])->toArray();
 
-    $data = [
+    $data = $this->convertKeyToPascalCase([
       "id" => $proforma->codigo,
       "cliente" => ProformaData::$cliente,
       "productos" => $productos,
       "condiciones" => ProformaData::$condiciones,
-    ];
+      "fecha_emision" => $proforma->fecha_emision,
+      "fecha_vencimiento" => $proforma->fecha_vencimiento,
+    ]);
 
-    $response = Http::post(
-      'http://localhost:5138/api/proforma/excel',
-      $this->convertKeyToPascalCase($data)
-    );
+    try {
+      $response = Http::post(
+        'http://localhost:5138/api/proforma/excel',
+        $data
+      );
 
-    return response($response->body(), $response->status())
-      ->withHeaders($response->headers());
+      return response($response->body(), $response->status())
+        ->withHeaders($response->headers());
+    } catch (ConnectionException $e) {
+      return response()->json([
+        'error' => 'El servicio de la API no esta disponible.'
+      ], 503);
+    }
   }
 
   /**

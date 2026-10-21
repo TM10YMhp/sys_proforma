@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Collection<int, Product> $products
+ */
 #[Fillable(
   'codigo',
   'fecha_emision',
