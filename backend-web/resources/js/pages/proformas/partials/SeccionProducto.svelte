@@ -13,6 +13,8 @@
   };
   let { form, onAddProduct }: Props = $props();
 
+  let buscando = $state(false);
+
   let productItem = $state<ProductItem>({
     id: 0,
     codigo: '',
@@ -53,6 +55,8 @@
   };
 
   const handleAcceptCode = async (codigo: string) => {
+    buscando = true;
+
     const response = await fetch(
       ProductController.get.url({ query: { q: codigo, by: 'codigo' } }),
     );
@@ -67,9 +71,13 @@
       unidad_medida: producto.unidad_medida,
       activo: producto.activo,
     };
+
+    buscando = false;
   };
 
   const handleAcceptDescription = async (codigo: string) => {
+    buscando = true;
+
     const response = await fetch(
       ProductController.get.url({ query: { q: codigo, by: 'descripcion' } }),
     );
@@ -84,11 +92,15 @@
       unidad_medida: producto.unidad_medida,
       activo: producto.activo,
     };
+
+    buscando = false;
   };
 </script>
 
 <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
-  <legend class="fieldset-legend px-2 leading-none">Producto</legend>
+  <legend class="fieldset-legend px-2 leading-none"
+    >Producto{buscando ? ' - Buscando...' : ''}</legend
+  >
 
   <label>
     <span class="label">Descripcion</span>
@@ -135,7 +147,7 @@
 
   <button
     class="btn btn-secondary mt-2"
-    disabled={form.processing}
+    disabled={buscando || form.processing}
     type="button"
     onclick={addProduct}>Agregar Producto</button
   >
