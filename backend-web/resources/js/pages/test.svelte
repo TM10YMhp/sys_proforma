@@ -1,12 +1,6 @@
 <script lang="ts">
-  import Autocomplete from '@/components/_ui/autocomplete.svelte';
-
-  let busqueda = $state('');
 </script>
 
-<label for="prueba">Agregar Producto:</label>
-<Autocomplete
-  id="prueba"
-  bind:value={busqueda}
-  placeholder="Escribe el nombre del producto..."
-/>
+<div class="flex items-center justify-center">
+  <input type="checkbox" class="toggle toggle-md toggle-primary" />
+</div>

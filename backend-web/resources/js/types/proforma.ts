@@ -40,5 +40,5 @@ export interface ProformaForm {
   subtotal: number;
   igv_tasa: number;
   productos: { id: number; cantidad: number }[];
-  // cliente: { id: number };
+  cliente_id: number;
 }

@@ -121,7 +121,19 @@ class ProformaController extends Controller
    */
   public function edit(Proforma $proforma)
   {
-    $proforma->load("products");
+    $proforma->load(['products', 'cliente']);
+
+    // $proformaData = array_filter(
+    //   $proforma->toArray(),
+    //   fn($value) => $value !== null
+    // );
+    // if (isset($proformaData['cliente'])) {
+    //   $proformaData['cliente'] = array_filter(
+    //     $proformaData['cliente'],
+    //     fn($value) => $value !== null
+    //   );
+    // }
+
     return Inertia::render('proformas/edit', [
       'proforma' => $proforma
     ]);

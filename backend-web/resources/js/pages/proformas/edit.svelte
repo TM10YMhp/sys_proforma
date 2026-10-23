@@ -20,6 +20,7 @@
   import AppHead from '@/components/AppHead.svelte';
   import type { ProductItem } from '@/types/product';
   import type { Proforma, ProformaForm } from '@/types/proforma';
+  import SeccionCliente from './partials/SeccionCliente.svelte';
   import SeccionProducto from './partials/SeccionProducto.svelte';
   import SeccionProforma from './partials/SeccionProforma.svelte';
   import SeccionTabla from './partials/SeccionTabla.svelte';
@@ -54,6 +55,7 @@
       id: x.pivot.product_id,
       cantidad: x.pivot.cantidad,
     })),
+    cliente_id: proforma.cliente_id,
   });
 
   // NOTE: $effect solo debe usarse de forma excepcional
@@ -71,6 +73,10 @@
       id: p.id,
       cantidad: p.cantidad,
     }));
+
+    console.log(form.data())
+
+    return;
 
     form.put(ProformaController.update.url(proforma.id));
   };
@@ -95,45 +101,7 @@
 
       <SeccionProducto {form} onAddProduct={addProduct} />
 
-      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
-        <legend class="fieldset-legend px-2 leading-none">Cliente</legend>
-
-        <label>
-          <span class="label">Nombres</span>
-          <input class="input" />
-        </label>
-        <div class="flex flex-row gap-4">
-          <label>
-            <span class="label">Primer Apellido</span>
-            <input class="input" />
-          </label>
-          <label>
-            <span class="label">Segundo Apellido</span>
-            <input class="input" />
-          </label>
-        </div>
-        <div class="flex flex-row gap-4">
-          <label>
-            <span class="label">RUC</span>
-            <input type="number" class="input" />
-          </label>
-          <label>
-            <span class="label">DNI</span>
-            <input type="number" class="input" />
-          </label>
-          <label>
-            <span class="label">Telefono</span>
-            <input class="input" />
-          </label>
-        </div>
-
-        <button
-          class="btn btn-secondary mt-2"
-          disabled={form.processing}
-          type="button"
-          onclick={(_) => {}}>Establecer Cliente</button
-        >
-      </fieldset>
+      <SeccionCliente bind:form {proforma} />
     </div>
 
     <SeccionTabla {form} bind:productos />
