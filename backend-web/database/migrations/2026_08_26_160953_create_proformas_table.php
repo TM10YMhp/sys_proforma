@@ -14,8 +14,7 @@ return new class extends Migration {
       $table->id();
 
       $table->string('codigo')->unique();
-      // TODO: implementar
-      // $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
+      $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
       $table->timestamp('fecha_emision');
       $table->timestamp('fecha_vencimiento');
       $table->decimal('subtotal', 10, 2);

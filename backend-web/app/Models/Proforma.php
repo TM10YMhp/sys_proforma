@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Schema;
 
@@ -42,5 +43,13 @@ class Proforma extends Model
     $pivotColumns = Schema::getColumnListing('proforma_items');
     return $this->belongsToMany(Product::class, "proforma_items")
       ->withPivot($pivotColumns);
+  }
+
+  /**
+   * @return BelongsTo<Cliente, $this>
+   */
+  public function cliente()
+  {
+    return $this->belongsTo(Cliente::class, "cliente_id");
   }
 }

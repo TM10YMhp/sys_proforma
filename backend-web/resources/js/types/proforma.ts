@@ -1,3 +1,4 @@
+import type { Cliente } from './cliente';
 import type { Product } from './product';
 
 export interface Proforma {
@@ -12,6 +13,8 @@ export interface Proforma {
   total: number;
 
   products: (Product & { pivot: ProformaItem })[];
+  cliente: Cliente;
+  cliente_id: number;
 
   created_at: string;
   updated_at: string;

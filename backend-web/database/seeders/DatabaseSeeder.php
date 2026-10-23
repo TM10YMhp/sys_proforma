@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
 
     $this->call([
       ProductSeeder::class,
-      ProformaSeeder::class,
-      ClienteSeeder::class
+      ClienteSeeder::class,
+      ProformaSeeder::class
     ]);
   }
 }

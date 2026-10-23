@@ -60,6 +60,14 @@
   const formatFixed = (numero: number) => {
     return numero.toFixed(2);
   };
+
+  const formatClient = (cliente: Proforma['cliente']) => {
+    if (cliente.ruc) {
+      return cliente.nombres;
+    }
+
+    return `${cliente.nombres}, ${cliente.apellido_primario} ${cliente.apellido_secundario}`;
+  };
 </script>
 
 <AppHead title="Proforma" />
@@ -75,6 +83,7 @@
         <tr>
           <th>#</th>
           <th>Codigo</th>
+          <th>Cliente</th>
           <th class="text-center">Productos</th>
           <th>Fecha Emision</th>
           <th>Fecha Vencimiento</th>
@@ -101,7 +110,8 @@
             }}
           >
             <th>{index + Number(proformas.from)}</th>
-            <td class="font-mono text-nowrap"><span>{item.codigo}</span></td>
+            <td class="font-mono text-nowrap">{item.codigo}</td>
+            <td class="text-nowrap">{formatClient(item.cliente)}</td>
             <td class="text-center">
               {item.products.length}
             </td>

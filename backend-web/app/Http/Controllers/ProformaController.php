@@ -22,7 +22,8 @@ class ProformaController extends Controller
    */
   public function index()
   {
-    $proformas = Proforma::with('products')->orderByDesc('codigo')->paginate(6);
+    $proformas = Proforma::with(['products', 'cliente'])
+      ->orderByDesc('codigo')->paginate(6);
     return Inertia::render("proformas/index", [
       'proformas' => $proformas
     ]);

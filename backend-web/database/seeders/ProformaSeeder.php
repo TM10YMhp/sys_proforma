@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cliente;
 use App\Models\Product;
 use App\Models\Proforma;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -14,6 +15,7 @@ class ProformaSeeder extends Seeder
    */
   public function run(): void
   {
+    $clientes = Cliente::all();
     $products = Product::all();
 
     foreach (range(1, 10) as $i) {
@@ -41,6 +43,7 @@ class ProformaSeeder extends Seeder
       $montoIgv = $subtotalProforma * 0.18;
       $codigo = \sprintf("001 - %d", 2547 + $i);
       $proforma = Proforma::create([
+        'cliente_id' => $clientes->random()->id,
         'subtotal' => $subtotalProforma,
         'codigo' => $codigo,
         'igv_monto' => $montoIgv,
