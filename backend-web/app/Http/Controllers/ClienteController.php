@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
@@ -141,5 +142,58 @@ class ClienteController extends Controller
     //     "mensaje" => "No se pudo conectar con el servicio o el RUC es invalido. Codigo HTTP: {$http_code}"
     //   ]);
     // }
+  }
+
+  /**
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function search(Request $request)
+  {
+    $buscar = $request->query('q');
+    $by = $request->query('by');
+
+    if (empty($buscar) || empty($by)) {
+      return response()->json([]);
+    }
+
+    $columnasPermitidas = ['nombres', 'apellido_primario', 'apellido_secundario'];
+    if (!\in_array($by, $columnasPermitidas)) {
+      return response()->json(['error' => 'Criterio de busqueda inválido'], 400);
+    }
+
+    $buscar = strtolower($buscar);
+    $buscar = str_split(str_replace(" ", "", $buscar));
+    $buscar = implode("%", $buscar);
+    $buscar = "%{$buscar}%";
+
+    // TODO: esto podria causar inyeccion sql
+    /** @phpstan-ignore argument.type */
+    $cliente = Cliente::whereRaw("lower({$by}) LIKE ?", [$buscar])
+      ->select($by)
+      ->limit(10)
+      ->pluck($by);
+
+    return response()->json($cliente);
+  }
+
+  /**
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function get(Request $request)
+  {
+    $buscar = $request->query('q');
+    $by = $request->query('by');
+
+    if (empty($buscar) || empty($by)) {
+      return response()->json((object) []);
+    }
+
+    $columnasPermitidas = ['nombres', 'apellido_primario', 'apellido_secundario', 'ruc', 'dni', 'telefono'];
+    if (!\in_array($by, $columnasPermitidas)) {
+      return response()->json(['error' => 'Criterio de busqueda inválido'], 400);
+    }
+
+    $cliente = Cliente::where($by, '=', $buscar)->first();
+    return response()->json($cliente);
   }
 }

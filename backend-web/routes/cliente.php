@@ -12,4 +12,6 @@ Route::prefix('clientes')->group(function () {
   Route::delete('/{cliente}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
 
   Route::get('/getByRUC/{ruc}', [ClienteController::class, 'getByRUC'])->name('clientes.getByRUC');
+  Route::get('/search', [ClienteController::class, 'search'])->name('clientes.search');
+  Route::get('/get', [ClienteController::class, 'get'])->name('clientes.get');
 });
