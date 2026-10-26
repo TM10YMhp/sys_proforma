@@ -5,6 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Modules\Product\Application\DeleteProduct;
+use App\Modules\Product\Application\FindProductByField;
+use App\Modules\Product\Application\GetNextProductCode;
+use App\Modules\Product\Application\GetPaginatedProducts;
+use App\Modules\Product\Application\SearchProductField;
+use App\Modules\Product\Application\UpdateProduct;
+use App\Modules\Product\Domain\ProductPaginateCriteria;
+use App\Modules\Product\Domain\ProductSearchCriteria;
+use App\Modules\Product\Domain\SortCriteria;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,9 +25,16 @@ class ProductController extends Controller
    * Display a listing of the resource.
    * @return \Inertia\Response
    */
-  public function index()
+  public function index(GetPaginatedProducts $getPaginatedProducts)
   {
-    $products = Product::orderByDesc('codigo')->paginate(6);
+    // $products = Product::orderByDesc('codigo')->paginate(6);
+    $products = $getPaginatedProducts->execute(new ProductPaginateCriteria(
+      perPage: 6,
+      sort: new SortCriteria(
+        field: 'codigo',
+        direction: 'desc'
+      )
+    ));
     return Inertia::render("products/index", [
       'products' => $products
     ]);
@@ -27,11 +44,9 @@ class ProductController extends Controller
    * Show the form for creating a new resource.
    * @return \Inertia\Response
    */
-  public function create()
+  public function create(GetNextProductCode $getNextProductCode)
   {
-    $ultimoProducto = Product::latest("codigo")->first();
-    [$prefijo, $numero] = sscanf($ultimoProducto->codigo, "%[A-Za-z]-%[0-9]");
-    $siguienteCodigo = \sprintf("%s-%04d", $prefijo, (int) $numero + 1);
+    $siguienteCodigo = $getNextProductCode->execute();
 
     return Inertia::render('products/create', [
       'codigo' => $siguienteCodigo
@@ -73,10 +88,15 @@ class ProductController extends Controller
    * Update the specified resource in storage.
    * @return \Illuminate\Http\RedirectResponse
    */
-  public function update(UpdateProductRequest $request, Product $product)
-  {
+  public function update(
+    UpdateProductRequest $request,
+    int $id,
+    UpdateProduct $updateProduct
+  ) {
     $validated = $request->validated();
-    $product->update($validated);
+
+    $updateProduct->execute($id, $validated);
+
     return to_route('products.index');
   }
 
@@ -84,16 +104,17 @@ class ProductController extends Controller
    * Remove the specified resource from storage.
    * @return \Illuminate\Http\RedirectResponse
    */
-  public function destroy(Product $product)
+  public function destroy(int $id, DeleteProduct $deleteProduct)
   {
-    // TODO: revisar esto
-    $product->delete();
+    $deleteProduct->execute($id);
 
     return to_route('products.index');
   }
 
-  public function search(Request $request): JsonResponse
-  {
+  public function search(
+    Request $request,
+    SearchProductField $searchProductField
+  ): JsonResponse {
     // TODO: probar laravel/scout
     // $buscar = $request->input('q');
     $buscar = $request->query('q');
@@ -103,34 +124,19 @@ class ProductController extends Controller
       return response()->json([]);
     }
 
-    $columnasPermitidas = ['codigo', 'descripcion'];
-    if (!\in_array($by, $columnasPermitidas)) {
-      return response()->json(['error' => 'Criterio de búsqueda inválido'], 400);
+    try {
+      $products = $searchProductField->execute(new ProductSearchCriteria(
+        term: $buscar,
+        searchBy: $by
+      ));
+
+      return response()->json($products);
+    } catch (Exception $e) {
+      return response()->json(['error' => $e->getMessage()], 422);
     }
-
-    $buscar = strtolower($buscar);
-    $buscar = str_split(str_replace(" ", "", $buscar));
-    $buscar = implode("%", $buscar);
-    $buscar = "%" . $buscar . "%";
-
-    // TODO: esto podria causar inyeccion sql
-    /** @phpstan-ignore argument.type */
-    $products = Product::whereRaw("lower({$by}) LIKE ?", [$buscar])
-      ->select(
-        // 'id',
-        // 'codigo',
-        // 'precio'
-        $by
-      )
-      ->limit(10) // Limitar para mejorar el rendimiento
-      // ->dd();
-      // ->get();
-      ->pluck($by);
-
-    return response()->json($products);
   }
 
-  public function get(Request $request): JsonResponse
+  public function get(Request $request, FindProductByField $findProductByField): JsonResponse
   {
     $buscar = $request->query('q');
     $by = $request->query('by', 'codigo');
@@ -139,12 +145,16 @@ class ProductController extends Controller
       return response()->json((object) []);
     }
 
-    $columnasPermitidas = ['codigo', 'descripcion'];
-    if (!\in_array($by, $columnasPermitidas)) {
-      return response()->json(['error' => 'Criterio de búsqueda inválido'], 400);
+    $product = $findProductByField->execute(
+      new ProductSearchCriteria(
+        term: $buscar,
+        searchBy: $by
+      )
+    );
+    if (!$product) {
+      return response()->json(null, 404);
     }
 
-    $product = Product::where($by, '=', $buscar)->first();
     return response()->json($product);
   }
 }
