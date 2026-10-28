@@ -77,6 +77,8 @@ public class ProformaService : IProformaService
     sheet.Cells["A3"].Value = $"SEÑORES: {cliente.Empresa}";
     sheet.Cells["A4"].Value = $"ATENCIÓN: {cliente.NombreCliente}";
     sheet.Cells["A5"].Value = $"COND. PAGO: {cliente.CondicionPago}";
+
+    // sheet.Cells["D3"].Value = $"RUC: {cliente.Ruc}";
   }
 
   private static void FillWithConditions(

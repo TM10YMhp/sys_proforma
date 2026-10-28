@@ -149,6 +149,7 @@ class ProformaController extends Controller
     // $validated = $request->validated();
 
     $validated = $request->validate([
+      'cliente_id' => 'required|exists:clientes,id',
       'fecha_emision' => 'required',
       'fecha_vencimiento' => 'required',
       'subtotal' => 'required|numeric',
@@ -165,6 +166,7 @@ class ProformaController extends Controller
     DB::transaction(function () use ($proforma, $validated, $productsIndexed) {
       $igvMonto = $validated['subtotal'] * $validated['igv_tasa'];
       $proforma->update([
+        'cliente_id' => $validated['cliente_id'],
         'fecha_emision' => $validated['fecha_emision'],
         'fecha_vencimiento' => $validated['fecha_vencimiento'],
         'subtotal' => $validated['subtotal'],
@@ -225,12 +227,9 @@ class ProformaController extends Controller
     return $resultado;
   }
 
-  /**
-   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
-   */
-  public function exportExcel(Proforma $proforma)
+  private function formatProformaData(Proforma $proforma)
   {
-    $proforma->load("products");
+    $proforma->load(["products", "cliente"]);
 
     $productos = $proforma->products->map(fn($it) => [
       "descripcion" => $it->descripcion,
@@ -239,16 +238,40 @@ class ProformaController extends Controller
       "precio_unitario" => $it->precio,
     ])->toArray();
 
-    $data = $this->convertKeyToPascalCase([
+    $cliente = [
+      "empresa" => "",
+      "nombre_cliente" => "",
+      "condicion_pago" => "Credito 15 dias",
+    ];
+
+    $clienteData = $proforma->cliente;
+    if ($clienteData->ruc) {
+      $cliente['empresa'] = $clienteData->nombres;
+    } else {
+      $cliente['nombre_cliente'] = implode(' ', array_filter([
+        $clienteData->nombres,
+        $clienteData->apellido_primario,
+        $clienteData->apellido_secundario
+      ]));
+    }
+
+    return $this->convertKeyToPascalCase([
       "id" => $proforma->codigo,
-      "cliente" => ProformaData::$cliente,
+      "cliente" => $cliente,
       "productos" => $productos,
       "condiciones" => ProformaData::$condiciones,
       "fecha_emision" => $proforma->fecha_emision,
       "fecha_vencimiento" => $proforma->fecha_vencimiento,
     ]);
+  }
 
+  /**
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
+   */
+  public function exportExcel(Proforma $proforma)
+  {
     try {
+      $data = $this->formatProformaData($proforma);
       $response = Http::post(
         'http://localhost:5138/api/proforma/excel',
         $data
@@ -264,32 +287,12 @@ class ProformaController extends Controller
   }
 
   /**
-   * NOTE: es necesario que el excel se haya creado antes
-   * TODO: pasar datos de la proforma y manejar el estado interno
-   * TODO: verificar que la webapi este activa
    * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
    */
   public function exportPDF(Proforma $proforma)
   {
-    $proforma->load("products");
-
-    $productos = $proforma->products->map(fn($it) => [
-      "descripcion" => $it->descripcion,
-      "cantidad" => $it->pivot->cantidad,
-      "medida" => $it->unidad_medida,
-      "precio_unitario" => $it->precio,
-    ])->toArray();
-
-    $data = $this->convertKeyToPascalCase([
-      "id" => $proforma->codigo,
-      "cliente" => ProformaData::$cliente,
-      "productos" => $productos,
-      "condiciones" => ProformaData::$condiciones,
-      "fecha_emision" => $proforma->fecha_emision,
-      "fecha_vencimiento" => $proforma->fecha_vencimiento,
-    ]);
-
     try {
+      $data = $this->formatProformaData($proforma);
       $response = Http::post(
         'http://localhost:5138/api/proforma/pdf',
         $data

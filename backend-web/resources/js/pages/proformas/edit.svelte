@@ -74,10 +74,6 @@
       cantidad: p.cantidad,
     }));
 
-    console.log(form.data());
-
-    return;
-
     form.put(ProformaController.update.url(proforma.id));
   };
 

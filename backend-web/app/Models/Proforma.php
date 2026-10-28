@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection<int, Product> $products
+ * @property \App\Models\Cliente $cliente
  */
 #[Fillable(
   'codigo',
@@ -19,7 +20,8 @@ use Illuminate\Support\Facades\Schema;
   'subtotal',
   'igv_tasa',
   'igv_monto',
-  'total'
+  'total',
+  'cliente_id'
 )]
 class Proforma extends Model
 {
