@@ -1,0 +1,64 @@
+set default-list := true
+
+output_dir  := "output"
+backend_dir := output_dir + "/backend-web"
+
+# Elimina builds anteriores
+@clean:
+  echo "🗑️ Limpiando builds anteriores..."
+  rm -rf {{output_dir}}/
+  echo
+
+# Ejecuta todo el proceso de compilación
+[script]
+build: clean
+  echo "[*] 🚀 Iniciando exportación limpia del proyecto..."
+  git checkout-index -a -f --prefix={{output_dir}}/
+  echo
+
+  echo "[*] 🧹 Eliminando archivos innecesarios..."
+  rm -rf {{output_dir}}/GeneradorProforma/
+  rm {{output_dir}}/.gitignore
+  rm {{output_dir}}/justfile
+  echo
+
+
+  echo "[generador] ⚙️ Compilando Web API para Windows (Release)..."
+  cd GeneradorProforma
+  dotnet publish src/GeneradorProforma.WebAPI -c Release -r win-x64 -o publish
+  cd ..
+  echo
+
+  echo "[generador] 📦 Moviendo artefactos de C#..."
+  mv GeneradorProforma/publish {{output_dir}}/GeneradorProforma
+  echo
+
+
+  echo "[web] 📄 Configurando entorno de Laravel (.env)..."
+  cd {{backend_dir}}
+  cp .env.example .env
+  echo
+
+  echo "[web] 📦 Instalando dependencias de PHP..."
+  composer install --no-dev --optimize-autoloader
+  echo
+
+  echo "[web] 🔑 Generando App Key de Laravel..."
+  php artisan key:generate
+  echo
+
+  echo "[web] 🗄️ Ejecutando migraciones de Base de Datos..."
+  php artisan migrate --force
+  echo
+
+  echo "[web] ⚡ Instalando y compilando Frontend..."
+  npm install --loglevel info
+  npm run build
+  echo
+
+
+  echo "========================================================="
+  echo "✅ ¡Build completado con éxito!"
+  echo "========================================================="
+  echo "👉 Web API de C# lista en:  {{output_dir}}/GeneradorProforma"
+  echo "👉 Para probar Laravel:     cd {{backend_dir}} && php artisan serve"
