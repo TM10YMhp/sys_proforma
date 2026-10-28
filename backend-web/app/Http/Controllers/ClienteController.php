@@ -156,7 +156,7 @@ class ClienteController extends Controller
       return response()->json([]);
     }
 
-    $columnasPermitidas = ['nombres', 'apellido_primario', 'apellido_secundario'];
+    $columnasPermitidas = ['nombres', 'apellido_primario', 'apellido_secundario', 'ruc', 'dni', 'telefono'];
     if (!\in_array($by, $columnasPermitidas)) {
       return response()->json(['error' => 'Criterio de busqueda inválido'], 400);
     }

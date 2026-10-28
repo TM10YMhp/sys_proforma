@@ -1,15 +1,14 @@
 <script lang="ts">
-  import type { InertiaForm } from '@inertiajs/svelte';
   import ClienteController from '@/actions/App/Http/Controllers/ClienteController';
   import Autocomplete from '@/components/_ui/autocomplete.svelte';
   import type { Cliente } from '@/types/cliente';
-  import type { Proforma, ProformaForm } from '@/types/proforma';
+  import type { Proforma } from '@/types/proforma';
 
   type Props = {
-    form: InertiaForm<ProformaForm>;
     proforma: Pick<Proforma, 'cliente'>;
+    onAcceptCliente?: (cliente_id: number) => void;
   };
-  const { form = $bindable(), proforma }: Props = $props();
+  const { proforma, onAcceptCliente }: Props = $props();
 
   let buscando = $state.raw(false);
 
@@ -17,7 +16,7 @@
   let esEmpresa = $state.raw(Boolean(proforma.cliente.ruc));
 
   // svelte-ignore state_referenced_locally
-  let clienteItem = $state.raw({
+  let clienteItem = $state({
     nombres: proforma.cliente.nombres,
     apellido_primario: proforma.cliente.apellido_primario ?? '',
     apellido_secundario: proforma.cliente.apellido_secundario ?? '',
@@ -28,7 +27,13 @@
 
   const handleAcceptCliente = async (
     search: string,
-    searchBy: 'nombres' | 'apellido_primario' | 'apellido_secundario',
+    searchBy:
+      | 'nombres'
+      | 'apellido_primario'
+      | 'apellido_secundario'
+      | 'ruc'
+      | 'dni'
+      | 'telefono',
   ) => {
     buscando = true;
 
@@ -48,6 +53,8 @@
       };
 
       esEmpresa = Boolean(cliente.ruc);
+
+      onAcceptCliente?.(cliente.id);
     } catch (error) {
       console.error('Error al buscar cliente:', error);
     } finally {
@@ -120,15 +127,27 @@
     <label class="min-w-30">
       {#if esEmpresa}
         <span class="label">RUC</span>
-        <input class="input" defaultValue={clienteItem.ruc} />
+        <Autocomplete
+          bind:value={clienteItem.ruc}
+          urlTemplate="/clientes/search?q=%s&by=ruc"
+          onAccept={(search) => handleAcceptCliente(search, 'ruc')}
+        />
       {:else}
         <span class="label">DNI</span>
-        <input class="input" defaultValue={clienteItem.dni} />
+        <Autocomplete
+          bind:value={clienteItem.dni}
+          urlTemplate="/clientes/search?q=%s&by=dni"
+          onAccept={(search) => handleAcceptCliente(search, 'dni')}
+        />
       {/if}
     </label>
     <label class="min-w-30">
       <span class="label">Telefono</span>
-      <input class="input" defaultValue={clienteItem.telefono} />
+      <Autocomplete
+        bind:value={clienteItem.telefono}
+        urlTemplate="/clientes/search?q=%s&by=telefono"
+        onAccept={(search) => handleAcceptCliente(search, 'telefono')}
+      />
     </label>
   </div>
 </fieldset>

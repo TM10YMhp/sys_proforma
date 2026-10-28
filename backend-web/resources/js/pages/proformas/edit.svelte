@@ -74,7 +74,7 @@
       cantidad: p.cantidad,
     }));
 
-    console.log(form.data())
+    console.log(form.data());
 
     return;
 
@@ -90,6 +90,10 @@
       productos.unshift({ ...productItem });
     }
   };
+
+  const handleAcceptCliente = (cliente_id: number) => {
+    form.cliente_id = cliente_id;
+  };
 </script>
 
 <AppHead title="Proformas | Editar" />
@@ -101,7 +105,7 @@
 
       <SeccionProducto {form} onAddProduct={addProduct} />
 
-      <SeccionCliente bind:form {proforma} />
+      <SeccionCliente {proforma} onAcceptCliente={handleAcceptCliente} />
     </div>
 
     <SeccionTabla {form} bind:productos />
