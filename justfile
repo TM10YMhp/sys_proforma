@@ -23,16 +23,13 @@ build: clean
   echo
 
 
-  echo "[generador] ⚙️ Compilando Web API para Windows (Release)..."
-  cd GeneradorProforma
-  dotnet publish src/GeneradorProforma.WebAPI -c Release -r win-x64 -o publish
+  echo "[web] ⚡ Instalando y compilando Frontend..."
+  cd backend-web
+  npm install --loglevel info
+  npm run build
   cd ..
+  cp -r backend-web/public/build {{backend_dir}}/public/build
   echo
-
-  echo "[generador] 📦 Moviendo artefactos de C#..."
-  mv GeneradorProforma/publish {{output_dir}}/GeneradorProforma
-  echo
-
 
   echo "[web] 📄 Configurando entorno de Laravel (.env)..."
   cd {{backend_dir}}
@@ -51,9 +48,17 @@ build: clean
   php artisan migrate --force
   echo
 
-  echo "[web] ⚡ Instalando y compilando Frontend..."
-  npm install --loglevel info
-  npm run build
+  cd ../..
+
+
+  echo "[generador] ⚙️ Compilando Web API para Windows (Release)..."
+  cd GeneradorProforma
+  dotnet publish src/GeneradorProforma.WebAPI -c Release -r win-x64 -o publish
+  cd ..
+  echo
+
+  echo "[generador] 📦 Moviendo artefactos de C#..."
+  mv GeneradorProforma/publish {{output_dir}}/GeneradorProforma
   echo
 
 
