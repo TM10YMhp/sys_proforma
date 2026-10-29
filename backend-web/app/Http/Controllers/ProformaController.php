@@ -271,9 +271,16 @@ class ProformaController extends Controller
   public function exportExcel(Proforma $proforma)
   {
     try {
+      $url = config('services.proforma.url');
+      if (!$url) {
+        return response()->json([
+          'error' => 'El servicio generador no esta establecido'
+        ], 404);
+      }
+
       $data = $this->formatProformaData($proforma);
       $response = Http::post(
-        'http://localhost:5138/api/proforma/excel',
+        "{$url}/api/proforma/excel",
         $data
       );
 
@@ -292,9 +299,16 @@ class ProformaController extends Controller
   public function exportPDF(Proforma $proforma)
   {
     try {
+      $url = config('services.proforma.url');
+      if (!$url) {
+        return response()->json([
+          'error' => 'El servicio generador no esta establecido'
+        ], 404);
+      }
+
       $data = $this->formatProformaData($proforma);
       $response = Http::post(
-        'http://localhost:5138/api/proforma/pdf',
+        "{$url}/api/proforma/pdf",
         $data
       );
 
@@ -315,11 +329,18 @@ class ProformaController extends Controller
   }
 
   /**
-   * @return \Illuminate\Http\Response
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
    */
   public function getImgById(string $id)
   {
-    $response = Http::get("http://localhost:5138/api/proforma/img/{$id}");
+    $url = config('services.proforma.url');
+    if (!$url) {
+      return response()->json([
+        'error' => 'El servicio generador no esta establecido'
+      ], 404);
+    }
+
+    $response = Http::get("{$url}/api/proforma/img/{$id}");
 
     return response($response->body(), $response->status())
       ->withHeaders($response->headers());

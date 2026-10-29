@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'proforma' => [
+      'url' => env('GENERADOR_PROFORMA_URL')
+    ]
 ];

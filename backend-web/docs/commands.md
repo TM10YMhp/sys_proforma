@@ -14,4 +14,7 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 
 php artisan make:observer <name>
+
+# limpiar memoria cache de configuracion
+php artisan config:clear
 ```

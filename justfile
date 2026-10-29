@@ -41,6 +41,7 @@ build: clean
   echo "[web] 📄 Configurando entorno de Laravel (.env)..."
   cd {{backend_dir}}
   cp .env.example .env
+  sed -i "s|^GENERADOR_PROFORMA_URL=.*|GENERADOR_PROFORMA_URL=http://localhost:5000|" .env
   echo
 
   echo "[web] 📦 Instalando dependencias de PHP..."
