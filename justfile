@@ -3,6 +3,9 @@ set default-list := true
 output_dir  := "output"
 backend_dir := output_dir + "/backend-web"
 
+set_db:
+  cp backend-web/database/database.sqlite {{backend_dir}}/database/database.sqlite
+
 # Elimina builds anteriores
 @clean:
   echo "🗑️ Limpiando builds anteriores..."
