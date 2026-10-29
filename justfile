@@ -16,10 +16,17 @@ build: clean
   git checkout-index -a -f --prefix={{output_dir}}/
   echo
 
-  echo "[*] 🧹 Eliminando archivos innecesarios..."
-  rm -rf {{output_dir}}/GeneradorProforma/
-  rm {{output_dir}}/.gitignore
-  rm {{output_dir}}/justfile
+  echo "[*] 🧹 Limpiando exportación..."
+  cd {{output_dir}}
+
+  mv scripts/sys_proforma.cmd sys_proforma.cmd
+
+  rm -rf GeneradorProforma/
+  rm -rf scripts/
+  rm .gitignore
+  rm justfile
+
+  cd ..
   echo
 
 
