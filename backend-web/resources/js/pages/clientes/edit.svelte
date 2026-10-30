@@ -19,10 +19,6 @@
   import { useForm } from '@inertiajs/svelte';
   import ClienteController from '@/actions/App/Http/Controllers/ClienteController';
   import AppHead from '@/components/AppHead.svelte';
-  import InputError from '@/components/InputError.svelte';
-  import Button from '@/components/ui/button/Button.svelte';
-  import Input from '@/components/ui/input/Input.svelte';
-  import { Label } from '@/components/ui/label';
   import type { Cliente } from '@/types/cliente';
 
   type Props = {
@@ -44,47 +40,71 @@
     e.preventDefault();
     form.put(ClienteController.update.url(cliente.id));
   };
+
+  // svelte-ignore state_referenced_locally
+  let esEmpresa = $state.raw(Boolean(cliente.ruc));
 </script>
 
 <AppHead title="Clientes | Editar" />
 
-<div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <form onsubmit={handleSubmit} class="w-1/3 space-y-4">
-    <div>
-      <Label for="nombres">Nombres</Label>
-      <Input id="nombres" bind:value={form.nombres} />
-      <InputError message={form.errors.nombres} />
-    </div>
-    <div class="flex flex-row gap-4">
-      <div>
-        <Label for="apellido_primario">Primer Apellido</Label>
-        <Input id="apellido_primario" bind:value={form.apellido_primario} />
-        <InputError message={form.errors.apellido_primario} />
-      </div>
-      <div>
-        <Label for="apellido_secundario">Segundo Apellido</Label>
-        <Input id="apellido_secundario" bind:value={form.apellido_secundario} />
-        <InputError message={form.errors.apellido_secundario} />
-      </div>
-    </div>
-    <div class="flex flex-row gap-4">
-      <div>
-        <Label for="ruc">RUC</Label>
-        <Input id="ruc" type="number" bind:value={form.ruc} />
-        <InputError message={form.errors.ruc} />
-      </div>
-      <div>
-        <Label for="dni">DNI</Label>
-        <Input id="dni" type="number" bind:value={form.dni} />
-        <InputError message={form.errors.dni} />
-      </div>
-      <div>
-        <Label for="telefono">Telefono</Label>
-        <Input id="telefono" bind:value={form.telefono} />
-        <InputError message={form.errors.telefono} />
-      </div>
-    </div>
-    <Button disabled={form.processing} type="submit">Actualizar Cliente</Button
+<form class="grid gap-2 grid-cols-1 max-w-80 m-4" onsubmit={handleSubmit}>
+  <div class="flex gap-2 items-center">
+    {const noLabelStyle = 'btn btn-link no-underline text-white btn-square'}
+
+    <button
+      type="button"
+      class={noLabelStyle}
+      onclick={() => (esEmpresa = false)}>DNI</button
     >
-  </form>
-</div>
+    <input
+      type="checkbox"
+      bind:checked={esEmpresa}
+      class={[
+        'toggle',
+        'border-blue-600 bg-blue-500 text-blue-800',
+        'checked:border-emerald-500 checked:bg-emerald-400 checked:text-emerald-800',
+      ]}
+    />
+    <button
+      type="button"
+      class={noLabelStyle}
+      onclick={() => (esEmpresa = true)}>RUC</button
+    >
+  </div>
+
+  <label>
+    <span class="label">Nombres</span>
+    <input bind:value={form.nombres} class="input" />
+  </label>
+  {#if !esEmpresa}
+    <div class="flex flex-row gap-4">
+      <label>
+        <span class="label">Primer Apellido</span>
+        <input bind:value={form.apellido_primario} class="input" />
+      </label>
+      <label>
+        <span class="label">Segundo Apellido</span>
+        <input bind:value={form.apellido_secundario} class="input" />
+      </label>
+    </div>
+  {/if}
+  <div class="flex flex-row gap-4">
+    <label class="min-w-30">
+      {#if esEmpresa}
+        <span class="label">RUC</span>
+        <input bind:value={form.ruc} class="input" />
+      {:else}
+        <span class="label">DNI</span>
+        <input bind:value={form.dni} class="input" />
+      {/if}
+    </label>
+    <label class="min-w-30">
+      <span class="label">Telefono</span>
+      <input bind:value={form.telefono} class="input" />
+    </label>
+  </div>
+
+  <button class="btn btn-primary" disabled={form.processing} type="submit"
+    >Actualizar Cliente</button
+  >
+</form>
