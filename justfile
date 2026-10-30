@@ -16,7 +16,7 @@ set_db:
 [script]
 build: clean
   echo "[*] 🚀 Iniciando exportación limpia del proyecto..."
-  git checkout-index -a -f --prefix={{output_dir}}/
+  git checkout-index -a --prefix={{output_dir}}/
   echo
 
   echo "[*] 🧹 Limpiando exportación..."
@@ -45,6 +45,9 @@ build: clean
   cd {{backend_dir}}
   cp .env.example .env
   sed -i "s|^GENERADOR_PROFORMA_URL=.*|GENERADOR_PROFORMA_URL=http://localhost:5000|" .env
+  sed -i "s|^APP_ENV=.*|APP_ENV=production|" .env
+  sed -i "s|^APP_DEBUG=.*|APP_DEBUG=false|" .env
+  sed -i "s|^APP_URL=.*|APP_URL=https://sysproforma.shares.zrok.io|" .env
   echo
 
   echo "[web] 📦 Instalando dependencias de PHP..."
