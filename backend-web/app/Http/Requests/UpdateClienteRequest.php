@@ -27,22 +27,22 @@ class UpdateClienteRequest extends FormRequest
 
     return [
       'nombres' => ["required", "string", "max:255"],
-      'apellido_primario' => ["required", "string", "max:255"],
-      'apellido_secundario' => ["required", "string", "max:255"],
+      'apellido_primario' => ["nullable", "string", "max:255"],
+      'apellido_secundario' => ["nullable", "string", "max:255"],
       'ruc' => [
-        "required",
+        "nullable",
         Rule::unique('clientes', 'ruc')->ignore($clienteId),
         "integer",
         "min:0"
       ],
       'dni' => [
-        "required",
+        "nullable",
         Rule::unique('clientes', 'dni')->ignore($clienteId),
         "integer",
         "min:0"
       ],
       'telefono' => [
-        "required",
+        "nullable",
         Rule::unique('clientes', 'telefono')->ignore($clienteId),
         "string",
         "max:255"
