@@ -106,7 +106,7 @@
         class="join-item btn btn-soft">«</Link
       >
       {#each clientes.links as item (item.label)}
-        {#if !item.label.includes('Previous') && !item.label.includes('Next')}
+        {#if !item.label.includes('&laquo;') && !item.label.includes('&raquo;')}
           <Link
             prefetch="click"
             cacheFor="3m"
