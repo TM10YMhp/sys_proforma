@@ -9,6 +9,27 @@
       "label": "composer run dev",
       "command": "composer run dev"
     },
+    {
+      "label": "php artisan serve",
+      "command": "php artisan serve",
+      "presentation": {
+        "group": "group1"
+      },
+      "hide": true
+    },
+    {
+      "label": "zrok share",
+      "command": "zrok2 share public 8000 --headless",
+      "presentation": {
+        "group": "group1"
+      },
+      "hide": true
+    },
+    {
+      "label": "test tunnel",
+      "command": "echo 3",
+      "dependsOn": ["php artisan serve", "zrok share"]
+    }
     // {
     //   "label": "create-excel",
     //   "command": "node create-excel.ts && start test.xlsx",
