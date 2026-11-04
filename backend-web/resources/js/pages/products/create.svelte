@@ -32,7 +32,6 @@
   const form = useForm<Omit<Product, 'id' | 'created_at' | 'updated_at'>>({
     codigo,
     descripcion: '',
-    stock: 0,
     precio: 0,
     unidad_medida: '',
     activo: true,
@@ -58,11 +57,6 @@
       <InputError message={form.errors.descripcion} />
     </div>
     <div class="flex flex-row gap-4">
-      <div>
-        <Label for="stock">Stock</Label>
-        <Input id="stock" type="number" bind:value={form.stock} />
-        <InputError message={form.errors.stock} />
-      </div>
       <div>
         <Label for="precio">Precio</Label>
         <Input id="precio" type="number" step="0.01" bind:value={form.precio} />

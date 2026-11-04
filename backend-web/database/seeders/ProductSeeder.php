@@ -67,7 +67,6 @@ class ProductSeeder extends Seeder
 
       $product['codigo'] = $codigo;
       $product['unidad_medida'] = 'UN';
-      $product['stock'] = 50;
       $product['activo'] = true;
       $product['created_at'] = now();
       $product['updated_at'] = now();

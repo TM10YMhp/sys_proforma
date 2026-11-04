@@ -19,7 +19,6 @@ class ProductDTO
   {
     return new ProductDTO(
       descripcion: $product->descripcion,
-      cantidad: $product->stock,
       medida: $product->unidad_medida,
       precio_unitario: $product->precio,
       total: 0,

@@ -27,7 +27,7 @@ class ProductFactory extends Factory
       'descripcion' => fake()->unique()->sentence(),
       'precio' => fake()->randomFloat(2, 0, 100),
       'unidad_medida' => fake()->randomElement(['KG', 'UN']),
-      'stock' => fake()->randomDigit(),
+      // 'stock' => fake()->randomDigit(),
       'activo' => fake()->boolean(75)
     ];
   }

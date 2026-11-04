@@ -25,7 +25,6 @@ class UpdateProductRequest extends FormRequest
     return [
       'codigo' => ["required", "string", "max:255"],
       'descripcion' => ["required", "string", "max:255"],
-      'stock' => ["required", "integer:strict", "min:0"],
       'precio' => ["required", "decimal:0,2", "min:0"],
       'unidad_medida' => ["required", "string", "max:255"],
       'activo' => ["required", "boolean:strict", "max:255"],

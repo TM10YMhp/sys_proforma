@@ -17,7 +17,7 @@ return new class extends Migration {
       $table->text('descripcion')->unique();
       $table->decimal('precio', 10, 2);
       $table->string('unidad_medida');
-      $table->unsignedInteger('stock')->default(0);
+      // $table->unsignedInteger('stock')->default(0);
       $table->boolean('activo');
 
       $table->timestamps();

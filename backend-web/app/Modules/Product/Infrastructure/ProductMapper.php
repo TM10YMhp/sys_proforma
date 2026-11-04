@@ -13,7 +13,6 @@ class ProductMapper
       id: $eloquent->id,
       codigo: $eloquent->codigo,
       descripcion: $eloquent->descripcion,
-      stock: $eloquent->stock,
       precio: $eloquent->precio,
       unidad_medida: $eloquent->unidad_medida,
       activo: $eloquent->activo

@@ -52,7 +52,6 @@
           <th>Descripcion</th>
           <th class="text-right">Precio</th>
           <th class="text-center">U. Medida</th>
-          <th class="text-center">Stock</th>
           <th class="text-center">Activo</th>
           <th>Acciones</th>
         </tr>
@@ -65,7 +64,6 @@
             <td class="truncate max-w-50">{item.descripcion}</td>
             <td class="font-mono text-right">{item.precio}</td>
             <td class="text-center">{item.unidad_medida}</td>
-            <td class="text-center">{item.stock}</td>
             <td class="text-center">
               {#if item.activo}
                 <span class="inline-block bg-green-500 size-3 rounded-full"

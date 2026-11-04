@@ -20,7 +20,6 @@ class UpdateProduct
       descripcion: $data['descripcion'],
       precio: $data['precio'],
       unidad_medida: $data['unidad_medida'],
-      stock: $data['stock'],
       activo: $data['activo']
     ));
   }

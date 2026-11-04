@@ -19,7 +19,6 @@ class EloquentProductRepository implements ProductRepository
       'descripcion' => $product->descripcion,
       'precio' => $product->precio,
       'unidad_medida' => $product->unidad_medida,
-      'stock' => $product->stock,
       'activo' => $product->activo
     ]);
 
@@ -35,7 +34,6 @@ class EloquentProductRepository implements ProductRepository
       'descripcion' => $product->descripcion,
       'precio' => $product->precio,
       'unidad_medida' => $product->unidad_medida,
-      'stock' => $product->stock,
       'activo' => $product->activo
     ]);
   }

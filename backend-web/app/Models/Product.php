@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable(
   'codigo',
   'descripcion',
-  'stock',
   'precio',
   'unidad_medida',
   'activo'
