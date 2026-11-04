@@ -54,6 +54,7 @@ class ProformaController extends Controller
     // Proforma::create($validated);
 
     $validated = $request->validate([
+      'cliente_id' => 'required|exists:clientes,id',
       'codigo' => 'required',
       'fecha_emision' => 'required',
       'fecha_vencimiento' => 'required',
@@ -71,6 +72,7 @@ class ProformaController extends Controller
     DB::transaction(function () use ($validated, $productsIndexed) {
       $igvMonto = $validated['subtotal'] * $validated['igv_tasa'];
       $proforma = Proforma::create([
+        'cliente_id' => $validated['cliente_id'],
         'codigo' => $validated['codigo'],
         'fecha_emision' => $validated['fecha_emision'],
         'fecha_vencimiento' => $validated['fecha_vencimiento'],

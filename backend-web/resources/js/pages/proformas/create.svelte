@@ -20,6 +20,7 @@
   import AppHead from '@/components/AppHead.svelte';
   import type { ProductItem } from '@/types/product';
   import type { ProformaForm } from '@/types/proforma';
+  import SeccionCliente from './partials/SeccionCliente.svelte';
   import SeccionProducto from './partials/SeccionProducto.svelte';
   import SeccionProforma from './partials/SeccionProforma.svelte';
   import SeccionTabla from './partials/SeccionTabla.svelte';
@@ -46,6 +47,7 @@
     subtotal: 0,
     igv_tasa: 0.18,
     productos: [],
+    cliente_id: 0,
   });
 
   // NOTE: $effect solo debe usarse de forma excepcional
@@ -78,6 +80,10 @@
       productos.unshift({ ...productItem });
     }
   };
+
+  const handleAcceptCliente = (cliente_id: number) => {
+    form.cliente_id = cliente_id;
+  };
 </script>
 
 <AppHead title="Proformas | Nuevo" />
@@ -88,9 +94,36 @@
       <SeccionProforma bind:form proforma={{ codigo }} />
 
       <SeccionProducto {form} onAddProduct={addProduct} />
+
+      <!-- HACK: deberia aceptar cliente vacio -->
+      <SeccionCliente
+        proforma={{
+          cliente: {
+            id: 0,
+            nombres: '',
+            apellido_primario: '',
+            apellido_secundario: '',
+            ruc: '',
+            dni: '',
+            telefono: '',
+            created_at: '',
+            updated_at: '',
+          },
+        }}
+        onAcceptCliente={handleAcceptCliente}
+      />
     </div>
 
     <SeccionTabla {form} bind:productos />
+
+    {#if form.hasErrors}
+      <fieldset class="fieldset rounded-box border border-base-100 px-2 w-xs">
+        <legend class="fieldset-legend px-2 leading-none">Errores</legend>
+        {#each Object.values(form.errors) as error, i (i)}
+          <p>{error}</p>
+        {/each}
+      </fieldset>
+    {/if}
 
     <button class="btn btn-primary" disabled={form.processing} type="submit"
       >Crear Proforma</button
