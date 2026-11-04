@@ -24,11 +24,11 @@ class StoreClienteRequest extends FormRequest
   {
     return [
       'nombres' => ["required", "string", "max:255"],
-      'apellido_primario' => ["required", "string", "max:255"],
-      'apellido_secundario' => ["required", "string", "max:255"],
-      'ruc' => ["required", "unique:clientes,ruc", "integer:strict", "min:0"],
-      'dni' => ["required", "unique:clientes,dni", "integer:strict", "min:0"],
-      'telefono' => ["required", "unique:clientes,telefono", "string", "max:255"]
+      'apellido_primario' => ["nullable", "string", "max:255"],
+      'apellido_secundario' => ["nullable", "string", "max:255"],
+      'ruc' => ["nullable", "unique:clientes,ruc", "integer", "min:0"],
+      'dni' => ["nullable", "unique:clientes,dni", "integer", "min:0"],
+      'telefono' => ["nullable", "unique:clientes,telefono", "string", "max:255"]
     ];
   }
 }
