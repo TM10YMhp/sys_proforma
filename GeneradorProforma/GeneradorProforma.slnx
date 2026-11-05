@@ -3,5 +3,6 @@
     <Project Path="src/GeneradorProforma.Console/GeneradorProforma.Console.csproj" />
     <Project Path="src/GeneradorProforma.Core/GeneradorProforma.Core.csproj" />
     <Project Path="src/GeneradorProforma.WebAPI/GeneradorProforma.WebAPI.csproj" />
+    <Project Path="src/GeneradorProforma.WPF/GeneradorProforma.WPF.csproj" />
   </Folder>
 </Solution>
