@@ -16,6 +16,10 @@
     {
       "label": "WebAPI: watch",
       "command": "dotnet watch --project src/GeneradorProforma.WebAPI"
+    },
+    {
+      "label": "WPF: run",
+      "command": "dotnet run --project src/GeneradorProforma.WPF"
     }
   ]
 }
