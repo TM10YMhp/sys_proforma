@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <SolidColorBrush x:Key="ActivoBrush"
+                   Color="#C8E6C9" />
+  <SolidColorBrush x:Key="InactivoBrush"
+                   Color="#B3E5FC" />
+
+  <Style x:Key="HeaderTextStyle"
+         TargetType="TextBlock">
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="StatusBorderStyle"
+         TargetType="Border">
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="Margin" Value="2" />
+    <Setter Property="Background" Value="{StaticResource InactivoBrush}" />
+  </Style>
+</ResourceDictionary>
