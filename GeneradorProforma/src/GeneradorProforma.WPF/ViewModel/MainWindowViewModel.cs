@@ -9,9 +9,9 @@ internal partial class MainWindowViewModel : ObservableObject
   [ObservableProperty]
   private ObservableWebService _webService = new();
 
-  [RelayCommand]
-  private void ToggleWebService()
+  [RelayCommand(AllowConcurrentExecutions = true)]
+  private async Task ToggleWebService()
   {
-    WebService.Toggle();
+    await WebService.Toggle();
   }
 }

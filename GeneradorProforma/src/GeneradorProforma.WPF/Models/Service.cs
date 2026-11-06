@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace GeneradorProforma.WPF.Models;
@@ -19,36 +20,90 @@ internal partial class ObservableService : ObservableObject
 
   public string BtnText => IsRunning ? "Detener" : "Iniciar";
 
+  public Process? Process;
+
   public void CleanupState()
   {
     PID = "--";
     Port = "--";
     IsRunning = false;
+    Process?.Dispose();
+    Process = null;
   }
 }
 
 internal partial class ObservableWebService : ObservableService
 {
-  public void Start()
+  public async Task Start()
   {
-    Logger("Iniciar servicio web");
+    var psi = new ProcessStartInfo
+    {
+      FileName = "ping",
+      Arguments = "google.com -n 5",
+      RedirectStandardOutput = true,
+      RedirectStandardError = true,
+      UseShellExecute = false,
+      CreateNoWindow = true,
+      StandardOutputEncoding = System.Text.Encoding.UTF8,
+    };
+    Process = new Process { StartInfo = psi };
+    Process.OutputDataReceived += (sender, args) =>
+    {
+      if (args.Data != null)
+      {
+        App.Current.Dispatcher.Invoke(() => Logger(args.Data));
+      }
+    };
 
-    IsRunning = true;
-    PID = new Random().Next(1000, 9999).ToString();
+    try
+    {
+      Process.Start();
+      Process.BeginOutputReadLine();
+
+      IsRunning = true;
+      PID = Process.Id.ToString();
+
+      Logger($"Web ejecutándose. Port: {Port}, PID: {PID}.");
+
+      await Process.WaitForExitAsync();
+    }
+    catch (Exception ex)
+    {
+      Logger($"Error al ejecutar: {ex.Message}");
+    }
+    finally
+    {
+      // NOTE: esto se ejecuta cuando el proceso termina normalmente o falla
+      // no si el usuario lo detiene manualmente
+      if (IsRunning)
+      {
+        CleanupState();
+      }
+    }
   }
 
   public void Stop()
   {
-    Logger("Detener servicio web");
+    try
+    {
+      if (Process != null && !Process.HasExited)
+      {
+        Process.Kill(entireProcessTree: true);
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger($"Aviso al detener proceso: {ex.Message}");
+    }
 
     CleanupState();
   }
 
-  public void Toggle()
+  public async Task Toggle()
   {
     if (!IsRunning)
     {
-      Start();
+      await Start();
     }
     else
     {
