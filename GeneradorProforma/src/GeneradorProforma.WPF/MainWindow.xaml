@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:GeneradorProforma.WPF"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodel="clr-namespace:GeneradorProforma.WPF.ViewModel"
         Title="sys-proforma"
         Width="500"
         Height="350"
@@ -16,6 +17,10 @@
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Window.Resources>
+
+  <Window.DataContext>
+    <viewmodel:MainWindowViewModel />
+  </Window.DataContext>
 
   <Grid>
     <Grid.RowDefinitions>
@@ -91,7 +96,9 @@
                     Margin="4,0,0,0"
                     Orientation="Horizontal">
           <Button Width="65"
-                  Height="25" />
+                  Height="25"
+                  Command="{Binding ToggleServiceCommand}"
+                  Content="Iniciar" />
           <!--<Button Content="Config" Width="65" Height="25" Margin="0,0,5,0" Background="White"/>-->
         </StackPanel>
 
@@ -137,7 +144,7 @@
                    FontSize="11"
                    Foreground="#ffffff"
                    IsReadOnly="True"
-                   Text="web"
+                   Text="{Binding LogService, Mode=OneWay}"
                    TextWrapping="Wrap"
                    VerticalScrollBarVisibility="Auto" />
         </TabItem>
@@ -149,7 +156,7 @@
                    FontSize="11"
                    Foreground="#ffffff"
                    IsReadOnly="True"
-                   Text="generador"
+                   Text="{Binding LogService, Mode=OneWay}"
                    TextWrapping="Wrap"
                    VerticalScrollBarVisibility="Auto" />
         </TabItem>
