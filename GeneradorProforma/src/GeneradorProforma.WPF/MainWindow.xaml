@@ -136,7 +136,7 @@
     <GroupBox Grid.Row="2"
               Header="Registros">
 
-      <TabControl x:Name="miTabControl">
+      <TabControl SelectionChanged="TabControl_SelectionChanged">
         <TabItem Header="Web">
           <TextBox Padding="4"
                    Background="#000000"
@@ -144,7 +144,8 @@
                    FontSize="11"
                    Foreground="#ffffff"
                    IsReadOnly="True"
-                   Text="{Binding LogService, Mode=OneWay}"
+                   TargetUpdated="TextBox_TargetUpdated"
+                   Text="{Binding LogService, Mode=OneWay, NotifyOnTargetUpdated=True}"
                    TextWrapping="Wrap"
                    VerticalScrollBarVisibility="Auto" />
         </TabItem>
@@ -156,7 +157,8 @@
                    FontSize="11"
                    Foreground="#ffffff"
                    IsReadOnly="True"
-                   Text="{Binding LogService, Mode=OneWay}"
+                   TargetUpdated="TextBox_TargetUpdated"
+                   Text="{Binding LogService, Mode=OneWay, NotifyOnTargetUpdated=True}"
                    TextWrapping="Wrap"
                    VerticalScrollBarVisibility="Auto" />
         </TabItem>

@@ -1,13 +1,7 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace GeneradorProforma.WPF;
 
@@ -16,8 +10,37 @@ namespace GeneradorProforma.WPF;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+  public MainWindow()
+  {
+    InitializeComponent();
+  }
+
+  private void TextBox_TargetUpdated(object sender, DataTransferEventArgs e)
+  {
+    if (sender is TextBox textBox)
     {
-        InitializeComponent();
+      textBox.ScrollToEnd();
     }
+  }
+
+  private void TabControl_SelectionChanged(
+    object sender,
+    SelectionChangedEventArgs e
+  )
+  {
+    if (e.Source is TabControl tabControl && tabControl.SelectedContent != null)
+    {
+      if (tabControl.SelectedContent is TextBox textBox)
+      {
+        // TODO: asegura el scroll pero muestra un parpadeo
+        Dispatcher.BeginInvoke(
+          new Action(() =>
+          {
+            textBox.ScrollToEnd();
+          }),
+          DispatcherPriority.Background
+        );
+      }
+    }
+  }
 }
