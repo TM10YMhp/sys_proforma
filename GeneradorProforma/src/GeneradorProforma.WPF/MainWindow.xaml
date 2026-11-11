@@ -6,8 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodel="clr-namespace:GeneradorProforma.WPF.ViewModel"
         Title="sys-proforma"
-        Width="500"
-        Height="350"
+        Width="800"
+        Height="500"
         mc:Ignorable="d">
 
   <Window.Resources>

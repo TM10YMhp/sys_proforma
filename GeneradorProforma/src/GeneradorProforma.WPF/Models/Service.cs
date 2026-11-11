@@ -28,7 +28,10 @@ internal partial class ObservableGeneratorService : ObservableService
     if (!IsRunning)
     {
       IsRunning = true;
-      await Runner.StartAsync("pwd", "");
+      await Runner.StartAsync(
+        "cmd.exe",
+        "/k \"cd ../output/GeneradorProforma && GeneradorProforma.WebAPI.exe\""
+      );
       CleanupState();
     }
     else
