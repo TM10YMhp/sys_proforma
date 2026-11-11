@@ -48,7 +48,48 @@ internal partial class ObservableWebService : ObservableService
     {
       IsRunning = true;
 
-      await _runner.StartAsync("ping", "google.com -n 5");
+      await _runner.StartAsync(
+        "cmd.exe",
+        "/k \"cd ../output/backend-web && php artisan serve\""
+      );
+
+      CleanupState();
+    }
+    else
+    {
+      _runner.Stop();
+
+      CleanupState();
+    }
+  }
+
+  private void Logger(string message)
+  {
+    Log += $"{message}\n";
+  }
+}
+
+internal partial class ObservableGeneratorService : ObservableService
+{
+  private ProcessRunner _runner = new();
+
+  public ObservableGeneratorService()
+  {
+    _runner.OnLogReceived += (msg) =>
+      App.Current.Dispatcher.Invoke(() => Logger(msg));
+    _runner.OnStarted += (pid) =>
+    {
+      PID = pid;
+    };
+  }
+
+  public async Task Toggle()
+  {
+    if (!IsRunning)
+    {
+      IsRunning = true;
+
+      await _runner.StartAsync("pwd", "");
 
       CleanupState();
     }

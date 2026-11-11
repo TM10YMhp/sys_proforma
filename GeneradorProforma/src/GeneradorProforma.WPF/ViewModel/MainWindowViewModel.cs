@@ -9,9 +9,18 @@ internal partial class MainWindowViewModel : ObservableObject
   [ObservableProperty]
   private ObservableWebService _webService = new();
 
+  [ObservableProperty]
+  private ObservableGeneratorService _generatorService = new();
+
   [RelayCommand(AllowConcurrentExecutions = true)]
   private async Task ToggleWebService()
   {
     await WebService.Toggle();
+  }
+
+  [RelayCommand(AllowConcurrentExecutions = true)]
+  private async Task ToggleGeneratorService()
+  {
+    await GeneratorService.Toggle();
   }
 }

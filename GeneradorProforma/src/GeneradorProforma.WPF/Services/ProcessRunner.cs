@@ -37,18 +37,18 @@ internal class ProcessRunner
         OnLogReceived?.Invoke(args.Data);
     };
 
-    // NOTE: no parece funcionar, probar con otros sistemas operativos
-    // _process.ErrorDataReceived += (sender, args) =>
-    // {
-    //   if (args.Data != null)
-    //     OnLogReceived?.Invoke($"[ERROR] {args.Data}");
-    // };
+    // NOTE: ciertos comandos como cmd mandan las salidas de error
+    _process.ErrorDataReceived += (sender, args) =>
+    {
+      if (args.Data != null)
+        OnLogReceived?.Invoke($"[ERROR] {args.Data}");
+    };
 
     try
     {
       _process.Start();
       _process.BeginOutputReadLine();
-      // _process.BeginErrorReadLine();
+      _process.BeginErrorReadLine();
 
       _isRunning = true;
       OnStarted?.Invoke(_process.Id.ToString());
@@ -83,7 +83,7 @@ internal class ProcessRunner
     {
       if (_process != null && !_process.HasExited)
       {
-        _process.Kill(entireProcessTree: true);
+        _process.KillTree();
       }
     }
     catch (Exception ex)
@@ -97,6 +97,35 @@ internal class ProcessRunner
       _process = null;
 
       OnExited?.Invoke();
+    }
+  }
+}
+
+// NOTE:
+// https://stackoverflow.com/a/45667693
+// https://github.com/dotnet/cli/blob/master/test/Microsoft.DotNet.Tools.Tests.Utilities/Extensions/ProcessExtensions.cs
+internal static class ProcessExtensions
+{
+  private static readonly int _defaultMillisecods = 30000;
+
+  public static void KillTree(this Process process)
+  {
+    process.KillTree(_defaultMillisecods);
+  }
+
+  public static void KillTree(this Process process, int millisecods)
+  {
+    var startInfo = new ProcessStartInfo
+    {
+      FileName = "taskkill",
+      Arguments = $"/F /T /PID {process.Id}",
+      CreateNoWindow = true,
+      UseShellExecute = false,
+    };
+
+    using (var killer = Process.Start(startInfo))
+    {
+      killer?.WaitForExit(millisecods);
     }
   }
 }
