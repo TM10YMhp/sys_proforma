@@ -45,16 +45,16 @@
     {#snippet children({ errors, processing })}
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="name">Username</Label>
                 <Input
-                    id="email"
-                    type="email"
-                    name="email"
+                    id="name"
+                    type="text"
+                    name="name"
                     required
-                    autocomplete="email"
-                    placeholder="email@example.com"
+                    autocomplete="username"
+                    placeholder="username"
                 />
-                <InputError message={errors.email} />
+                <InputError message={errors.name} />
             </div>
 
             <div class="grid gap-2">
