@@ -18,7 +18,7 @@ class ClienteController extends Controller
    */
   public function index()
   {
-    $clientes = Cliente::orderByDesc('updated_at')->paginate(6);
+    $clientes = Cliente::orderByDesc('updated_at')->paginate(10);
     return Inertia::render("clientes/index", [
       'clientes' => $clientes
     ]);

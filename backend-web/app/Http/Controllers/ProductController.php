@@ -29,7 +29,7 @@ class ProductController extends Controller
   {
     // $products = Product::orderByDesc('codigo')->paginate(6);
     $products = $getPaginatedProducts->execute(new ProductPaginateCriteria(
-      perPage: 6,
+      perPage: 10,
       sort: new SortCriteria(
         field: 'codigo',
         direction: 'desc'
