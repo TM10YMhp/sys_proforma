@@ -5,11 +5,11 @@ use Illuminate\Support\Facades\Route;
 // Route::inertia('/', 'Welcome')->name('home');
 Route::redirect('/', '/proformas');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
-});
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+// });
 
-Route::inertia('/test', 'test');
+// Route::inertia('/test', 'test');
 
 require __DIR__.'/product.php';
 require __DIR__.'/proforma.php';

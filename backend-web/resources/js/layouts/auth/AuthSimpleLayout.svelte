@@ -2,7 +2,7 @@
     import { Link } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
-    import { home } from '@/routes';
+    import { index as home } from '@/routes/proformas';
 
     let {
         title = '',

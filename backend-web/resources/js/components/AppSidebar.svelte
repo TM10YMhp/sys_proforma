@@ -3,7 +3,7 @@
   import { Contact, FileText, PackageSearch } from 'lucide-svelte';
   import BookOpen from 'lucide-svelte/icons/book-open';
   import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
-  import LayoutGrid from 'lucide-svelte/icons/layout-grid';
+  // import LayoutGrid from 'lucide-svelte/icons/layout-grid';
   import type { Snippet } from 'svelte';
   import AppLogo from '@/components/AppLogo.svelte';
   import NavFooter from '@/components/NavFooter.svelte';
@@ -19,7 +19,8 @@
     SidebarMenuItem,
   } from '@/components/ui/sidebar';
   import { toUrl } from '@/lib/utils';
-  import { dashboard } from '@/routes';
+  // import { dashboard } from '@/routes';
+  import proformas from '@/routes/proformas';
   import type { NavItem } from '@/types';
 
   let {
@@ -29,11 +30,11 @@
   } = $props();
 
   const mainNavItems: NavItem[] = [
-    {
-      title: 'Dashboard',
-      href: dashboard(),
-      icon: LayoutGrid,
-    },
+    // {
+    //   title: 'Dashboard',
+    //   href: dashboard(),
+    //   icon: LayoutGrid,
+    // },
     {
       title: 'Clientes',
       href: '/clientes',
@@ -71,7 +72,7 @@
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
           {#snippet children(props)}
-            <Link {...props} href={toUrl(dashboard())} class={props.class}>
+            <Link {...props} href={toUrl(proformas.index())} class={props.class}>
               <AppLogo />
             </Link>
           {/snippet}

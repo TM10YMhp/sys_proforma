@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProformaController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('proformas')->group(function () {
+Route::prefix('proformas')->middleware(['auth', 'verified'])->group(function () {
   Route::get('/', [ProformaController::class, 'index'])->name('proformas.index');
   Route::get('/create', [ProformaController::class, 'create'])->name('proformas.create');
   Route::get('/{proforma}', [ProformaController::class, 'show'])->name('proformas.show');
