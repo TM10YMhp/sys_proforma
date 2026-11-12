@@ -43,4 +43,9 @@ internal partial class ObservableService : ObservableObject
   {
     Log += $"{message}\n";
   }
+
+  public void Stop()
+  {
+    Runner.Stop();
+  }
 }

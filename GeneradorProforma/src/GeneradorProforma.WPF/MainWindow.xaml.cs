@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
+using GeneradorProforma.WPF.ViewModel;
 
 namespace GeneradorProforma.WPF;
 
@@ -41,6 +42,14 @@ public partial class MainWindow : Window
           DispatcherPriority.Background
         );
       }
+    }
+  }
+
+  private void Window_Closed(object sender, EventArgs e)
+  {
+    if (DataContext is MainWindowViewModel vm)
+    {
+      vm.StopProcesses();
     }
   }
 }

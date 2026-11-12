@@ -8,6 +8,7 @@
         Title="sys-proforma"
         Width="800"
         Height="500"
+        Closed="Window_Closed"
         mc:Ignorable="d">
 
   <Window.Resources>

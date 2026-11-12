@@ -23,4 +23,16 @@ internal partial class MainWindowViewModel : ObservableObject
   {
     await GeneratorService.Toggle();
   }
+
+  public void StopProcesses()
+  {
+    try
+    {
+      WebService.Stop();
+      GeneratorService.Stop();
+    }
+    catch
+    { /* Ignorar errores al cerrar */
+    }
+  }
 }
