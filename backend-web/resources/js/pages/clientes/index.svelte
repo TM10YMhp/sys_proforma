@@ -15,7 +15,7 @@
   import { Link, useForm } from '@inertiajs/svelte';
   import ClienteController from '@/actions/App/Http/Controllers/ClienteController';
   import AppHead from '@/components/AppHead.svelte';
-  import { cn } from '@/lib/utils';
+  import { cleanPageUrl, cn } from '@/lib/utils';
   import { table } from '@/lib/variants';
   import type { Cliente } from '@/types/cliente';
   import type { LaravelPaginator } from '@/types/paginate';
@@ -110,7 +110,7 @@
           <Link
             prefetch="click"
             cacheFor="3m"
-            href={item.url!}
+            href={cleanPageUrl(item.url)!}
             class={cn('join-item btn btn-soft', item.active && 'btn-active')}
             >{item.label}</Link
           >
