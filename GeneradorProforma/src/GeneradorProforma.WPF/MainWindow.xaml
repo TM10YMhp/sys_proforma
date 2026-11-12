@@ -76,6 +76,7 @@
         <!--  primera fila  -->
         <Border Grid.Row="1"
                 Grid.Column="0"
+                DataContext="{Binding WebService}"
                 Style="{StaticResource StatusBorderStyle}">
           <TextBlock HorizontalAlignment="Center"
                      VerticalAlignment="Center"
@@ -108,6 +109,7 @@
         <!--  segunda fila  -->
         <Border Grid.Row="2"
                 Grid.Column="0"
+                DataContext="{Binding GeneratorService}"
                 Style="{StaticResource StatusBorderStyle}">
           <TextBlock HorizontalAlignment="Center"
                      VerticalAlignment="Center"

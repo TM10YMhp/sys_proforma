@@ -1,9 +1,17 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
   <SolidColorBrush x:Key="ActivoBrush"
-                   Color="#C8E6C9" />
+                   Color="#10B981" />
+
   <SolidColorBrush x:Key="InactivoBrush"
                    Color="#B3E5FC" />
+
+  <SolidColorBrush x:Key="EsperarBrush"
+                   Color="#F59E0B" />
+
+  <SolidColorBrush x:Key="ErrorBrush"
+                   Color="#EF4444" />
 
   <Style x:Key="HeaderTextStyle"
          TargetType="TextBlock">
@@ -17,5 +25,12 @@
     <Setter Property="CornerRadius" Value="2" />
     <Setter Property="Margin" Value="2" />
     <Setter Property="Background" Value="{StaticResource InactivoBrush}" />
+
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsRunning}"
+                   Value="True">
+        <Setter Property="Background" Value="{StaticResource ActivoBrush}" />
+      </DataTrigger>
+    </Style.Triggers>
   </Style>
 </ResourceDictionary>
