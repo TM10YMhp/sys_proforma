@@ -16,7 +16,7 @@
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
-    import { register } from '@/routes';
+    // import { register } from '@/routes';
     import { store } from '@/routes/login';
     import { request } from '@/routes/password';
 
@@ -52,7 +52,7 @@
                     name="name"
                     required
                     autocomplete="username"
-                    placeholder="username"
+                    placeholder="Username"
                 />
                 <InputError message={errors.name} />
             </div>
@@ -94,9 +94,9 @@
             </Button>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <!-- <div class="text-center text-sm text-muted-foreground">
             Don't have an account?
             <TextLink href={register()}>Sign up</TextLink>
-        </div>
+        </div> -->
     {/snippet}
 </Form>

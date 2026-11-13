@@ -143,7 +143,9 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // TODO: registrar no pide confirmacion, es inseguro hasta que
+        // se agregue un smtp
+        // Features::registration(),
         Features::resetPasswords(),
     ],
 
