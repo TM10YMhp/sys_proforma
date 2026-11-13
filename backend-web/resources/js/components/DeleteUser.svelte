@@ -20,22 +20,22 @@
 <div class="space-y-6">
     <Heading
         variant="small"
-        title="Delete account"
-        description="Delete your account and all of its resources"
+        title="Eliminar cuenta"
+        description="Elimina tu cuenta y todos sus recursos"
     />
     <div
         class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
     >
         <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
-            <p class="font-medium">Warning</p>
+            <p class="font-medium">Advertencia</p>
             <p class="text-sm">
-                Please proceed with caution, this cannot be undone.
+                Por favor, proceda con precaución; esto no se puede deshacer.
             </p>
         </div>
         <Dialog>
             <DialogTrigger>
                 <Button variant="destructive" data-test="delete-user-button"
-                    >Delete account</Button
+                    >Eliminar cuenta</Button
                 >
             </DialogTrigger>
             <DialogContent>

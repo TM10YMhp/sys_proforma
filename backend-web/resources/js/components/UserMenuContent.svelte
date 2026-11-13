@@ -44,7 +44,7 @@
                 onclick={props.onClick}
             >
                 <Settings class="mr-2 h-4 w-4" />
-                Ajustes
+                Configuración
             </Link>
         {/snippet}
     </DropdownMenuItem>

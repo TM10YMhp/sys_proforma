@@ -4,7 +4,7 @@
     export const layout = {
         breadcrumbs: [
             {
-                title: 'Profile settings',
+                title: 'Configuración del perfil',
                 href: edit(),
             },
         ],
@@ -25,15 +25,15 @@
     const user = $derived(page.props.auth.user);
 </script>
 
-<AppHead title="Profile settings" />
+<AppHead title="Configuración del perfil" />
 
-<h1 class="sr-only">Profile settings</h1>
+<h1 class="sr-only">Configuración del perfil</h1>
 
 <div class="flex flex-col space-y-6">
     <Heading
         variant="small"
-        title="Profile"
-        description="Update your name and email address"
+        title="Perfil"
+        description="Actualiza tu nombre y dirección de correo electrónico"
     />
 
     <Form
@@ -75,7 +75,7 @@
                 <Button
                     type="submit"
                     disabled={processing}
-                    data-test="update-profile-button">Save</Button
+                    data-test="update-profile-button">Guardar</Button
                 >
             </div>
         {/snippet}
