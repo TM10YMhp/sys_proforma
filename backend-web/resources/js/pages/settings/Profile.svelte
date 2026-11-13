@@ -15,7 +15,7 @@
     import { Form, page } from '@inertiajs/svelte';
     import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
     import AppHead from '@/components/AppHead.svelte';
-    import DeleteUser from '@/components/DeleteUser.svelte';
+    // import DeleteUser from '@/components/DeleteUser.svelte';
     import Heading from '@/components/Heading.svelte';
     import InputError from '@/components/InputError.svelte';
     import { Button } from '@/components/ui/button';
@@ -82,4 +82,5 @@
     </Form>
 </div>
 
-<DeleteUser />
+<!-- NOTE: no es posible la recuperacion de cuentas hasta agregar el smtp -->
+<!-- <DeleteUser /> -->
