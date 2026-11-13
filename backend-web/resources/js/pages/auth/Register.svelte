@@ -16,7 +16,7 @@
     import { Label } from '@/components/ui/label';
     import { Spinner } from '@/components/ui/spinner';
     import { login } from '@/routes';
-    import { store } from '@/routes/register';
+    // import { store } from '@/routes/register';
 
     let { passwordRules }: { passwordRules: string } = $props();
 </script>
@@ -24,7 +24,7 @@
 <AppHead title="Register" />
 
 <Form
-    {...store.form()}
+    // {...store.form()}
     resetOnSuccess={['password', 'password_confirmation']}
     class="flex flex-col gap-6"
 >

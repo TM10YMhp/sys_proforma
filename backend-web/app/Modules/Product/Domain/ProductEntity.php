@@ -8,7 +8,7 @@ class ProductEntity
     public int $id,
     public string $codigo,
     public string $descripcion,
-    public int $precio,
+    public float $precio,
     public string $unidad_medida,
     public bool $activo
   ) {

@@ -17,7 +17,7 @@ export function toUrl(
 // unificar las interfaces
 // NOTE: elimina la pagina 1 de la url para usar la cache de inertia
 export function cleanPageUrl(url: string | null) {
-  if (!url) {
+  if (!url || typeof window === 'undefined') {
     return;
   }
 
