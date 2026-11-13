@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Link } from '@inertiajs/svelte';
   import { Contact, FileText, PackageSearch } from 'lucide-svelte';
-  import BookOpen from 'lucide-svelte/icons/book-open';
-  import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
+  // import BookOpen from 'lucide-svelte/icons/book-open';
+  // import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
   // import LayoutGrid from 'lucide-svelte/icons/layout-grid';
   import type { Snippet } from 'svelte';
   import AppLogo from '@/components/AppLogo.svelte';
@@ -53,16 +53,16 @@
   ];
 
   const footerNavItems: NavItem[] = [
-    {
-      title: 'Repository',
-      href: 'https://github.com/laravel/svelte-starter-kit',
-      icon: FolderGit2,
-    },
-    {
-      title: 'Documentation',
-      href: 'https://laravel.com/docs/starter-kits#svelte',
-      icon: BookOpen,
-    },
+    // {
+    //   title: 'Repository',
+    //   href: 'https://github.com/laravel/svelte-starter-kit',
+    //   icon: FolderGit2,
+    // },
+    // {
+    //   title: 'Documentation',
+    //   href: 'https://laravel.com/docs/starter-kits#svelte',
+    //   icon: BookOpen,
+    // },
   ];
 </script>
 
