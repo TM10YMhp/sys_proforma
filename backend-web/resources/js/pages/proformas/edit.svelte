@@ -99,7 +99,7 @@
     <div class="flex flex-row gap-2">
       <SeccionProforma bind:form {proforma} />
 
-      <SeccionProducto {form} onAddProduct={addProduct} />
+      <SeccionProducto {form} {productos} onAddProduct={addProduct} />
 
       <SeccionCliente {proforma} onAcceptCliente={handleAcceptCliente} />
     </div>

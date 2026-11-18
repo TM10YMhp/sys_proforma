@@ -9,9 +9,10 @@
   // HACK: tomar solo propiedades que se necesitan
   type Props = {
     form: InertiaForm<any>;
+    productos?: ProductItem[];
     onAddProduct?: (productItem: ProductItem) => void;
   };
-  let { form, onAddProduct }: Props = $props();
+  let { form, productos, onAddProduct }: Props = $props();
 
   let buscando = $state(false);
 
@@ -62,12 +63,14 @@
     );
     const producto = (await response.json()) as Product;
 
+    const productoExistente = productos?.find((p) => p.id === producto.id);
+
     productItem = {
       id: producto.id,
       codigo: producto.codigo,
       cantidad: 1,
       descripcion: producto.descripcion,
-      precio: producto.precio,
+      precio: productoExistente ? productoExistente.precio : producto.precio,
       unidad_medida: producto.unidad_medida,
       activo: producto.activo,
     };
@@ -83,12 +86,14 @@
     );
     const producto = (await response.json()) as Product;
 
+    const productoExistente = productos?.find((p) => p.id === producto.id);
+
     productItem = {
       id: producto.id,
       codigo: producto.codigo,
       cantidad: 1,
       descripcion: producto.descripcion,
-      precio: producto.precio,
+      precio: productoExistente ? productoExistente.precio : producto.precio,
       unidad_medida: producto.unidad_medida,
       activo: producto.activo,
     };
