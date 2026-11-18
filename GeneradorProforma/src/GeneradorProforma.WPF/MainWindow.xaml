@@ -51,6 +51,7 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="30" />
           <RowDefinition Height="30" />
+          <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
         <!--  encabezado  -->
@@ -137,6 +138,38 @@
                   Command="{Binding ToggleGeneratorServiceCommand}"
                   Content="{Binding GeneratorService.BtnText}" />
         </StackPanel>
+
+        <!--  tercera fila  -->
+        <Border Grid.Row="3"
+                Grid.Column="0"
+                DataContext="{Binding TunelService}"
+                Style="{StaticResource StatusBorderStyle}">
+          <TextBlock HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     FontWeight="SemiBold"
+                     Text="Tunel" />
+        </Border>
+        <TextBlock Grid.Row="3"
+                   Grid.Column="1"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontFamily="Consolas"
+                   Text="{Binding TunelService.PID}" />
+        <TextBlock Grid.Row="3"
+                   Grid.Column="2"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontFamily="Consolas"
+                   Text="{Binding TunelService.Port}" />
+        <StackPanel Grid.Row="3"
+                    Grid.Column="3"
+                    Margin="4,0,0,0"
+                    Orientation="Horizontal">
+          <Button Width="65"
+                  Height="25"
+                  Command="{Binding ToggleTunelServiceCommand}"
+                  Content="{Binding TunelService.BtnText}" />
+        </StackPanel>
       </Grid>
     </Border>
 
@@ -166,6 +199,19 @@
                    IsReadOnly="True"
                    TargetUpdated="TextBox_TargetUpdated"
                    Text="{Binding GeneratorService.Log, Mode=OneWay, NotifyOnTargetUpdated=True}"
+                   TextWrapping="Wrap"
+                   VerticalScrollBarVisibility="Auto" />
+        </TabItem>
+
+        <TabItem Header="Tunel">
+          <TextBox Padding="4"
+                   Background="#000000"
+                   FontFamily="Consolas"
+                   FontSize="11"
+                   Foreground="#ffffff"
+                   IsReadOnly="True"
+                   TargetUpdated="TextBox_TargetUpdated"
+                   Text="{Binding TunelService.Log, Mode=OneWay, NotifyOnTargetUpdated=True}"
                    TextWrapping="Wrap"
                    VerticalScrollBarVisibility="Auto" />
         </TabItem>

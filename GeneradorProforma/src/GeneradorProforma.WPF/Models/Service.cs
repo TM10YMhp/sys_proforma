@@ -41,3 +41,25 @@ internal partial class ObservableGeneratorService : ObservableService
     }
   }
 }
+
+internal partial class ObservableTunelService : ObservableService
+{
+  public async Task Toggle()
+  {
+    if (!IsRunning)
+    {
+      IsRunning = true;
+      // TODO: solo usar en produccion `-n public:sysproforma`
+      await Runner.StartAsync(
+        "cmd.exe",
+        "/k \"cd ../output && zrok2 share public 8000 --headless\""
+      );
+      CleanupState();
+    }
+    else
+    {
+      Runner.Stop();
+      CleanupState();
+    }
+  }
+}

@@ -12,6 +12,9 @@ internal partial class MainWindowViewModel : ObservableObject
   [ObservableProperty]
   private ObservableGeneratorService _generatorService = new();
 
+  [ObservableProperty]
+  private ObservableTunelService _tunelService = new();
+
   [RelayCommand(AllowConcurrentExecutions = true)]
   private async Task ToggleWebService()
   {
@@ -24,12 +27,19 @@ internal partial class MainWindowViewModel : ObservableObject
     await GeneratorService.Toggle();
   }
 
+  [RelayCommand(AllowConcurrentExecutions = true)]
+  private async Task ToggleTunelService()
+  {
+    await TunelService.Toggle();
+  }
+
   public void StopProcesses()
   {
     try
     {
       WebService.Stop();
       GeneratorService.Stop();
+      TunelService.Stop();
     }
     catch
     { /* Ignorar errores al cerrar */
