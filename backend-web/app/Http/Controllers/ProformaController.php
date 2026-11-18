@@ -147,9 +147,6 @@ class ProformaController extends Controller
    */
   public function update(Request $request, Proforma $proforma)
   {
-    // TODO: se quito la validacion por falta de tiempo
-    // $validated = $request->validated();
-
     $validated = $request->validate([
       'cliente_id' => 'required|exists:clientes,id',
       'fecha_emision' => 'required',
@@ -177,6 +174,8 @@ class ProformaController extends Controller
         'total' => $validated['subtotal'] + $igvMonto,
       ]);
 
+      $existingProducts = $proforma->products->keyBy('id');
+
       // NOTE: formato requerido [ id_producto => [columna_pivote => valor] ]
       $productosPivot = [];
       foreach ($validated['productos'] as $item) {
@@ -187,10 +186,13 @@ class ProformaController extends Controller
           continue;
         }
 
+        $existing = $existingProducts->get($item['id']);
+        $precioUnitario = $existing ? $existing->pivot->precio_unitario : $prod->precio;
+
         $productosPivot[$item['id']] = [
           'cantidad' => $item['cantidad'],
-          'precio_unitario' => $prod->precio,
-          'subtotal' => $prod->precio * $item['cantidad'],
+          'precio_unitario' => $precioUnitario,
+          'subtotal' => $precioUnitario * $item['cantidad'],
         ];
       }
 
