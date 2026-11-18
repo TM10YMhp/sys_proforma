@@ -239,7 +239,7 @@ class ProformaController extends Controller
       "descripcion" => $it->descripcion,
       "cantidad" => $it->pivot->cantidad,
       "medida" => $it->unidad_medida,
-      "precio_unitario" => $it->precio,
+      "precio_unitario" => $it->pivot->precio_unitario,
     ])->toArray();
 
     $cliente = [
