@@ -87,9 +87,9 @@
           <th>#</th>
           <th>Codigo</th>
           <th>Descripcion</th>
-          <th class="text-right">Precio</th>
-          <th class="text-center">U. Medida</th>
           <th class="text-center">Cantidad</th>
+          <th class="text-center">U. Medida</th>
+          <th class="text-right">Precio</th>
           <th class="text-center">Total</th>
           <th class="text-center">Activo</th>
         </tr>
@@ -100,9 +100,9 @@
             <th>{idx + 1}</th>
             <td class="font-mono">{item.codigo}</td>
             <td class="truncate max-w-50">{item.descripcion}</td>
-            <td class="font-mono text-right">{item.precio}</td>
-            <td class="text-center">{item.unidad_medida}</td>
             <td class="text-center">{item.pivot.cantidad}</td>
+            <td class="text-center">{item.unidad_medida}</td>
+            <td class="font-mono text-right">{item.precio}</td>
             <td class="font-mono text-right"
               >{(item.precio * item.pivot.cantidad).toFixed(2)}</td
             >
