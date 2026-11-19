@@ -94,9 +94,6 @@
     form.cliente_id = cliente_id;
   };
 
-  let loader: HTMLDivElement;
-  let image: HTMLImageElement;
-
   // NOTE: el transpilador tiene problemas con "const enum"
   const ImageStatus = {
     Ok: 0,
@@ -106,6 +103,8 @@
   type ImageStatus = (typeof ImageStatus)[keyof typeof ImageStatus];
 
   let imageStatus = $state.raw<ImageStatus>(ImageStatus.Pending);
+  let imageUrl = $state.raw('');
+  let isLoaded = $state.raw(false);
 
   let imageContainer: HTMLDivElement;
   const { createZoomImage: createZoomImageClick } = useZoomImageClick();
@@ -121,8 +120,7 @@
 
     const data = (await response.json()) as { url: string };
     imageStatus = ImageStatus.Ok;
-
-    image.src = data.url;
+    imageUrl = data.url;
   });
 </script>
 
@@ -164,29 +162,32 @@
     class="relative w-[359.52px] h-[500px] cursor-crosshair overflow-hidden"
     bind:this={imageContainer}
   >
-    <div
-      bind:this={loader}
-      class="flex justify-center items-center gap-2 size-full bg-base-300 border rounded border-base-200"
-    >
-      {#if imageStatus === ImageStatus.Pending}
-        <p class="loading loading-spinner text-info"></p>
-        <p class="font-bold">Recuperando imagen</p>
-      {:else if imageStatus === ImageStatus.Error}
-        <FileWarning class="text-warning" />
-        <p class="font-bold">No se pudo recuperar la imagen</p>
-      {/if}
-    </div>
-    <img
-      class="w-full h-full hidden"
-      bind:this={image}
-      alt={`proforma ${proforma.codigo}`}
-      loading="lazy"
-      onload={() => {
-        image.classList.remove('hidden');
-        loader.classList.add('hidden');
+    {#if !isLoaded}
+      <div
+        class="flex justify-center items-center gap-2 size-full bg-base-300 border rounded border-base-200"
+      >
+        {#if imageStatus === ImageStatus.Pending}
+          <p class="loading loading-spinner text-info"></p>
+          <p class="font-bold">Recuperando imagen</p>
+        {:else if imageStatus === ImageStatus.Error}
+          <FileWarning class="text-warning" />
+          <p class="font-bold">No se pudo recuperar la imagen</p>
+        {/if}
+      </div>
+    {/if}
 
-        createZoomImageClick(imageContainer);
-      }}
-    />
+    {#if imageUrl}
+      <!-- NOTE: la imagen debe ser visible para el zoom -->
+      <!-- class:hidden={!isLoaded} -->
+      <img
+        class="w-full h-full"
+        src={imageUrl}
+        alt={`proforma ${proforma.codigo}`}
+        onload={() => {
+          isLoaded = true;
+          createZoomImageClick(imageContainer);
+        }}
+      />
+    {/if}
   </div>
 </div>
