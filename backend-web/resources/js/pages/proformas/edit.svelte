@@ -17,6 +17,7 @@
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
   import { useZoomImageClick } from '@zoom-image/svelte';
+  import { FileWarning } from 'lucide-svelte';
   import { onMount } from 'svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
@@ -96,21 +97,32 @@
   let loader: HTMLDivElement;
   let image: HTMLImageElement;
 
-  let loaderInfo = $state.raw('Recuperando imagen');
+  // NOTE: el transpilador tiene problemas con "const enum"
+  const ImageStatus = {
+    Ok: 0,
+    Error: 1,
+    Pending: 2,
+  } as const;
+  type ImageStatus = (typeof ImageStatus)[keyof typeof ImageStatus];
+
+  let imageStatus = $state.raw<ImageStatus>(ImageStatus.Pending);
 
   let imageContainer: HTMLDivElement;
   const { createZoomImage: createZoomImageClick } = useZoomImageClick();
 
   onMount(async () => {
     const response = await fetch(ProformaController.getImgUrl.url(proforma.id));
+
+    if (!response.ok) {
+      imageStatus = ImageStatus.Error;
+
+      return;
+    }
+
     const data = (await response.json()) as { url: string };
+    imageStatus = ImageStatus.Ok;
 
     image.src = data.url;
-
-    image.classList.remove('hidden');
-    loader.classList.add('hidden');
-
-    createZoomImageClick(imageContainer);
   });
 </script>
 
@@ -156,14 +168,25 @@
       bind:this={loader}
       class="flex justify-center items-center gap-2 size-full bg-base-300 border rounded border-base-200"
     >
-      <p class="loading loading-spinner text-info"></p>
-      <p class="font-bold">{loaderInfo}</p>
+      {#if imageStatus === ImageStatus.Pending}
+        <p class="loading loading-spinner text-info"></p>
+        <p class="font-bold">Recuperando imagen</p>
+      {:else if imageStatus === ImageStatus.Error}
+        <FileWarning class="text-warning" />
+        <p class="font-bold">No se pudo recuperar la imagen</p>
+      {/if}
     </div>
     <img
       class="w-full h-full hidden"
       bind:this={image}
       alt={`proforma ${proforma.codigo}`}
       loading="lazy"
+      onload={() => {
+        image.classList.remove('hidden');
+        loader.classList.add('hidden');
+
+        createZoomImageClick(imageContainer);
+      }}
     />
   </div>
 </div>

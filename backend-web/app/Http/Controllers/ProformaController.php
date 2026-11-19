@@ -347,22 +347,28 @@ class ProformaController extends Controller
     $codigo = str_replace(" ", "_", trim($proforma->codigo));
     $imageUrl = "{$baseUrl}/api/proforma/img/{$codigo}";
 
-    $response = Http::get($imageUrl);
-    if ($response->status() === 404) {
-      $data = $this->formatProformaData($proforma);
-      $postResponse = Http::post("{$baseUrl}/api/proforma/img", $data);
-      if ($postResponse->failed()) {
-        return response($postResponse->body(), $postResponse->status())
-          ->withHeaders($postResponse->headers());
+    try {
+      $response = Http::get($imageUrl);
+      if ($response->status() === 404) {
+        $data = $this->formatProformaData($proforma);
+        $postResponse = Http::post("{$baseUrl}/api/proforma/img", $data);
+        if ($postResponse->failed()) {
+          return response($postResponse->body(), $postResponse->status())
+            ->withHeaders($postResponse->headers());
+        }
+      } elseif ($response->failed()) {
+        return response($response->body(), $response->status())
+          ->withHeaders($response->headers());
       }
-    } elseif ($response->failed()) {
-      return response($response->body(), $response->status())
-        ->withHeaders($response->headers());
-    }
 
-    return response()->json([
-      'url' => $imageUrl
-    ]);
+      return response()->json([
+        'url' => $imageUrl
+      ]);
+    } catch (ConnectionException $e) {
+      return response()->json([
+        'error' => 'El servicio generador de imágenes no está disponible en este momento.'
+      ], 503);
+    }
   }
 
   /**
