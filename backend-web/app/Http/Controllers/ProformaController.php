@@ -335,6 +335,39 @@ class ProformaController extends Controller
   /**
    * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
    */
+  public function getImgUrl(Proforma $proforma)
+  {
+    $baseUrl = config('services.proforma.url');
+    if (!$baseUrl) {
+      return response()->json([
+        'error' => 'El servicio generador no esta establecido'
+      ], 404);
+    }
+
+    $codigo = str_replace(" ", "_", trim($proforma->codigo));
+    $imageUrl = "{$baseUrl}/api/proforma/img/{$codigo}";
+
+    $response = Http::get($imageUrl);
+    if ($response->status() === 404) {
+      $data = $this->formatProformaData($proforma);
+      $postResponse = Http::post("{$baseUrl}/api/proforma/img", $data);
+      if ($postResponse->failed()) {
+        return response($postResponse->body(), $postResponse->status())
+          ->withHeaders($postResponse->headers());
+      }
+    } elseif ($response->failed()) {
+      return response($response->body(), $response->status())
+        ->withHeaders($response->headers());
+    }
+
+    return response()->json([
+      'url' => $imageUrl
+    ]);
+  }
+
+  /**
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
+   */
   public function getImgById(string $id)
   {
     $url = config('services.proforma.url');

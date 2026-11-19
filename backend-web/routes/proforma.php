@@ -15,4 +15,5 @@ Route::prefix('proformas')->middleware(['auth', 'verified'])->group(function () 
   Route::get('/exportExcel/{proforma}', [ProformaController::class, 'exportExcel']);
   Route::get('/exportPDF/{proforma}', [ProformaController::class, 'exportPDF']);
   Route::get('/getImgById/{id}', [ProformaController::class, 'getImgById']);
+  Route::get('/getImgUrl/{proforma}', [ProformaController::class, 'getImgUrl']);
 });

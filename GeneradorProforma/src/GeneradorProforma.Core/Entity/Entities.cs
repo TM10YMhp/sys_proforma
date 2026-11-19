@@ -27,6 +27,6 @@ public record Proforma
   public required ClienteInfo Cliente { get; init; }
   public required List<Producto> Productos { get; init; }
   public required CondicionesInfo Condiciones { get; init; }
-  public required DateTimeOffset FechaEmision { get; init; }
-  public required DateTimeOffset FechaVencimiento { get; init; }
+  public DateTimeOffset FechaEmision { get; init; } = DateTimeOffset.Now;
+  public DateTimeOffset FechaVencimiento { get; init; } = DateTimeOffset.Now;
 };

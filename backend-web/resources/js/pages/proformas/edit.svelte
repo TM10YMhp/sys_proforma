@@ -93,10 +93,23 @@
     form.cliente_id = cliente_id;
   };
 
+  let loader: HTMLDivElement;
+  let image: HTMLImageElement;
+
+  let loaderInfo = $state.raw('Recuperando imagen');
+
   let imageContainer: HTMLDivElement;
   const { createZoomImage: createZoomImageClick } = useZoomImageClick();
 
-  onMount(() => {
+  onMount(async () => {
+    const response = await fetch(ProformaController.getImgUrl.url(proforma.id));
+    const data = (await response.json()) as { url: string };
+
+    image.src = data.url;
+
+    image.classList.remove('hidden');
+    loader.classList.add('hidden');
+
     createZoomImageClick(imageContainer);
   });
 </script>
@@ -134,14 +147,22 @@
     <SeccionTabla {form} bind:productos />
   </form>
 
+  <!-- NOTE: es necesario especificar el alto y ancho para el zoom -->
   <div
     class="relative w-[359.52px] h-[500px] cursor-crosshair overflow-hidden"
     bind:this={imageContainer}
   >
+    <div
+      bind:this={loader}
+      class="flex justify-center items-center gap-2 size-full bg-base-300 border rounded border-base-200"
+    >
+      <p class="loading loading-spinner text-info"></p>
+      <p class="font-bold">{loaderInfo}</p>
+    </div>
     <img
-      class="w-full h-full"
-      src="https://templates.invoicehome.com/factura-proforma-modelo-es-mono-negro-750px.png"
-      alt=""
+      class="w-full h-full hidden"
+      bind:this={image}
+      alt={`proforma ${proforma.codigo}`}
       loading="lazy"
     />
   </div>
