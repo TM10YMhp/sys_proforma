@@ -106,7 +106,7 @@
                 return;
               }
 
-              router.visit(ProformaController.show.url(item.id));
+              router.visit(ProformaController.edit.url(item.id));
             }}
           >
             <th>{index + Number(proformas.from)}</th>

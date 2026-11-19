@@ -16,6 +16,8 @@
 
 <script lang="ts">
   import { useForm } from '@inertiajs/svelte';
+  import { useZoomImageClick } from '@zoom-image/svelte';
+  import { onMount } from 'svelte';
   import ProformaController from '@/actions/App/Http/Controllers/ProformaController';
   import AppHead from '@/components/AppHead.svelte';
   import type { ProductItem } from '@/types/product';
@@ -90,6 +92,13 @@
   const handleAcceptCliente = (cliente_id: number) => {
     form.cliente_id = cliente_id;
   };
+
+  let imageContainer: HTMLDivElement;
+  const { createZoomImage: createZoomImageClick } = useZoomImageClick();
+
+  onMount(() => {
+    createZoomImageClick(imageContainer);
+  });
 </script>
 
 <AppHead title="Proformas | Editar" />
@@ -104,10 +113,36 @@
       <SeccionCliente {proforma} onAcceptCliente={handleAcceptCliente} />
     </div>
 
-    <SeccionTabla {form} bind:productos />
+    <div class="flex flex-row gap-x-2 my-4">
+      <button class="btn btn-primary" disabled={form.processing} type="submit"
+        >Actualizar Proforma</button
+      >
 
-    <button class="btn btn-primary" disabled={form.processing} type="submit"
-      >Actualizar Proforma</button
-    >
+      <div class="divider divider-horizontal"></div>
+
+      <a
+        href={ProformaController.exportExcel.url(proforma.id)}
+        class="btn [--btn-color:var(--color-green-900)]">Excel</a
+      >
+      <a
+        href={ProformaController.exportPDF.url(proforma.id)}
+        target="_blank"
+        class="btn [--btn-color:var(--color-red-900)]">PDF</a
+      >
+    </div>
+
+    <SeccionTabla {form} bind:productos />
   </form>
+
+  <div
+    class="relative w-[359.52px] h-[500px] cursor-crosshair overflow-hidden"
+    bind:this={imageContainer}
+  >
+    <img
+      class="w-full h-full"
+      src="https://templates.invoicehome.com/factura-proforma-modelo-es-mono-negro-750px.png"
+      alt=""
+      loading="lazy"
+    />
+  </div>
 </div>

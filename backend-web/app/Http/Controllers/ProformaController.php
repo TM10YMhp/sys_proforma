@@ -105,17 +105,17 @@ class ProformaController extends Controller
     return to_route('proformas.index');
   }
 
-  /**
-   * Display the specified resource.
-   * @return \Inertia\Response
-   */
-  public function show(Proforma $proforma)
-  {
-    $proforma->load('products');
-    return Inertia::render("proformas/show", [
-      'proforma' => $proforma
-    ]);
-  }
+  // /**
+  //  * Display the specified resource.
+  //  * @return \Inertia\Response
+  //  */
+  // public function show(Proforma $proforma)
+  // {
+  //   $proforma->load('products');
+  //   return Inertia::render("proformas/show", [
+  //     'proforma' => $proforma
+  //   ]);
+  // }
 
   /**
    * Show the form for editing the specified resource.
