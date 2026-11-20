@@ -16,7 +16,7 @@ class ClienteSeeder extends Seeder
   {
     // Cliente::factory(10)->create();
 
-    $clientes = Collection::times(10, fn() => [
+    $clientes = Collection::times(15, fn() => [
       'nombres' => null,
       'apellido_primario' => null,
       'apellido_secundario' => null,

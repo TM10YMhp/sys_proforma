@@ -18,7 +18,7 @@ class ProformaSeeder extends Seeder
     $clientes = Cliente::all();
     $products = Product::all();
 
-    foreach (range(1, 10) as $i) {
+    foreach (range(1, 20) as $i) {
       $randomProducts = $products->random(fake()->numberBetween(2, 5));
 
       $totalProforma = 0;
