@@ -18,6 +18,7 @@ public interface IProformaService
   ErrorOr<string> GenerateImg(Proforma proforma);
   ErrorOr<string> GetExcelById(string id);
   ErrorOr<string> GetImgById(string id);
+  ErrorOr<string> GetPDFById(string id);
 }
 
 public class ProformaService : IProformaService
@@ -245,6 +246,17 @@ public class ProformaService : IProformaService
         description: "Archivo no encontrado",
         metadata: new() { { "filename", filename } }
       );
+    }
+
+    return ruta;
+  }
+
+  public ErrorOr<string> GetPDFById(string id)
+  {
+    var ruta = Path.Combine(RutaSalida, $"proforma-{id}.pdf");
+    if (!File.Exists(ruta))
+    {
+      return Error.Unexpected(description: "Archivo no encontrado");
     }
 
     return ruta;

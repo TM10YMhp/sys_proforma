@@ -260,4 +260,30 @@ public class ProformaController(IProformaService service) : ControllerBase
 
     return PhysicalFile(rutaImagen, "image/webp");
   }
+
+  [HttpGet("pdf/{id}")]
+  public IActionResult GenerarPDFPorId([FromRoute] string id)
+  {
+    var result = _service.GetPDFById(id);
+    if (result.IsError)
+    {
+      return NotFound(result.Errors);
+    }
+
+    var rutaArchivoPDF = result.Value;
+    string extension = Path.GetExtension(rutaArchivoPDF).ToLowerInvariant();
+    string contentType = extension switch
+    {
+      ".pdf" => "application/pdf",
+      _ => "application/octet-stream",
+    };
+    string fileName = Path.GetFileName(rutaArchivoPDF);
+
+    return PhysicalFile(
+      rutaArchivoPDF,
+      contentType,
+      fileName,
+      enableRangeProcessing: true
+    );
+  }
 }
