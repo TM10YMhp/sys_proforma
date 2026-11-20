@@ -136,25 +136,33 @@
       <SeccionCliente {proforma} onAcceptCliente={handleAcceptCliente} />
     </div>
 
-    <div class="flex flex-row gap-x-2 my-4">
+    <SeccionTabla {form} bind:productos />
+
+    <div class="flex flex-row gap-x-2 mt-4">
       <button class="btn btn-primary" disabled={form.processing} type="submit"
-        >Actualizar Proforma</button
+        >Actualizar</button
       >
 
-      <div class="divider divider-horizontal"></div>
+      <div class="divider divider-horizontal m-2"></div>
 
       <a
         href={ProformaController.exportExcel.url(proforma.id)}
+        aria-disabled={!imageUrl}
         class="btn [--btn-color:var(--color-green-900)]">Excel</a
       >
       <a
         href={ProformaController.exportPDF.url(proforma.id)}
+        aria-disabled={!imageUrl}
         target="_blank"
         class="btn [--btn-color:var(--color-red-900)]">PDF</a
       >
+      <a
+        href={ProformaController.getImgById.url(proforma.codigo)}
+        aria-disabled={!imageUrl}
+        download={`proforma_${proforma.codigo.replaceAll(' ', '_')}`}
+        class="btn btn-info">Imagen</a
+      >
     </div>
-
-    <SeccionTabla {form} bind:productos />
   </form>
 
   <!-- NOTE: es necesario especificar el alto y ancho para el zoom -->

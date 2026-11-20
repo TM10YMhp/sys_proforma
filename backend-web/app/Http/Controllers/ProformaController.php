@@ -383,7 +383,8 @@ class ProformaController extends Controller
       ], 404);
     }
 
-    $response = Http::get("{$url}/api/proforma/img/{$id}");
+    $codigo = str_replace(" ", "_", trim($id));
+    $response = Http::get("{$url}/api/proforma/img/{$codigo}");
 
     return response($response->body(), $response->status())
       ->withHeaders($response->headers());
