@@ -151,7 +151,7 @@
         class="btn [--btn-color:var(--color-green-900)]">Excel</a
       >
       <a
-        href={ProformaController.exportPDF.url(proforma.id)}
+        href={ProformaController.getPDFById.url(proforma.codigo)}
         aria-disabled={!imageUrl}
         target="_blank"
         class="btn [--btn-color:var(--color-red-900)]">PDF</a

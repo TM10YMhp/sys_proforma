@@ -16,6 +16,19 @@ use Inertia\Inertia;
 
 class ProformaController extends Controller
 {
+  private string $baseUrl;
+
+  public function __construct()
+  {
+    $url = config('services.proforma.url');
+    if (!$url) {
+      abort(404, 'El servicio generador no esta establecido');
+    }
+
+    $this->baseUrl = rtrim($url, "/");
+  }
+
+
   /**
    * Display a listing of the resource.
    * @return \Inertia\Response
@@ -404,6 +417,26 @@ class ProformaController extends Controller
 
     $codigo = str_replace(" ", "_", trim($id));
     $response = Http::get("{$url}/api/proforma/excel/{$codigo}");
+
+    return response($response->body(), $response->status())
+      ->withHeaders($response->headers());
+  }
+
+  /**
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
+   */
+  public function getPDFById(string $id)
+  {
+    $codigo = str_replace(" ", "_", trim($id));
+    $response = Http::get("{$this->baseUrl}/api/proforma/pdf/{$codigo}");
+
+    if ($response->successful()) {
+      $contentDisposition = $response->header('Content-Disposition');
+      $inlineDisposition = str_replace('attachment', 'inline', $contentDisposition);
+      return response($response->body(), $response->status())
+        ->withHeaders($response->headers())
+        ->header('Content-Disposition', $inlineDisposition);
+    }
 
     return response($response->body(), $response->status())
       ->withHeaders($response->headers());
