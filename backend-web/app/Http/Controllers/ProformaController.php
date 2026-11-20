@@ -389,4 +389,23 @@ class ProformaController extends Controller
     return response($response->body(), $response->status())
       ->withHeaders($response->headers());
   }
+
+  /**
+   * @return \Illuminate\Http\Response | \Illuminate\Http\JsonResponse
+   */
+  public function getExcelById(string $id)
+  {
+    $url = config('services.proforma.url');
+    if (!$url) {
+      return response()->json([
+        'error' => 'El servicio generador no esta establecido'
+      ], 404);
+    }
+
+    $codigo = str_replace(" ", "_", trim($id));
+    $response = Http::get("{$url}/api/proforma/excel/{$codigo}");
+
+    return response($response->body(), $response->status())
+      ->withHeaders($response->headers());
+  }
 }

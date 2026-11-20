@@ -146,7 +146,7 @@
       <div class="divider divider-horizontal m-2"></div>
 
       <a
-        href={ProformaController.exportExcel.url(proforma.id)}
+        href={ProformaController.getExcelById.url(proforma.codigo)}
         aria-disabled={!imageUrl}
         class="btn [--btn-color:var(--color-green-900)]">Excel</a
       >
