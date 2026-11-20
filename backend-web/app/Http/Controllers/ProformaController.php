@@ -212,7 +212,12 @@ class ProformaController extends Controller
       $proforma->products()->sync($productosPivot);
     });
 
-    return to_route('proformas.index');
+    // TODO: separar y manejar error
+    $data = $this->formatProformaData($proforma);
+    $postResponse = Http::post("{$this->baseUrl}/api/proforma/img", $data);
+
+    // TODO: no recarga
+    return to_route('proformas.edit', ['proforma' => $proforma->id]);
   }
 
   /**
@@ -375,7 +380,7 @@ class ProformaController extends Controller
       }
 
       return response()->json([
-        'url' => $imageUrl
+        'url' => "{$imageUrl}?t={$proforma->updated_at}"
       ]);
     } catch (ConnectionException $e) {
       return response()->json([

@@ -77,7 +77,11 @@
       cantidad: p.cantidad,
     }));
 
-    form.put(ProformaController.update.url(proforma.id));
+    form.put(ProformaController.update.url(proforma.id), {
+      onSuccess: () => {
+        fetchImageUrl();
+      },
+    });
   };
 
   const addProduct = (productItem: ProductItem) => {
@@ -109,7 +113,10 @@
   let imageContainer: HTMLDivElement;
   const { createZoomImage: createZoomImageClick } = useZoomImageClick();
 
-  onMount(async () => {
+  const fetchImageUrl = async () => {
+    imageStatus = ImageStatus.Pending;
+    isLoaded = false;
+
     const response = await fetch(ProformaController.getImgUrl.url(proforma.id));
 
     if (!response.ok) {
@@ -121,6 +128,10 @@
     const data = (await response.json()) as { url: string };
     imageStatus = ImageStatus.Ok;
     imageUrl = data.url;
+  };
+
+  onMount(() => {
+    fetchImageUrl();
   });
 </script>
 
