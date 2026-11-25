@@ -7,10 +7,15 @@ internal partial class ObservableWebService : ObservableService
     if (!IsRunning)
     {
       IsRunning = true;
-      await Runner.StartAsync(
-        "cmd.exe",
-        "/k \"cd ../output/backend-web && php artisan serve\""
-      );
+
+#if DEBUG
+      string arguments =
+        "/k \"cd ../sys_proforma/backend-web && php artisan serve\"";
+#else
+      string arguments = "/k \"cd backend-web && php artisan serve\"";
+#endif
+
+      await Runner.StartAsync("cmd.exe", arguments);
       CleanupState();
     }
     else
@@ -28,10 +33,16 @@ internal partial class ObservableGeneratorService : ObservableService
     if (!IsRunning)
     {
       IsRunning = true;
-      await Runner.StartAsync(
-        "cmd.exe",
-        "/k \"cd ../output/GeneradorProforma && GeneradorProforma.WebAPI.exe\""
-      );
+
+#if DEBUG
+      string arguments =
+        "/k \"cd ../sys_proforma/GeneradorProforma && GeneradorProforma.WebAPI.exe\"";
+#else
+      string arguments =
+        "/k \"cd GeneradorProforma && GeneradorProforma.WebAPI.exe\"";
+#endif
+
+      await Runner.StartAsync("cmd.exe", arguments);
       CleanupState();
     }
     else
@@ -49,11 +60,16 @@ internal partial class ObservableTunelService : ObservableService
     if (!IsRunning)
     {
       IsRunning = true;
-      // TODO: solo usar en produccion `-n public:sysproforma`
-      await Runner.StartAsync(
-        "cmd.exe",
-        "/k \"cd ../output && zrok2 share public 8000 --headless\""
-      );
+
+#if DEBUG
+      string arguments =
+        "/k \"cd ../sys_proforma && zrok2 share public 8000 --headless\"";
+#else
+      string arguments =
+        "/k \"zrok2 share public 8000 -n public:sysproforma --headless\"";
+#endif
+
+      await Runner.StartAsync("cmd.exe", arguments);
       CleanupState();
     }
     else

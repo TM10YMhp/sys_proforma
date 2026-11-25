@@ -1,5 +1,5 @@
 <script module lang="ts">
-    import { dashboard } from '@/routes';
+    import { login as dashboard } from '@/routes';
 
     export const layout = {
         breadcrumbs: [

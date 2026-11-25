@@ -2,8 +2,8 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
-    import { dashboard, login } from '@/routes';
-    import { register } from '@/routes';
+    import { login as dashboard, login } from '@/routes';
+    import { login as register } from '@/routes';
 
     const auth = $derived(page.props.auth);
 </script>

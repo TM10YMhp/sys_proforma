@@ -1,6 +1,6 @@
 set default-list := true
 
-output_dir  := "output"
+output_dir  := "sys_proforma"
 backend_dir := output_dir + "/backend-web"
 
 set_db:
@@ -28,6 +28,7 @@ build: clean
   rm -rf scripts/
   rm .gitignore
   rm justfile
+  rm README.md
 
   cd ..
   echo
@@ -65,14 +66,18 @@ build: clean
   cd ../..
 
 
-  echo "[generador] ⚙️ Compilando Web API para Windows (Release)..."
+  echo "[generador] ⚙️ Compilando Web API y WPF para Windows (Release)..."
   cd GeneradorProforma
   dotnet publish src/GeneradorProforma.WebAPI -c Release -r win-x64 -o publish
+  dotnet publish src/GeneradorProforma.WPF -c Release -r win-x64 -o publish_wpf \
+    --no-self-contained -p:DebugType=None -p:PublishSingleFile=true
   cd ..
   echo
 
   echo "[generador] 📦 Moviendo artefactos de C#..."
   mv GeneradorProforma/publish {{output_dir}}/GeneradorProforma
+  mv GeneradorProforma/publish_wpf/GeneradorProforma.WPF.exe {{output_dir}}/
+  rm -r GeneradorProforma/publish_wpf/
   echo
 
 
