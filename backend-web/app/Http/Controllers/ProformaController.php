@@ -380,7 +380,7 @@ class ProformaController extends Controller
       }
 
       return response()->json([
-        'url' => "{$imageUrl}?t={$proforma->updated_at}"
+        'url' => "/proformas/getImgById/{$codigo}?t={$proforma->updated_at}"
       ]);
     } catch (ConnectionException $e) {
       return response()->json([
