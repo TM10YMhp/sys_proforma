@@ -48,10 +48,46 @@
 
 <AppHead title="Clientes" />
 
-<div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <Link href={ClienteController.create.url()} class="btn btn-primary w-fit">
-    Nuevo Cliente
-  </Link>
+<div class="flex h-full flex-1 flex-col rounded-xl p-4 pt-0">
+  <div class="sticky top-0 bg-background p-4 z-10 space-y-4">
+    <Link href={ClienteController.create.url()} class="btn btn-primary w-fit">
+      Nuevo Cliente
+    </Link>
+    <div class="flex flex-row justify-between">
+      <span class="text-gray-400"
+        >Mostrando <span class="font-semibold text-white"
+          >{clientes.from}-{clientes.to}</span
+        >
+        de
+        <span class="text-white">{clientes.total}</span></span
+      >
+      <div class="join">
+        <Link
+          prefetch="click"
+          cacheFor="3m"
+          href={clientes.prev_page_url!}
+          class="join-item btn btn-soft">«</Link
+        >
+        {#each clientes.links as item (item.label)}
+          {#if !item.label.includes('&laquo;') && !item.label.includes('&raquo;')}
+            <Link
+              prefetch="click"
+              cacheFor="3m"
+              href={cleanPageUrl(item.url)!}
+              class={cn('join-item btn btn-soft', item.active && 'btn-active')}
+              >{item.label}</Link
+            >
+          {/if}
+        {/each}
+        <Link
+          prefetch="click"
+          cacheFor="3m"
+          href={clientes.next_page_url!}
+          class="join-item btn btn-soft">»</Link
+        >
+      </div>
+    </div>
+  </div>
 
   <div class="overflow-x-auto">
     <table class={table()}>
@@ -71,7 +107,7 @@
             <td class="text-nowrap">{formatClient(item)}</td>
             <td class="font-mono">{item.ruc || item.dni}</td>
             <td class="font-mono">{item.telefono}</td>
-            <td>
+            <td class="flex flex-row gap-1">
               <Link href={ClienteController.edit(item.id)} class="btn btn-info">
                 Editar
               </Link>
@@ -87,41 +123,5 @@
         {/each}
       </tbody>
     </table>
-  </div>
-
-  <div class="flex flex-row justify-between p-4">
-    <span class="text-gray-400"
-      >Mostrando <span class="font-semibold text-white"
-        >{clientes.from}-{clientes.to}</span
-      >
-      de
-      <span class="text-white">{clientes.total}</span></span
-    >
-
-    <div class="join">
-      <Link
-        prefetch="click"
-        cacheFor="3m"
-        href={clientes.prev_page_url!}
-        class="join-item btn btn-soft">«</Link
-      >
-      {#each clientes.links as item (item.label)}
-        {#if !item.label.includes('&laquo;') && !item.label.includes('&raquo;')}
-          <Link
-            prefetch="click"
-            cacheFor="3m"
-            href={cleanPageUrl(item.url)!}
-            class={cn('join-item btn btn-soft', item.active && 'btn-active')}
-            >{item.label}</Link
-          >
-        {/if}
-      {/each}
-      <Link
-        prefetch="click"
-        cacheFor="3m"
-        href={clientes.next_page_url!}
-        class="join-item btn btn-soft">»</Link
-      >
-    </div>
   </div>
 </div>

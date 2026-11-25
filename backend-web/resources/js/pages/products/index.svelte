@@ -38,10 +38,47 @@
 
 <AppHead title="Productos" />
 
-<div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-  <Link href={ProductController.create.url()} class="btn btn-primary w-fit">
-    Nuevo Producto
-  </Link>
+<div class="flex h-full flex-1 flex-col rounded-xl p-4 pt-0">
+  <div class="sticky top-0 bg-background p-4 z-10 space-y-4">
+    <Link href={ProductController.create.url()} class="btn btn-primary w-fit">
+      Nuevo Producto
+    </Link>
+    <div class="flex flex-row justify-between">
+      <span class="text-gray-400"
+        >Mostrando <span class="font-semibold text-white"
+          >{products.from}-{products.to}</span
+        >
+        de
+        <span class="text-white">{products.total}</span></span
+      >
+      <!-- NOTE: prefetch click necesita el cacheFor sino no funciona -->
+      <div class="join">
+        <Link
+          prefetch="click"
+          cacheFor="3m"
+          href={products.prev_page_url!}
+          class="join-item btn btn-soft">«</Link
+        >
+        {#each products.links as item (item.label)}
+          {#if !item.label.includes('&laquo;') && !item.label.includes('&raquo;')}
+            <Link
+              prefetch="click"
+              cacheFor="3m"
+              href={cleanPageUrl(item.url)!}
+              class={cn('join-item btn btn-soft', item.active && 'btn-active')}
+              >{item.label}</Link
+            >
+          {/if}
+        {/each}
+        <Link
+          prefetch="click"
+          cacheFor="3m"
+          href={products.next_page_url!}
+          class="join-item btn btn-soft">»</Link
+        >
+      </div>
+    </div>
+  </div>
 
   <div class="overflow-x-auto">
     <table class={table()}>
@@ -89,42 +126,5 @@
         {/each}
       </tbody>
     </table>
-  </div>
-
-  <div class="flex flex-row justify-between p-4">
-    <span class="text-gray-400"
-      >Mostrando <span class="font-semibold text-white"
-        >{products.from}-{products.to}</span
-      >
-      de
-      <span class="text-white">{products.total}</span></span
-    >
-
-    <!-- NOTE: prefetch click necesita el cacheFor sino no funciona -->
-    <div class="join">
-      <Link
-        prefetch="click"
-        cacheFor="3m"
-        href={products.prev_page_url!}
-        class="join-item btn btn-soft">«</Link
-      >
-      {#each products.links as item (item.label)}
-        {#if !item.label.includes('&laquo;') && !item.label.includes('&raquo;')}
-          <Link
-            prefetch="click"
-            cacheFor="3m"
-            href={cleanPageUrl(item.url)!}
-            class={cn('join-item btn btn-soft', item.active && 'btn-active')}
-            >{item.label}</Link
-          >
-        {/if}
-      {/each}
-      <Link
-        prefetch="click"
-        cacheFor="3m"
-        href={products.next_page_url!}
-        class="join-item btn btn-soft">»</Link
-      >
-    </div>
   </div>
 </div>
