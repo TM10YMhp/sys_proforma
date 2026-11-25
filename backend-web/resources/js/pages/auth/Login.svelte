@@ -1,7 +1,7 @@
 <script module lang="ts">
     export const layout = {
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
+        title: 'Inicia sesión en tu cuenta',
+        description: 'Introduce tu correo electrónico y tu contraseña a continuación para iniciar sesión',
     };
 </script>
 
@@ -29,7 +29,7 @@
     } = $props();
 </script>
 
-<AppHead title="Log in" />
+<AppHead title="Iniciar sesión" />
 
 {#if status}
     <div class="mb-4 text-center text-sm font-medium text-green-600">
@@ -45,7 +45,7 @@
     {#snippet children({ errors, processing })}
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="name">Username</Label>
+                <Label for="name">Nombre de usuario</Label>
                 <Input
                     id="name"
                     type="text"
@@ -59,7 +59,7 @@
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between">
-                    <Label for="password">Password</Label>
+                    <Label for="password">Contraseña</Label>
                     {#if canResetPassword}
                         <TextLink href={request()} class="text-sm">
                             Forgot your password?
@@ -79,7 +79,7 @@
             <div class="flex items-center justify-between">
                 <Label for="remember" class="flex items-center space-x-3">
                     <Checkbox id="remember" name="remember" />
-                    <span>Remember me</span>
+                    <span>Mantener la sesión iniciada</span>
                 </Label>
             </div>
 
@@ -90,7 +90,7 @@
                 data-test="login-button"
             >
                 {#if processing}<Spinner />{/if}
-                Log in
+                Iniciar sesión
             </Button>
         </div>
 
