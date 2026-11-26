@@ -229,6 +229,9 @@ class ProformaController extends Controller
     // TODO: revisar esto
     $proforma->delete();
 
+    $codigo = str_replace(" ", "_", trim($proforma->codigo));
+    Http::delete("{$this->baseUrl}/api/proforma/{$codigo}");
+
     return to_route('proformas.index');
   }
 
