@@ -1,3 +1,4 @@
+using ErrorOr;
 using GeneradorProforma.Core.Entity;
 using GeneradorProforma.Core.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -284,6 +285,22 @@ public class ProformaController(IProformaService service) : ControllerBase
       contentType,
       fileName,
       enableRangeProcessing: true
+    );
+  }
+
+  [HttpDelete("{id}")]
+  public IActionResult EliminarPorId([FromRoute] string id)
+  {
+    var result = _service.DeleteById(id);
+    return result.MatchFirst(
+      value => Ok(new { message = value }),
+      error =>
+        error.Type switch
+        {
+          ErrorType.NotFound => NotFound(error),
+          ErrorType.Unexpected => Problem(error.Description, statusCode: 500),
+          _ => BadRequest(error),
+        }
     );
   }
 }

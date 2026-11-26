@@ -19,6 +19,7 @@ public interface IProformaService
   ErrorOr<string> GetExcelById(string id);
   ErrorOr<string> GetImgById(string id);
   ErrorOr<string> GetPDFById(string id);
+  ErrorOr<string> DeleteById(string id);
 }
 
 public class ProformaService : IProformaService
@@ -260,5 +261,23 @@ public class ProformaService : IProformaService
     }
 
     return ruta;
+  }
+
+  public ErrorOr<string> DeleteById(string id)
+  {
+    if (!Directory.Exists(RutaSalida))
+      return Error.Unexpected(description: "La carpeta de salida no existe");
+
+    var archivos = Directory.EnumerateFiles(RutaSalida, $"proforma-{id}.*");
+    if (!archivos.Any())
+    {
+      return Error.NotFound(description: "La proforma no existe");
+    }
+    foreach (var archivo in archivos)
+    {
+      File.Delete(archivo);
+    }
+
+    return "Proforma eliminada";
   }
 }
