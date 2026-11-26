@@ -1,0 +1,44 @@
+@startuml 02-generador
+title Generador de Proformas - Casos de uso
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+
+actor "Sistema Web" as Web
+
+rectangle "Generador de Proformas" {
+  package "Generacion" {
+    usecase "Generar Excel" as G01
+    usecase "Generar PDF" as G02
+    usecase "Generar imagen" as G03
+  }
+  package "Consulta" {
+    usecase "Descargar Excel" as G04
+    usecase "Descargar PDF" as G05
+    usecase "Descargar imagen" as G06
+  }
+  package "Almacenamiento" {
+    usecase "Cargar plantilla Excel" as G07
+    usecase "Verificar archivo generado" as G08
+  }
+}
+
+Web --> G01
+Web --> G02
+Web --> G03
+Web --> G04
+Web --> G05
+Web --> G06
+
+' G02 ..> G01 : <<include>>
+' G03 ..> G02 : <<include>>
+
+G02 .left.> G01 : <<include>>
+G03 .left.> G02 : <<include>>
+
+G01 ..> G07 : <<include>>
+G04 ..> G08 : <<include>>
+G05 ..> G08 : <<include>>
+G06 ..> G08 : <<include>>
+@enduml
