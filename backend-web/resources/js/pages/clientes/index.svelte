@@ -93,7 +93,7 @@
     <table class={table()}>
       <thead>
         <tr>
-          <th>#</th>
+          <th>Id</th>
           <th>Nombres</th>
           <th>RUC/DNI</th>
           <th>Telefono</th>
@@ -101,9 +101,9 @@
         </tr>
       </thead>
       <tbody>
-        {#each clientes.data as item, index (item.id)}
+        {#each clientes.data as item (item.id)}
           <tr>
-            <th>{index + Number(clientes.from)}</th>
+            <th>{item.id}</th>
             <td class="text-nowrap">{formatClient(item)}</td>
             <td class="font-mono">{item.ruc || item.dni}</td>
             <td class="font-mono">{item.telefono}</td>

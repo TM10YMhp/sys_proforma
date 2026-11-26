@@ -42,7 +42,7 @@
   <table class={table()}>
     <thead>
       <tr>
-        <th>#</th>
+        <th>Id</th>
         <th>Codigo</th>
         <th>Descripcion</th>
         <th class="text-center">Cantidad</th>
@@ -56,7 +56,7 @@
     <tbody>
       {#each productos as item, idx (idx)}
         <tr>
-          <th>{idx + 1}</th>
+          <th>{item.id}</th>
           <td class="font-mono">{item.codigo}</td>
           <td class="truncate max-w-50">{item.descripcion}</td>
           <td class="text-center">{item.cantidad}</td>

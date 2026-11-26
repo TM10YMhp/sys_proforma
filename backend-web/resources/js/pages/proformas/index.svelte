@@ -117,7 +117,7 @@
     <table class={table()}>
       <thead>
         <tr>
-          <th>#</th>
+          <th>Id</th>
           <th>Codigo</th>
           <th>Cliente</th>
           <th class="text-center">Productos</th>
@@ -145,7 +145,7 @@
               router.visit(ProformaController.edit.url(item.id));
             }}
           >
-            <th>{index + Number(proformas.from)}</th>
+            <th>{item.id}</th>
             <td class="font-mono text-nowrap">{item.codigo}</td>
             <td class="text-nowrap">{formatClient(item.cliente)}</td>
             <td class="text-center">

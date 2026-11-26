@@ -84,7 +84,7 @@
     <table class={table()}>
       <thead>
         <tr>
-          <th>#</th>
+          <th>Id</th>
           <th>Codigo</th>
           <th>Descripcion</th>
           <th class="text-right">Precio</th>
@@ -94,9 +94,9 @@
         </tr>
       </thead>
       <tbody>
-        {#each products.data as item, idx (item.id)}
+        {#each products.data as item (item.id)}
           <tr>
-            <th>{idx + Number(products.from)}</th>
+            <th>{item.id}</th>
             <td class="font-mono">{item.codigo}</td>
             <td class="truncate max-w-50">{item.descripcion}</td>
             <td class="font-mono text-right">{item.precio}</td>
