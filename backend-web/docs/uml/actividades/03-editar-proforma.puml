@@ -1,0 +1,48 @@
+@startuml 03-editar-proforma
+title Editar proforma y actualizar vista previa
+
+|Administrador|
+start
+:Abrir proforma desde el listado;
+
+|Sistema Web|
+:Cargar proforma, cliente e ítems;
+:Mostrar formulario y vista previa;
+
+|Administrador|
+:Modificar fechas, cliente o productos;
+
+|Sistema Web|
+:Recalcular subtotal, IGV y total;
+
+|Administrador|
+:Guardar cambios;
+
+|Sistema Web|
+:Validar datos;
+if (¿Datoss válidos?) then (No)
+  :Mostrar errores;
+
+  |Administrador|
+  :Corregir formulario;
+  stop
+else (Sí)
+endif
+
+|Sistema Web|
+:Actualizar proforma e ítems;
+:Solicitar regeneración de imagen;
+
+|Generador|
+:Generar PDF;
+:Convertir PDF a WebP;
+:Guardar imagen;
+
+|Sistema Web|
+:Consultar URL de imagen;
+:Devolver URL con marca de tiempo;
+
+|Administrador|
+:Visualizar vista previa actualizada;
+stop
+@enduml
