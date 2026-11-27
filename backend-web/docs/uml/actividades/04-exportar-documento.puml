@@ -1,0 +1,44 @@
+@startuml 04-exportar-documento
+title Exportar documento (PDF, Excel o imagen)
+
+|Administrador|
+start
+:Seleccionar formato;
+
+|Sistema Web|
+:Formatear datos de la proforma;
+:Enviar solicitud al Generador;
+
+|Generador|
+:Validar cuerpo de la solicitud;
+
+if (¿Datos válidos?) then (No)
+  :Devolver error 400;
+  |Sistema Web|
+  :Mostrar mensaje de error;
+  stop
+else (Sí)
+endif
+
+|Generador|
+:Cargar plantilla Excel;
+:Rellenar cliente, productos, fechas y condiciones;
+
+switch (¿Formato?)
+case (Excel)
+  :Guardar archivo .xlsx;
+case (PDF)
+  :Guardar archivo .xlsx;
+  :Convertir a PDF;
+case (Imagen)
+  :Guardar archivo .xlsx;
+  :Convertir a PDF;
+  :Convertir a imagen;
+endswitch
+:Devolver archivo;
+
+|Sistema Web|
+:Entregar archivo al navegador;
+stop
+
+@enduml
