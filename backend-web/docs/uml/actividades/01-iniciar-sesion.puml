@@ -1,0 +1,21 @@
+@startuml 01-iniciar-sesion
+title Iniciar sesión
+
+|Administrador|
+start
+:Ingresar nombre de usuario y contraseña;
+|Sistema Web|
+:Limitar intentos (5 por minuto);
+:Validar credenciales;
+if (¿Credenciales válidas?) then (Sí)
+  :Iniciar sesión;
+  :Redirigir al listado de proformas;
+  stop
+else (No)
+  :Mostrar error de autenticación;
+endif
+
+|Administrador|
+:Corregir datos o reintentar;
+stop
+@enduml
