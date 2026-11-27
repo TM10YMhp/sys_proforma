@@ -1,0 +1,44 @@
+@startuml 02-registrar-proforma
+title Registrar proforma
+|Administrador|
+start
+:Abrir "Nueva proforma";
+|Sistema Web|
+:Obtener última proforma;
+:Generar código correlativo;
+:Mostrar formulario;
+|Administrador|
+:Seleccionar cliente por DNI, RUC o nombre;
+|Sistema Web|
+:Buscar y autocompletar cliente;
+|Administrador|
+repeat
+  :Buscar producto por código o descripción;
+  |Sistema Web|
+  :Consultar producto;
+  :Mostrar precio y unidad de medida;
+  |Administrador|
+  :Indicar cantidad;
+  :Agregar producto;
+repeat while (¿Agregar otro producto?) is (Sí) not (No)
+|Sistema Web|
+:Calcular subtotal;
+:Calcular IGV (subtotal x tasa);
+:Calcular total;
+|Administrador|
+:Confirmar y enviar;
+|Sistema Web|
+:Validar cliente, fechas y productos;
+if (¿Datos válidos?) then (Sí)
+  :Iniciar transacción;
+  :Guardar proforma;
+  :Confirmar transacción;
+  :Redirigir al listado;
+  stop
+else (No)
+  :Mostrar errores de validación;
+endif
+  |Administrador|
+  :Corregir formulario;
+  stop
+@enduml
